@@ -149,6 +149,41 @@ Add a row for every dependency (CODING_RULES §9). Empty until P1.
 
 | Package | Version | Side | Why | Added in |
 |---|---|---|---|---|
+| `django` | `5.2.17` | Backend | Web framework (5.2 LTS, Python 3.13 support) | P1 |
+| `djangorestframework` | `3.18.1` | Backend | REST API layer and serializers | P1 |
+| `django-cors-headers` | `4.9.0` | Backend | CORS middleware for local Vite frontend | P1 |
+| `httpx` | `0.28.1` | Backend | HTTP client for external provider APIs | P1 |
+| `gunicorn` | `26.2.0` | Backend | Production WSGI HTTP server | P1 |
+| `tzdata` | `2026.4` | Backend | IANA timezone database for zoneinfo | P1 |
+| `python-dotenv` | `1.2.3` | Backend | Environment variable loader from .env | P1 |
+| `ruff` | `0.16.9` | Backend (dev) | Python linter and formatter (line-length 100) | P1 |
+| `pytest` | `9.1.1` | Backend (dev) | Python test runner | P1 |
+| `pytest-django` | `4.14.0` | Backend (dev) | Django test runner plugin for pytest | P1 |
+| `respx` | `0.23.1` | Backend (dev) | HTTPX mock framework for provider tests | P1 |
+| `pip-audit` | `2.10.1` | Backend (dev) | PyPI vulnerability scanner | P1 |
+| `react` | `19.3.0` | Frontend | React 19 UI library | P1 |
+| `react-dom` | `19.3.0` | Frontend | React 19 DOM renderer | P1 |
+| `@mui/material` | `9.4.0` | Frontend | Material UI v9 (first-class React 19 peer support) | P1 |
+| `@emotion/react` | `11.14.0` | Frontend | Emotion CSS-in-JS engine for MUI v9 | P1 |
+| `@emotion/styled` | `11.14.1` | Frontend | Emotion styled API for MUI v9 | P1 |
+| `@tanstack/react-query` | `5.104.0` | Frontend | Async server state and query management | P1 |
+| `@fontsource/barlow` | `5.3.0` | Frontend | Self-hosted UI font per DESIGN.md §2 | P1 |
+| `@fontsource/jetbrains-mono` | `5.3.0` | Frontend | Self-hosted tabular numbers font per DESIGN.md §2 | P1 |
+| `vite` | `6.4.3` | Frontend (dev) | Fast ESM frontend bundler | P1 |
+| `@vitejs/plugin-react` | `4.3.4` | Frontend (dev) | Vite React Fast Refresh plugin | P1 |
+| `typescript` | `5.8.3` | Frontend (dev) | TypeScript compiler (strict type checking) | P1 |
+| `typescript-eslint` | `8.70.1` | Frontend (dev) | Strict TypeScript ESLint parser and plugin suite | P1 |
+| `eslint-plugin-react-hooks` | `7.1.1` | Frontend (dev) | React hooks enforcement rules | P1 |
+| `@eslint/js` | `9.39.5` | Frontend (dev) | ESLint JavaScript core rules | P1 |
+| `eslint-config-prettier` | `9.1.2` | Frontend (dev) | Disables ESLint rules conflicting with Prettier | P1 |
+| `eslint` | `9.39.5` | Frontend (dev) | Linter core engine | P1 |
+| `prettier` | `3.5.3` | Frontend (dev) | Code formatter (single quotes) | P1 |
+| `vitest` | `4.1.11` | Frontend (dev) | Fast unit and component test runner | P1 |
+| `@testing-library/react` | `16.3.3` | Frontend (dev) | React 19 component testing utilities | P1 |
+| `@testing-library/jest-dom` | `6.6.3` | Frontend (dev) | Custom DOM element matchers | P1 |
+| `jsdom` | `26.0.0` | Frontend (dev) | Headless DOM environment for Vitest | P1 |
+| `@types/react` | `19.3.0` | Frontend (dev) | TypeScript definitions for React 19 | P1 |
+| `@types/react-dom` | `19.3.0` | Frontend (dev) | TypeScript definitions for React 19 DOM | P1 |
 
 ## 10. Definition of done (every feature)
 

@@ -113,7 +113,7 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | ID | Feature | Phase | Status |
 |---|---|---|---|
 | F-000 | Provider spike (TomTom + Open-Meteo) | P0 | done |
-| F-001 | Project scaffold (backend Django/DRF, frontend Vite/React/TS, tooling) | P1 | planned |
+| F-001 | Project scaffold (backend Django/DRF, frontend Vite/React/TS, tooling) | P1 | done |
 | F-010 | Domain core: types, rules_config, risk assessment | P2 | planned |
 | F-011 | Domain core: geometry (haversine, interpolation) & sampling | P2 | planned |
 | F-012 | Domain core: timeline & ETA interpolation | P2 | planned |
@@ -161,7 +161,12 @@ _None yet._
 
 ## 6. Dependencies
 
-_None yet. Pinned at install time per CODING_RULES §9._
+### P-001 P1 Scaffold Dependencies
+- Date: 2026-10-10
+- Type: dependency
+- Phase: P1
+- Summary: Pinned exact dependencies audited >= 14 days old as of 2026-10-10. Backend: Django 5.2.17 + DRF 3.18.1 on Python 3.13; Frontend: React 19.3.0 + MUI 9.4.0 + Vite 6.4.3 + Vitest 4.1.11. pip-audit and npm audit zero vulnerabilities.
+- Status: done
 
 ---
 
@@ -179,3 +184,4 @@ _None yet. Pinned at install time per CODING_RULES §9._
 | Phase | Description | Planned (h) | Actual (h) | Cumulative (h) | Notes |
 |---|---|---|---|---|---|
 | P0 | Provider spike, decisions | 0.75 | 0.75 | 0.75 | Evaluated Open-Meteo batching, TomTom truck routing, fallback, determinism |
+| P1 | Scaffold, tooling | 0.5 | 0.5 | 1.25 | Backend Django 5.2/DRF scaffold, Frontend React 19/Vite/TS/MUI v9, tests & audits clean |

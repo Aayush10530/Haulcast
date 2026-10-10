@@ -1,0 +1,17 @@
+# Backend Dependencies (Pinned exact versions, audited >= 14 days old as of 2026-10-10)
+
+# Runtime
+django==5.2.17
+djangorestframework==3.18.1
+django-cors-headers==4.9.0
+httpx==0.28.1
+gunicorn==26.2.0
+tzdata==2026.4
+python-dotenv==1.2.3
+
+# Development & Testing
+ruff==0.16.9
+pytest==9.1.1
+pytest-django==4.14.0
+respx==0.23.1
+pip-audit==2.10.1
