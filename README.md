@@ -1,6 +1,6 @@
 # Haulcast
 
-> Weather-aware truck routing web app built for Spotter.ai.
+> Weather-aware truck routing web app.
 
 Haulcast evaluates long-haul truck routes across the contiguous United States against dynamic weather forecasts. It samples weather conditions along route corridors at the truck's estimated arrival time (ETA), evaluates risk thresholds against gross vehicle load weight, and recommends the safest, most efficient route.
 
@@ -37,8 +37,8 @@ flowchart LR
 
 ### Technology Stack
 
-- **Backend**: Python 3.12, Django 5, Django REST Framework, HTTPX, Respx, Pytest.
-- **Frontend**: React 18, Vite, TypeScript (strict), Material UI (MUI), Leaflet / React-Leaflet, TanStack Query.
+- **Backend**: Python 3.13, Django 5.2, Django REST Framework, HTTPX, Respx, Pytest.
+- **Frontend**: React 19, Vite, TypeScript (strict), Material UI (MUI), Leaflet / React-Leaflet, TanStack Query.
 - **External Providers**: TomTom Routing & Geocoding APIs, Open-Meteo Weather API.
 
 ---
