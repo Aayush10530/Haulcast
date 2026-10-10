@@ -4,72 +4,34 @@
 *.env.local
 .env.*.local
 
-# Python
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Node / Frontend
+node_modules/
+dist/
+.vite/
+
+# Python caches and bytecode
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual environments
-venv/
-.venv/
-ENV/
-env/
+.ruff_cache/
 
 # Testing and coverage
 .pytest_cache/
 .coverage
 htmlcov/
-.tox/
-.nox/
 
-# Django
+# Database
+db.sqlite3
 *.sqlite3
-local_settings.py
-staticfiles/
-
-# Node / Frontend
-node_modules/
-dist/
-.next/
-.vite/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 # IDE and OS
-.idea/
 .vscode/
-*.swp
-*.swo
-*~
+.idea/
 .DS_Store
 Thumbs.db
-
-# Internal documentation and guides (kept local, GitHub tracks root README.md only)
-AGENTS.md
-ARCHITECTURE.md
-CODING_RULES.md
-FEATURE_LOG.md
-PROJECT_CONTEXT.md
-PROMPT.md
-DESIGN.md
-backend/**/*.md
-frontend/**/*.md
-
