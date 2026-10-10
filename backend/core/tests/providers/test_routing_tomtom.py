@@ -3,6 +3,7 @@
 import json
 import logging
 import math
+from collections.abc import Generator
 from pathlib import Path
 from typing import Any
 
@@ -39,6 +40,12 @@ def _load_fixture(filename: str) -> dict[str, Any]:
         return json.load(f)
 
 
+@pytest.fixture(scope="module")
+def mock_client() -> Generator[httpx.Client]:
+    with httpx.Client() as client:
+        yield client
+
+
 @pytest.fixture
 def tomtom_3_routes_data() -> dict[str, Any]:
     return _load_fixture("tomtom_3_routes.json")
@@ -54,22 +61,28 @@ def tomtom_no_route_data() -> dict[str, Any]:
     return _load_fixture("tomtom_no_route.json")
 
 
+# Configure respx router so any unmocked request fails immediately
+respx.mock.assert_all_mocked = True
+
+
 # ---------------------------------------------------------------------------
 # Success scenarios
 # ---------------------------------------------------------------------------
 
 
 @respx.mock
-def test_tomtom_success_three_routes(tomtom_3_routes_data: dict[str, Any]) -> None:
+def test_tomtom_success_three_routes(
+    tomtom_3_routes_data: dict[str, Any], mock_client: httpx.Client
+) -> None:
     origin = Coordinate(lat=34.0522, lon=-118.2437)
     destination = Coordinate(lat=40.7608, lon=-111.8910)
 
     route_mock = respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/34.0522,-118.2437:40.7608,-111.891/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/34.0522,-118.2437:40.7608,-111.891/json"
     ).mock(return_value=httpx.Response(200, json=tomtom_3_routes_data))
 
     sleep_calls: list[float] = []
-    provider = TomTomRoutingProvider("test_key", sleep=sleep_calls.append)
+    provider = TomTomRoutingProvider("test_key", client=mock_client, sleep=sleep_calls.append)
     routes = provider.get_routes(origin, destination, max_routes=3)
 
     assert route_mock.called
@@ -97,16 +110,18 @@ def test_tomtom_success_three_routes(tomtom_3_routes_data: dict[str, Any]) -> No
 
 
 @respx.mock
-def test_tomtom_via_request_two_legs(tomtom_via_route_data: dict[str, Any]) -> None:
+def test_tomtom_via_request_two_legs(
+    tomtom_via_route_data: dict[str, Any], mock_client: httpx.Client
+) -> None:
     origin = Coordinate(lat=32.7767, lon=-96.7970)
     via = Coordinate(lat=33.5779, lon=-101.8552)
     destination = Coordinate(lat=39.7392, lon=-104.9903)
 
     route_mock = respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:33.5779,-101.8552:39.7392,-104.9903/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:33.5779,-101.8552:39.7392,-104.9903/json"
     ).mock(return_value=httpx.Response(200, json=tomtom_via_route_data))
 
-    provider = TomTomRoutingProvider("test_key")
+    provider = TomTomRoutingProvider("test_key", client=mock_client, sleep=lambda _: None)
     routes = provider.get_routes(origin, destination, via=[via], max_routes=3)
 
     assert route_mock.called
@@ -125,16 +140,16 @@ def test_tomtom_via_request_two_legs(tomtom_via_route_data: dict[str, Any]) -> N
 
 
 @respx.mock
-def test_tomtom_timeout_retry_and_exhaustion() -> None:
+def test_tomtom_timeout_retry_and_exhaustion(mock_client: httpx.Client) -> None:
     origin = Coordinate(lat=32.7767, lon=-96.7970)
     destination = Coordinate(lat=39.7392, lon=-104.9903)
 
     respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
     ).mock(side_effect=httpx.ReadTimeout("Connection read timed out"))
 
     sleep_calls: list[float] = []
-    provider = TomTomRoutingProvider("test_key", sleep=sleep_calls.append)
+    provider = TomTomRoutingProvider("test_key", client=mock_client, sleep=sleep_calls.append)
 
     with pytest.raises(ProviderTimeout) as exc_info:
         provider.get_routes(origin, destination)
@@ -144,16 +159,16 @@ def test_tomtom_timeout_retry_and_exhaustion() -> None:
 
 
 @respx.mock
-def test_tomtom_rate_limited_retry_and_exhaustion() -> None:
+def test_tomtom_rate_limited_retry_and_exhaustion(mock_client: httpx.Client) -> None:
     origin = Coordinate(lat=32.7767, lon=-96.7970)
     destination = Coordinate(lat=39.7392, lon=-104.9903)
 
     respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
     ).mock(return_value=httpx.Response(429, text="Rate limit exceeded"))
 
     sleep_calls: list[float] = []
-    provider = TomTomRoutingProvider("test_key", sleep=sleep_calls.append)
+    provider = TomTomRoutingProvider("test_key", client=mock_client, sleep=sleep_calls.append)
 
     with pytest.raises(ProviderRateLimited) as exc_info:
         provider.get_routes(origin, destination)
@@ -164,16 +179,16 @@ def test_tomtom_rate_limited_retry_and_exhaustion() -> None:
 
 @pytest.mark.parametrize("status_code", [401, 403])
 @respx.mock
-def test_tomtom_auth_failure_no_retry(status_code: int) -> None:
+def test_tomtom_auth_failure_no_retry(status_code: int, mock_client: httpx.Client) -> None:
     origin = Coordinate(lat=32.7767, lon=-96.7970)
     destination = Coordinate(lat=39.7392, lon=-104.9903)
 
     respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
     ).mock(return_value=httpx.Response(status_code, text="Forbidden"))
 
     sleep_calls: list[float] = []
-    provider = TomTomRoutingProvider("test_key", sleep=sleep_calls.append)
+    provider = TomTomRoutingProvider("test_key", client=mock_client, sleep=sleep_calls.append)
 
     with pytest.raises(ProviderUnavailable) as exc_info:
         provider.get_routes(origin, destination)
@@ -184,16 +199,18 @@ def test_tomtom_auth_failure_no_retry(status_code: int) -> None:
 
 @pytest.mark.parametrize("status_code", [500, 502, 503, 504])
 @respx.mock
-def test_tomtom_server_error_retry_and_exhaustion(status_code: int) -> None:
+def test_tomtom_server_error_retry_and_exhaustion(
+    status_code: int, mock_client: httpx.Client
+) -> None:
     origin = Coordinate(lat=32.7767, lon=-96.7970)
     destination = Coordinate(lat=39.7392, lon=-104.9903)
 
     respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
     ).mock(return_value=httpx.Response(status_code, text="Internal Server Error"))
 
     sleep_calls: list[float] = []
-    provider = TomTomRoutingProvider("test_key", sleep=sleep_calls.append)
+    provider = TomTomRoutingProvider("test_key", client=mock_client, sleep=sleep_calls.append)
 
     with pytest.raises(ProviderUnavailable) as exc_info:
         provider.get_routes(origin, destination)
@@ -203,16 +220,16 @@ def test_tomtom_server_error_retry_and_exhaustion(status_code: int) -> None:
 
 
 @respx.mock
-def test_tomtom_connection_error_retry_and_exhaustion() -> None:
+def test_tomtom_connection_error_retry_and_exhaustion(mock_client: httpx.Client) -> None:
     origin = Coordinate(lat=32.7767, lon=-96.7970)
     destination = Coordinate(lat=39.7392, lon=-104.9903)
 
     respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
     ).mock(side_effect=httpx.ConnectError("Connection refused"))
 
     sleep_calls: list[float] = []
-    provider = TomTomRoutingProvider("test_key", sleep=sleep_calls.append)
+    provider = TomTomRoutingProvider("test_key", client=mock_client, sleep=sleep_calls.append)
 
     with pytest.raises(ProviderUnavailable) as exc_info:
         provider.get_routes(origin, destination)
@@ -222,12 +239,14 @@ def test_tomtom_connection_error_retry_and_exhaustion() -> None:
 
 
 @respx.mock
-def test_tomtom_retry_then_success(tomtom_via_route_data: dict[str, Any]) -> None:
+def test_tomtom_retry_then_success(
+    tomtom_via_route_data: dict[str, Any], mock_client: httpx.Client
+) -> None:
     origin = Coordinate(lat=32.7767, lon=-96.7970)
     destination = Coordinate(lat=39.7392, lon=-104.9903)
 
     route_mock = respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
     )
     route_mock.side_effect = [
         httpx.Response(500, text="Temporary Error"),
@@ -235,7 +254,7 @@ def test_tomtom_retry_then_success(tomtom_via_route_data: dict[str, Any]) -> Non
     ]
 
     sleep_calls: list[float] = []
-    provider = TomTomRoutingProvider("test_key", sleep=sleep_calls.append)
+    provider = TomTomRoutingProvider("test_key", client=mock_client, sleep=sleep_calls.append)
     routes = provider.get_routes(origin, destination)
 
     assert len(routes) == 1
@@ -248,15 +267,15 @@ def test_tomtom_retry_then_success(tomtom_via_route_data: dict[str, Any]) -> Non
 
 
 @respx.mock
-def test_tomtom_malformed_json_syntax() -> None:
+def test_tomtom_malformed_json_syntax(mock_client: httpx.Client) -> None:
     origin = Coordinate(lat=32.7767, lon=-96.7970)
     destination = Coordinate(lat=39.7392, lon=-104.9903)
 
     respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
     ).mock(return_value=httpx.Response(200, text="not-valid-json{["))
 
-    provider = TomTomRoutingProvider("test_key")
+    provider = TomTomRoutingProvider("test_key", client=mock_client, sleep=lambda _: None)
     with pytest.raises(ProviderBadResponse) as exc_info:
         provider.get_routes(origin, destination)
 
@@ -264,15 +283,15 @@ def test_tomtom_malformed_json_syntax() -> None:
 
 
 @respx.mock
-def test_tomtom_json_not_a_dict() -> None:
+def test_tomtom_json_not_a_dict(mock_client: httpx.Client) -> None:
     origin = Coordinate(lat=32.7767, lon=-96.7970)
     destination = Coordinate(lat=39.7392, lon=-104.9903)
 
     respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
     ).mock(return_value=httpx.Response(200, json=["unexpected", "array"]))
 
-    provider = TomTomRoutingProvider("test_key")
+    provider = TomTomRoutingProvider("test_key", client=mock_client, sleep=lambda _: None)
     with pytest.raises(ProviderBadResponse):
         provider.get_routes(origin, destination)
 
@@ -329,43 +348,47 @@ def test_tomtom_json_not_a_dict() -> None:
     ],
 )
 @respx.mock
-def test_tomtom_malformed_route_structures(payload: dict[str, Any]) -> None:
+def test_tomtom_malformed_route_structures(
+    payload: dict[str, Any], mock_client: httpx.Client
+) -> None:
     origin = Coordinate(lat=32.7767, lon=-96.7970)
     destination = Coordinate(lat=39.7392, lon=-104.9903)
 
     respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
     ).mock(return_value=httpx.Response(200, json=payload))
 
-    provider = TomTomRoutingProvider("test_key")
+    provider = TomTomRoutingProvider("test_key", client=mock_client, sleep=lambda _: None)
     with pytest.raises(ProviderBadResponse):
         provider.get_routes(origin, destination)
 
 
 @respx.mock
-def test_tomtom_empty_routes_list_raises_no_route_found() -> None:
+def test_tomtom_empty_routes_list_raises_no_route_found(mock_client: httpx.Client) -> None:
     origin = Coordinate(lat=32.7767, lon=-96.7970)
     destination = Coordinate(lat=39.7392, lon=-104.9903)
 
     respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
     ).mock(return_value=httpx.Response(200, json={"routes": []}))
 
-    provider = TomTomRoutingProvider("test_key")
+    provider = TomTomRoutingProvider("test_key", client=mock_client, sleep=lambda _: None)
     with pytest.raises(NoRouteFound):
         provider.get_routes(origin, destination)
 
 
 @respx.mock
-def test_tomtom_no_route_found_400_response(tomtom_no_route_data: dict[str, Any]) -> None:
+def test_tomtom_no_route_found_400_response(
+    tomtom_no_route_data: dict[str, Any], mock_client: httpx.Client
+) -> None:
     origin = Coordinate(lat=21.3069, lon=-157.8583)
     destination = Coordinate(lat=32.7767, lon=-96.7970)
 
     respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/21.3069,-157.8583:32.7767,-96.797/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/21.3069,-157.8583:32.7767,-96.797/json"
     ).mock(return_value=httpx.Response(400, json=tomtom_no_route_data))
 
-    provider = TomTomRoutingProvider("test_key")
+    provider = TomTomRoutingProvider("test_key", client=mock_client, sleep=lambda _: None)
     with pytest.raises(NoRouteFound) as exc_info:
         provider.get_routes(origin, destination)
 
@@ -373,29 +396,29 @@ def test_tomtom_no_route_found_400_response(tomtom_no_route_data: dict[str, Any]
 
 
 @respx.mock
-def test_tomtom_other_400_error_response() -> None:
+def test_tomtom_other_400_error_response(mock_client: httpx.Client) -> None:
     origin = Coordinate(lat=32.7767, lon=-96.7970)
     destination = Coordinate(lat=39.7392, lon=-104.9903)
 
     respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
     ).mock(return_value=httpx.Response(400, json={"error": "Bad Request: invalid coordinate"}))
 
-    provider = TomTomRoutingProvider("test_key")
+    provider = TomTomRoutingProvider("test_key", client=mock_client, sleep=lambda _: None)
     with pytest.raises(ProviderBadResponse):
         provider.get_routes(origin, destination)
 
 
 @respx.mock
-def test_tomtom_malformed_error_body() -> None:
+def test_tomtom_malformed_error_body(mock_client: httpx.Client) -> None:
     origin = Coordinate(lat=32.7767, lon=-96.7970)
     destination = Coordinate(lat=39.7392, lon=-104.9903)
 
     respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
     ).mock(return_value=httpx.Response(400, text="not-json"))
 
-    provider = TomTomRoutingProvider("test_key")
+    provider = TomTomRoutingProvider("test_key", client=mock_client, sleep=lambda _: None)
     with pytest.raises(ProviderBadResponse):
         provider.get_routes(origin, destination)
 
@@ -414,13 +437,14 @@ def test_secret_key_never_leaked_in_exceptions_or_logs(
     failure_mode: str,
     caplog: pytest.LogCaptureFixture,
     tomtom_no_route_data: dict[str, Any],
+    mock_client: httpx.Client,
 ) -> None:
     secret_key = "SECRETKEY123"
     origin = Coordinate(lat=32.7767, lon=-96.7970)
     destination = Coordinate(lat=39.7392, lon=-104.9903)
 
     route_mock = respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
     )
 
     if failure_mode == "timeout":
@@ -436,7 +460,7 @@ def test_secret_key_never_leaked_in_exceptions_or_logs(
     elif failure_mode == "no_route":
         route_mock.mock(return_value=httpx.Response(400, json=tomtom_no_route_data))
 
-    provider = TomTomRoutingProvider(secret_key, sleep=lambda _: None)
+    provider = TomTomRoutingProvider(secret_key, client=mock_client, sleep=lambda _: None)
 
     with caplog.at_level(logging.DEBUG):
         with pytest.raises(ProviderError) as exc_info:
@@ -598,23 +622,30 @@ def test_raw_route_validation() -> None:
         RawRoute("id", (c1, c2), 10.0, float("inf"), tl)
 
 
-def test_tomtom_with_explicit_client(tomtom_via_route_data: dict[str, Any]) -> None:
-    origin = Coordinate(lat=32.7767, lon=-96.7970)
-    destination = Coordinate(lat=39.7392, lon=-104.9903)
-
-    with respx.mock:
-        respx.get(
-            "https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
-        ).mock(return_value=httpx.Response(200, json=tomtom_via_route_data))
-
-        with httpx.Client() as client:
-            provider = TomTomRoutingProvider("test_key", client=client)
-            routes = provider.get_routes(origin, destination)
-            assert len(routes) == 1
+# ---------------------------------------------------------------------------
+# Default client & additional coverage tests
+# ---------------------------------------------------------------------------
 
 
 @respx.mock
-def test_tomtom_route_without_guidance_instructions_builds_two_point_timeline() -> None:
+def test_tomtom_default_client_execution(tomtom_via_route_data: dict[str, Any]) -> None:
+    """Verifies that client=None initializes an internal httpx.Client correctly."""
+    origin = Coordinate(lat=32.7767, lon=-96.7970)
+    destination = Coordinate(lat=39.7392, lon=-104.9903)
+
+    respx.get(
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
+    ).mock(return_value=httpx.Response(200, json=tomtom_via_route_data))
+
+    provider = TomTomRoutingProvider("test_key", client=None, sleep=lambda _: None)
+    routes = provider.get_routes(origin, destination)
+    assert len(routes) == 1
+
+
+@respx.mock
+def test_tomtom_route_without_guidance_instructions_builds_two_point_timeline(
+    mock_client: httpx.Client,
+) -> None:
     origin = Coordinate(lat=32.7767, lon=-96.7970)
     destination = Coordinate(lat=39.7392, lon=-104.9903)
     payload = {
@@ -634,17 +665,19 @@ def test_tomtom_route_without_guidance_instructions_builds_two_point_timeline() 
         ]
     }
     respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
     ).mock(return_value=httpx.Response(200, json=payload))
 
-    provider = TomTomRoutingProvider("test_key")
+    provider = TomTomRoutingProvider("test_key", client=mock_client, sleep=lambda _: None)
     routes = provider.get_routes(origin, destination)
     assert len(routes) == 1
     assert len(routes[0].timeline.distances_miles) == 2
 
 
 @respx.mock
-def test_tomtom_route_with_instructions_ending_at_total_distance() -> None:
+def test_tomtom_route_with_instructions_ending_at_total_distance(
+    mock_client: httpx.Client,
+) -> None:
     origin = Coordinate(lat=32.7767, lon=-96.7970)
     destination = Coordinate(lat=39.7392, lon=-104.9903)
     payload = {
@@ -669,10 +702,10 @@ def test_tomtom_route_with_instructions_ending_at_total_distance() -> None:
         ]
     }
     respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
     ).mock(return_value=httpx.Response(200, json=payload))
 
-    provider = TomTomRoutingProvider("test_key")
+    provider = TomTomRoutingProvider("test_key", client=mock_client, sleep=lambda _: None)
     routes = provider.get_routes(origin, destination)
     assert len(routes) == 1
     assert routes[0].timeline.distances_miles[-1] == 10.0
@@ -680,7 +713,9 @@ def test_tomtom_route_with_instructions_ending_at_total_distance() -> None:
 
 
 @respx.mock
-def test_tomtom_route_with_single_point_polyline_raises_bad_response() -> None:
+def test_tomtom_route_with_single_point_polyline_raises_bad_response(
+    mock_client: httpx.Client,
+) -> None:
     origin = Coordinate(lat=32.7767, lon=-96.7970)
     destination = Coordinate(lat=39.7392, lon=-104.9903)
     payload = {
@@ -692,10 +727,10 @@ def test_tomtom_route_with_single_point_polyline_raises_bad_response() -> None:
         ]
     }
     respx.get(
-        "https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
+        url__startswith="https://api.tomtom.com/routing/1/calculateRoute/32.7767,-96.797:39.7392,-104.9903/json"
     ).mock(return_value=httpx.Response(200, json=payload))
 
-    provider = TomTomRoutingProvider("test_key")
+    provider = TomTomRoutingProvider("test_key", client=mock_client, sleep=lambda _: None)
     with pytest.raises(ProviderBadResponse, match="fewer than 2 coordinates"):
         provider.get_routes(origin, destination)
 
