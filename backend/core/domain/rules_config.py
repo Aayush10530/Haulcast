@@ -1,5 +1,13 @@
 """Domain rules and threshold configuration."""
 
+# Earth radius in miles (mean spherical)
+EARTH_RADIUS_MILES: float = 3958.8
+
+# Checkpoint intervals (miles)
+ALLOWED_INTERVALS: tuple[int, ...] = (10, 25, 50)
+AUTO_INTERVAL_SHORT_MAX_MILES: float = 250.0
+AUTO_INTERVAL_MEDIUM_MAX_MILES: float = 800.0
+
 # Wind thresholds (mph)
 # Low: < 25.0
 # Moderate: 25.0 <= w < 35.0

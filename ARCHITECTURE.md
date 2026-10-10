@@ -91,11 +91,11 @@ All frozen dataclasses. Times are timezone-aware UTC `datetime`. Distances in mi
 - `TripRequest(origin, destination, departure_utc, origin_tz, load_weight_lb, interval_mode, interval_miles|None)`
 - `RawRoute(provider_id, polyline: tuple[Coordinate], distance_miles, duration_seconds, timeline_points, via_summary|None)`
 - `Timeline(points: tuple[(distance_miles, elapsed_seconds)])`, monotonic, at least 2 points
-- `Checkpoint(index, mile, coordinate, eta_utc, covers_from_mile, covers_to_mile)`
+- `Checkpoint(index, mile, coordinate, covers_from_mile, covers_to_mile)`
 - `WeatherSeries(cell, utc_offset_seconds, tz_name, wind_mph: Mapping[epoch,float], rain_in: ..., snow_in: ...)` hourly, keyed by epoch seconds
 - `WeatherSample(wind_mph, rain_in_hr, snow_in_hr)` already rounded per A-03
 - `RiskAssessment(level, table_level, driver, load_rule_applied, per_condition_levels)`
-- `AssessedCheckpoint(checkpoint, sample|None, risk|None, local_time, local_tz)`
+- `AssessedCheckpoint(checkpoint, eta_utc, sample|None, risk|None, local_time, local_tz)`
 - `RouteSummary(distance_miles, duration_seconds, miles_by_level, avg_risk_score, max_level, has_no_travel, delta_vs_fastest_seconds)`
 - `AnalyzedRoute(id, label, polyline, checkpoints, summary, rank, is_recommended)`
 - `Recommendation(route_id, decided_by, headline, comparisons)`
