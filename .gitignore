@@ -61,3 +61,15 @@ yarn-error.log*
 *~
 .DS_Store
 Thumbs.db
+
+# Internal documentation and guides (kept local, GitHub tracks root README.md only)
+AGENTS.md
+ARCHITECTURE.md
+CODING_RULES.md
+FEATURE_LOG.md
+PROJECT_CONTEXT.md
+PROMPT.md
+DESIGN.md
+backend/**/*.md
+frontend/**/*.md
+
