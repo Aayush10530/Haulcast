@@ -116,7 +116,7 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-001 | Project scaffold (backend Django/DRF, frontend Vite/React/TS, tooling) | P1 | done |
 | F-010 | Domain core: types, rules_config, risk assessment | P2 | done |
 | F-011 | Domain core: geometry (haversine, interpolation) & sampling | P2 | done |
-| F-012 | Domain core: timeline & ETA interpolation | P2 | planned |
+| F-012 | Domain core: timeline & ETA interpolation | P2 | done |
 | F-013 | Domain core: weather alignment & hourly interpolation | P2 | planned |
 | F-014 | Domain core: scoring (miles by level, avg risk, delta) | P2 | planned |
 | F-015 | Domain core: route ranking & deterministic recommendation | P2 | planned |
@@ -125,7 +125,7 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-022 | Route selection service (dedupe, detour filtering, via-fallback) | P3 | planned |
 | F-023 | Open-Meteo provider adapter & per-cell cache | P3 | planned |
 | F-024 | Geocoding adapter & `/api/geocode/` endpoint | P3 | planned |
-| F-025 | Trip analysis service orchestrator | P3 | planned |
+| F-025 | Trip analysis service orchestrator (verify timeline.total_miles is within 0.01 mi of route distance, else raise ProviderBadResponse) | P3 | planned |
 | F-026 | API layer: serializers, validation, container, `/api/trips/analyze/` (per-scope throttles: analyze, heatmap, geocode) | P3 | planned |
 | F-030 | Frontend API client, typed DTOs, error parsing | P4 | planned |
 | F-031 | TripForm & PlaceAutocomplete with validation | P4 | planned |
@@ -188,3 +188,4 @@ _None yet._
 | P1 (cleanup) | Pre-P2 hardening | 0.25 | 0.25 | 1.50 | Settings security, WCAG AA contrast, coverage tooling |
 | P2 (F-010) | Risk rules & types | 0.25 | 0.25 | 1.75 | Pure domain risk classification, load rules, describe formatting, 100% test coverage |
 | P2 (F-011) | Geometry & sampling | 0.25 | 0.10 | 1.85 | Haversine, scaling, point_at_mile, iterative simplify, sampling, 100% test coverage |
+| P2 (F-012) | Timeline & ETA interpolation | 0.25 | 0.15 | 2.00 | Pure domain Timeline dataclass, linear ETA interpolation, timezones & clamping, 100% test coverage |
