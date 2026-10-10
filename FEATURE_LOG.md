@@ -143,6 +143,7 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-062 | Fresh-clone verification test | P7 | planned |
 | F-063 | Security audits (`pip-audit`, `npm audit`) | P7 | planned |
 | F-064 | Tag `v1.0-submission` & final QA checklist | P7 | planned |
+| F-065 | Consolidate the spike scripts into one documented script or delete them (keep results table in FEATURE_LOG.md) | P7 | planned |
 
 ---
 
