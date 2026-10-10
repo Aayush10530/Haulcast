@@ -57,3 +57,8 @@ SNOW_NO_TRAVEL_IN_HR: float = 3.0
 # Severe wind band (45-54 mph) + load > 30,000 lb -> No Travel
 LOAD_RULE_SEVERE_OVER_LB: float = 40_000.0
 LOAD_RULE_NO_TRAVEL_OVER_LB: float = 30_000.0
+
+# Weather alignment constants
+SECONDS_PER_HOUR: int = 3600
+WIND_DECIMALS: int = 1
+PRECIP_DECIMALS: int = 2

@@ -170,3 +170,45 @@ class Timeline:
             distances_miles=tuple(float(p[0]) for p in pairs),
             elapsed_seconds=tuple(float(p[1]) for p in pairs),
         )
+
+
+@dataclass(frozen=True, slots=True)
+class HourlySeries:
+    """Hourly time series of weather values with fixed 3600-second step."""
+
+    start_epoch: int
+    values: tuple[float | None, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.values, tuple):
+            object.__setattr__(self, "values", tuple(self.values))
+        if not self.values:
+            raise ValueError("HourlySeries values cannot be empty")
+
+
+@dataclass(frozen=True, slots=True)
+class WeatherSeries:
+    """Weather series containing wind, rain, and snow hourly components."""
+
+    tz_name: str
+    wind_mph: HourlySeries
+    rain_in_hr: HourlySeries
+    snow_in_hr: HourlySeries
+
+    def __post_init__(self) -> None:
+        if not (
+            self.wind_mph.start_epoch == self.rain_in_hr.start_epoch == self.snow_in_hr.start_epoch
+        ):
+            raise ValueError(
+                f"HourlySeries components must have matching start_epoch: "
+                f"wind={self.wind_mph.start_epoch}, rain={self.rain_in_hr.start_epoch}, "
+                f"snow={self.snow_in_hr.start_epoch}"
+            )
+        if not (
+            len(self.wind_mph.values) == len(self.rain_in_hr.values) == len(self.snow_in_hr.values)
+        ):
+            raise ValueError(
+                f"HourlySeries components must have matching lengths: "
+                f"wind={len(self.wind_mph.values)}, rain={len(self.rain_in_hr.values)}, "
+                f"snow={len(self.snow_in_hr.values)}"
+            )

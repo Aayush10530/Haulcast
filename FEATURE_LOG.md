@@ -117,7 +117,7 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-010 | Domain core: types, rules_config, risk assessment | P2 | done |
 | F-011 | Domain core: geometry (haversine, interpolation) & sampling | P2 | done |
 | F-012 | Domain core: timeline & ETA interpolation | P2 | done |
-| F-013 | Domain core: weather alignment & hourly interpolation | P2 | planned |
+| F-013 | Domain core: weather alignment & hourly interpolation | P2 | done |
 | F-014 | Domain core: scoring (miles by level, avg risk, delta) | P2 | planned |
 | F-015 | Domain core: route ranking & deterministic recommendation | P2 | planned |
 | F-020 | Provider base protocols & typed error hierarchy | P3 | planned |
@@ -189,3 +189,4 @@ _None yet._
 | P2 (F-010) | Risk rules & types | 0.25 | 0.25 | 1.75 | Pure domain risk classification, load rules, describe formatting, 100% test coverage |
 | P2 (F-011) | Geometry & sampling | 0.25 | 0.10 | 1.85 | Haversine, scaling, point_at_mile, iterative simplify, sampling, 100% test coverage |
 | P2 (F-012) | Timeline & ETA interpolation | 0.25 | 0.15 | 2.00 | Pure domain Timeline dataclass, linear ETA interpolation, timezones & clamping, 100% test coverage |
+| P2 (F-013) | Weather time alignment | 0.25 | 0.15 | 2.15 | HourlySeries & WeatherSeries, wind linear interpolation, precip bucket rule, 100% test coverage |
