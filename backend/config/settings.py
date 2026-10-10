@@ -68,6 +68,7 @@ CACHES = {
         "LOCATION": "haulcast-cache",
     }
 }
+ROUTE_CACHE_TTL_SECONDS = int(os.getenv("ROUTE_CACHE_TTL_SECONDS", "1800"))
 
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = [

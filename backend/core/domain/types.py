@@ -434,3 +434,48 @@ class RawRoute:
             raise ValueError(
                 f"duration_seconds must be non-negative finite, got {self.duration_seconds}"
             )
+
+
+@dataclass(frozen=True, slots=True)
+class SelectedRoute:
+    """Selected route candidate labeled with identifier and display label."""
+
+    route_id: str
+    label: str
+    raw: RawRoute
+
+    def __post_init__(self) -> None:
+        if not self.route_id or not self.route_id.strip():
+            raise ValueError("route_id cannot be empty")
+        if not self.label or not self.label.strip():
+            raise ValueError("label cannot be empty")
+        if not isinstance(self.raw, RawRoute):
+            raise TypeError(f"raw must be a RawRoute instance, got {type(self.raw)}")
+
+
+@dataclass(frozen=True, slots=True)
+class Warning:
+    """Warning item associated with a trip or route selection."""
+
+    code: str
+    message: str
+
+    def __post_init__(self) -> None:
+        if not self.code or not self.code.strip():
+            raise ValueError("code cannot be empty")
+        if not self.message or not self.message.strip():
+            raise ValueError("message cannot be empty")
+
+
+@dataclass(frozen=True, slots=True)
+class RouteSelection:
+    """Result of route diversity and selection."""
+
+    routes: tuple[SelectedRoute, ...]
+    warnings: tuple[Warning, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.routes, tuple):
+            object.__setattr__(self, "routes", tuple(self.routes))
+        if not isinstance(self.warnings, tuple):
+            object.__setattr__(self, "warnings", tuple(self.warnings))

@@ -69,3 +69,14 @@ DEPARTURE_MAX_DAYS_AHEAD: int = 7
 
 # Routing provider constants
 TRUCK_MAX_SPEED_KMH: int = 105
+
+# Route selection and diversity
+ROUTE_OVERLAP_MAX: float = 0.85
+ROUTE_OVERLAP_TOLERANCE_MILES: float = 0.3
+ROUTE_OVERLAP_SAMPLE_MILES: float = 1.0
+ROUTE_MAX_DURATION_RATIO: float = 1.6
+VIA_ANCHOR_FRACTIONS: tuple[float, float] = (0.33, 0.66)
+VIA_OFFSET_FRACTION: float = 0.12
+VIA_OFFSET_MIN_MILES: float = 15.0
+VIA_OFFSET_MAX_MILES: float = 60.0
+MAX_ROUTES: int = 3

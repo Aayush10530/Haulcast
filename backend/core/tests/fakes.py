@@ -1,6 +1,6 @@
 """In-memory test doubles for external providers and cache."""
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from typing import Any
 
 from core.domain.types import Coordinate, GridCell, Place, RawRoute, WeatherSeries
@@ -13,10 +13,20 @@ class FakeRoutingProvider:
     def __init__(
         self,
         routes: list[RawRoute] | None = None,
+        routes_by_via: dict[Coordinate, list[RawRoute]] | None = None,
+        via_routes: list[RawRoute] | None = None,
+        via_route_fn: Callable[[Coordinate], list[RawRoute]] | None = None,
         error: ProviderError | None = None,
+        via_error: ProviderError | None = None,
+        via_errors: dict[Coordinate, ProviderError] | None = None,
     ) -> None:
         self.routes = routes or []
+        self.routes_by_via = routes_by_via or {}
+        self.via_routes = via_routes
+        self.via_route_fn = via_route_fn
         self.error = error
+        self.via_error = via_error
+        self.via_errors = via_errors or {}
         self.calls: list[dict[str, Any]] = []
 
     def get_routes(
@@ -34,6 +44,21 @@ class FakeRoutingProvider:
                 "max_routes": max_routes,
             }
         )
+        if via:
+            if self.via_error is not None:
+                raise self.via_error
+            for v in via:
+                if v in self.via_errors:
+                    raise self.via_errors[v]
+            if self.via_route_fn is not None and len(via) == 1:
+                return self.via_route_fn(via[0])
+            for v in via:
+                if v in self.routes_by_via:
+                    return list(self.routes_by_via[v][:max_routes])
+            if self.via_routes is not None:
+                return list(self.via_routes[:max_routes])
+            return []
+
         if self.error is not None:
             raise self.error
         return list(self.routes[:max_routes])
