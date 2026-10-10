@@ -6,6 +6,7 @@ Configured strictly from environment variables per ARCHITECTURE.md and CODING_RU
 import os
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,12 +14,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load environment variables from backend/.env if present
 load_dotenv(BASE_DIR / ".env")
 
-SECRET_KEY = os.getenv(
-    "DJANGO_SECRET_KEY",
-    "django-insecure-change-this-in-production-haulcast-secret-key",
-)
+DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() in ("true", "1", "yes")
 
-DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in ("true", "1", "yes")
+raw_secret_key = os.getenv("DJANGO_SECRET_KEY")
+if not DEBUG:
+    if not raw_secret_key or raw_secret_key.startswith("django-insecure"):
+        raise ImproperlyConfigured(
+            "DJANGO_SECRET_KEY must be set to a secure, non-default value when DEBUG is False."
+        )
+    SECRET_KEY = raw_secret_key
+else:
+    SECRET_KEY = raw_secret_key or "django-insecure-dev-only-placeholder-key-for-haulcast"
 
 ALLOWED_HOSTS = [
     host.strip()
@@ -34,10 +40,14 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
     "django.middleware.gzip.GZipMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
 ]
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 ROOT_URLCONF = "config.urls"
 
@@ -77,19 +87,11 @@ REST_FRAMEWORK = {
     "DEFAULT_PARSER_CLASSES": [
         "rest_framework.parsers.JSONParser",
     ],
-    "DEFAULT_THROTTLE_CLASSES": [
-        "rest_framework.throttling.AnonRateThrottle",
-    ],
-    "DEFAULT_THROTTLE_RATES": {
-        "anon": os.getenv("THROTTLE_ANALYZE", "20/min"),
-        "analyze": os.getenv("THROTTLE_ANALYZE", "20/min"),
-    },
 }
 
 # Internationalization
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
-USE_I18N = True
 USE_TZ = True
 
 # Logging configuration: httpx and httpcore at WARNING

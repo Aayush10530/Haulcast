@@ -75,7 +75,6 @@ export const theme = createTheme({
           MozOsxFontSmoothing: 'grayscale',
           margin: 0,
           padding: 0,
-          fontFeatureSettings: "'cv02', 'cv03', 'cv04', 'cv11'",
         },
         '::-webkit-scrollbar': {
           width: '6px',

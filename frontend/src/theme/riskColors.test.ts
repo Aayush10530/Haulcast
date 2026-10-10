@@ -1,0 +1,44 @@
+import { describe, expect, it } from 'vitest';
+import { RiskLevelKey, riskColors } from './riskColors';
+
+/**
+ * Calculates WCAG 2.1 relative luminance of an sRGB hex color.
+ */
+function getRelativeLuminance(hex: string): number {
+  const cleanHex = hex.replace('#', '');
+  const r = parseInt(cleanHex.slice(0, 2), 16) / 255;
+  const g = parseInt(cleanHex.slice(2, 4), 16) / 255;
+  const b = parseInt(cleanHex.slice(4, 6), 16) / 255;
+
+  const toLinear = (c: number): number =>
+    c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+
+  return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+}
+
+/**
+ * Calculates WCAG contrast ratio between two hex colors.
+ */
+function getContrastRatio(hex1: string, hex2: string): number {
+  const lum1 = getRelativeLuminance(hex1);
+  const lum2 = getRelativeLuminance(hex2);
+  const lighter = Math.max(lum1, lum2);
+  const darker = Math.min(lum1, lum2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+describe('riskColors WCAG AA contrast ratio compliance', () => {
+  const levels = Object.keys(riskColors) as RiskLevelKey[];
+
+  levels.forEach((level) => {
+    it(`evaluates WCAG AA contrast for ${level} level (>= 4.5:1)`, () => {
+      const { background, contrastText } = riskColors[level];
+      const ratio = getContrastRatio(background, contrastText);
+      // Log ratio to stdout so test output displays exact numerical values
+      console.log(
+        `[Contrast Ratio] ${level.padEnd(10)}: bg ${background} / text ${contrastText} = ${ratio.toFixed(2)}:1`,
+      );
+      expect(ratio).toBeGreaterThanOrEqual(4.5);
+    });
+  });
+});

@@ -59,7 +59,6 @@ export const App: React.FC = () => {
             Weather-Aware Truck Router
           </Typography>
         </Box>
-
       </Box>
 
       {/* Main Layout: Fixed 420px Docked Panel + Map Area */}

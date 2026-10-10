@@ -126,7 +126,7 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-023 | Open-Meteo provider adapter & per-cell cache | P3 | planned |
 | F-024 | Geocoding adapter & `/api/geocode/` endpoint | P3 | planned |
 | F-025 | Trip analysis service orchestrator | P3 | planned |
-| F-026 | API layer: serializers, validation, container, `/api/trips/analyze/` | P3 | planned |
+| F-026 | API layer: serializers, validation, container, `/api/trips/analyze/` (per-scope throttles: analyze, heatmap, geocode) | P3 | planned |
 | F-030 | Frontend API client, typed DTOs, error parsing | P4 | planned |
 | F-031 | TripForm & PlaceAutocomplete with validation | P4 | planned |
 | F-032 | Results UI: RecommendationBanner, RouteCards, CheckpointTable | P4 | planned |
@@ -138,7 +138,7 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-051 | Performance benchmarking (cold/warm analyze, payload sizes) | P6 | planned |
 | F-052 | Slow-server banner & example trip preset | P6 | planned |
 | F-053 | Accessibility & contrast review | P6 | planned |
-| F-060 | Production deployment configuration | P7 | planned |
+| F-060 | Production deployment configuration (set NUM_PROXIES for host & verify throttling sees real client IPs) | P7 | planned |
 | F-061 | Comprehensive documentation & README | P7 | planned |
 | F-062 | Fresh-clone verification test | P7 | planned |
 | F-063 | Security audits (`pip-audit`, `npm audit`) | P7 | planned |
