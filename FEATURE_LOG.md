@@ -130,7 +130,7 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-030 | Frontend API client, typed DTOs, error parsing | P4 | planned |
 | F-031 | TripForm & PlaceAutocomplete with validation | P4 | planned |
 | F-032 | Results UI: RecommendationBanner, RouteCards, CheckpointTable | P4 | planned |
-| F-033 | MapView: canvas render, route polylines, checkpoint markers, legend | P4 | planned |
+| F-033 | MapView: canvas render, route polylines, checkpoint markers, legend; remove map placeholder text | P4 | planned |
 | F-034 | UX states: idle, loading skeletons, error retry, no-safe-route alert | P4 | planned |
 | F-040 | Heatmap backend: corridor grid generation & `/api/trips/heatmap/` | P5 | planned |
 | F-041 | Heatmap frontend: useHeatmap, HeatmapLayer, 0-48h slider controls | P5 | planned |

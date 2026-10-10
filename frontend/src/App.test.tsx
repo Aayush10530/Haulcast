@@ -14,7 +14,6 @@ describe('App component', () => {
     );
 
     expect(screen.getByText('Weather-Aware Truck Router')).toBeInTheDocument();
-    expect(screen.getByText('SYSTEM READY')).toBeInTheDocument();
     expect(screen.getByText('Trip Planning')).toBeInTheDocument();
   });
 });

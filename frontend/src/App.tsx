@@ -60,34 +60,6 @@ export const App: React.FC = () => {
           </Typography>
         </Box>
 
-        {/* Small API status dot per DESIGN.md §5 */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1,
-          }}
-          title="API Ready"
-        >
-          <Box
-            sx={{
-              width: 8,
-              height: 8,
-              borderRadius: '50%',
-              backgroundColor: '#3FA66B', // Ready status dot
-            }}
-          />
-          <Typography
-            variant="caption"
-            sx={{
-              fontFamily: typographyTokens.fontFamilyMono,
-              fontSize: '11px',
-              color: 'rgba(255, 255, 255, 0.8)',
-            }}
-          >
-            SYSTEM READY
-          </Typography>
-        </Box>
       </Box>
 
       {/* Main Layout: Fixed 420px Docked Panel + Map Area */}
