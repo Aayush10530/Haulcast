@@ -21,16 +21,16 @@ def resolve_interval(
 
     if mode == IntervalMode.AUTO:
         if longest_route_miles <= rules_config.AUTO_INTERVAL_SHORT_MAX_MILES:
-            return 10
+            return rules_config.AUTO_INTERVAL_SHORT_MILES
         if longest_route_miles <= rules_config.AUTO_INTERVAL_MEDIUM_MAX_MILES:
-            return 25
-        return 50
+            return rules_config.AUTO_INTERVAL_MEDIUM_MILES
+        return rules_config.AUTO_INTERVAL_LONG_MILES
 
     if manual_miles not in rules_config.ALLOWED_INTERVALS:
         raise ValueError(
             f"manual_miles must be one of {rules_config.ALLOWED_INTERVALS}, got {manual_miles}"
         )
-    return manual_miles
+    return int(manual_miles)
 
 
 def checkpoint_miles(total: float, interval: int) -> list[float]:

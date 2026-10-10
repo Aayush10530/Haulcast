@@ -27,7 +27,14 @@ def test_resolve_interval_auto_mode_matches_breakpoints(dist: float, expected: i
 
 @pytest.mark.parametrize("manual_val", [10, 25, 50])
 def test_resolve_interval_manual_mode_allowed_intervals(manual_val: int) -> None:
-    assert resolve_interval(IntervalMode.MANUAL, manual_val, 100.0) == manual_val
+    result = resolve_interval(IntervalMode.MANUAL, manual_val, 100.0)
+    assert result == manual_val
+    assert isinstance(result, int)
+
+
+def test_resolve_interval_manual_mode_none_raises_value_error() -> None:
+    with pytest.raises(ValueError, match="manual_miles must be one of"):
+        resolve_interval(IntervalMode.MANUAL, None, 100.0)
 
 
 def test_resolve_interval_manual_mode_disallowed_interval_raises_value_error() -> None:

@@ -158,6 +158,13 @@ def test_point_at_mile_mismatched_lengths_raises_value_error() -> None:
         point_at_mile(polyline, [0.0, 50.0, 100.0], 10.0)
 
 
+@pytest.mark.parametrize("invalid_m", [float("nan"), float("inf"), float("-inf")])
+def test_point_at_mile_non_finite_m_raises_value_error(invalid_m: float) -> None:
+    polyline = [Coordinate(lat=40.0, lon=-80.0), Coordinate(lat=41.0, lon=-80.0)]
+    with pytest.raises(ValueError, match="m must be a finite number"):
+        point_at_mile(polyline, [0.0, 50.0], invalid_m)
+
+
 def test_simplify_collinear_points_collapses_to_endpoints() -> None:
     # 5 collinear points along longitude -80
     polyline = [Coordinate(lat=40.0 + i * 0.1, lon=-80.0) for i in range(5)]

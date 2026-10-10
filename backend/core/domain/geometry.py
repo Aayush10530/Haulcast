@@ -3,9 +3,8 @@ import math
 from collections.abc import Sequence
 
 from core.domain import rules_config
+from core.domain.rules_config import METERS_PER_MILE
 from core.domain.types import Coordinate
-
-METERS_PER_MILE: float = 1609.344
 
 
 def haversine_miles(coord1: Coordinate, coord2: Coordinate) -> float:
@@ -65,6 +64,8 @@ def point_at_mile(
         raise ValueError(
             f"Polyline length ({len(polyline)}) must match cumulative length ({len(cumulative)})"
         )
+    if not math.isfinite(m):
+        raise ValueError(f"m must be a finite number, got {m}")
 
     total = cumulative[-1]
     if m <= 0.0:

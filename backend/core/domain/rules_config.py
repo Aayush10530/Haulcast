@@ -1,10 +1,21 @@
 """Domain rules and threshold configuration."""
 
-# Earth radius in miles (mean spherical)
+# Geodetic constants
 EARTH_RADIUS_MILES: float = 3958.8
+METERS_PER_MILE: float = 1609.344
 
 # Checkpoint intervals (miles)
-ALLOWED_INTERVALS: tuple[int, ...] = (10, 25, 50)
+INTERVAL_SHORT_MILES: int = 10
+INTERVAL_MEDIUM_MILES: int = 25
+INTERVAL_LONG_MILES: int = 50
+ALLOWED_INTERVALS: tuple[int, ...] = (
+    INTERVAL_SHORT_MILES,
+    INTERVAL_MEDIUM_MILES,
+    INTERVAL_LONG_MILES,
+)
+AUTO_INTERVAL_SHORT_MILES: int = INTERVAL_SHORT_MILES
+AUTO_INTERVAL_MEDIUM_MILES: int = INTERVAL_MEDIUM_MILES
+AUTO_INTERVAL_LONG_MILES: int = INTERVAL_LONG_MILES
 AUTO_INTERVAL_SHORT_MAX_MILES: float = 250.0
 AUTO_INTERVAL_MEDIUM_MAX_MILES: float = 800.0
 
