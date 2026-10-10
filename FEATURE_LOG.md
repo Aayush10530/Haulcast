@@ -120,6 +120,7 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-013 | Domain core: weather alignment & hourly interpolation | P2 | done |
 | F-014 | Domain core: scoring (miles by level, avg risk, delta) | P2 | planned |
 | F-015 | Domain core: route ranking & deterministic recommendation | P2 | planned |
+| F-016 | Timezone conversion: local departure to UTC with DST edge cases (nonexistent local time rejected, ambiguous local time uses the first occurrence), UTC to local display, departure window check (now minus 1 h to now plus 7 days) | P2 | planned |
 | F-020 | Provider base protocols & typed error hierarchy | P3 | planned |
 | F-021 | Routing provider adapter (truck mode, polyline, timeline) | P3 | planned |
 | F-022 | Route selection service (dedupe, detour filtering, via-fallback) | P3 | planned |
