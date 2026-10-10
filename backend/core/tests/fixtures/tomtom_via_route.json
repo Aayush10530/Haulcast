@@ -1,0 +1,499 @@
+{
+  "routes": [
+    {
+      "summary": {
+        "lengthInMeters": 1450661,
+        "travelTimeInSeconds": 51820,
+        "trafficDelayInSeconds": 95,
+        "trafficLengthInMeters": 502,
+        "departureTime": "2026-10-10T18:19:02-05:00",
+        "arrivalTime": "2026-10-11T07:42:42-06:00",
+        "noTrafficTravelTimeInSeconds": 51831,
+        "historicTrafficTravelTimeInSeconds": 51921,
+        "liveTrafficIncidentsTravelTimeInSeconds": 51820
+      },
+      "legs": [
+        {
+          "summary": {
+            "lengthInMeters": 556273,
+            "travelTimeInSeconds": 19619,
+            "trafficDelayInSeconds": 95,
+            "trafficLengthInMeters": 502,
+            "departureTime": "2026-10-10T18:19:02-05:00",
+            "arrivalTime": "2026-10-10T23:46:01-05:00",
+            "noTrafficTravelTimeInSeconds": 19525,
+            "historicTrafficTravelTimeInSeconds": 19585,
+            "liveTrafficIncidentsTravelTimeInSeconds": 19619,
+            "originalWaypointIndexAtEndOfLeg": 0
+          },
+          "points": [
+            {
+              "latitude": 32.77667,
+              "longitude": -96.79699
+            },
+            {
+              "latitude": 32.77653,
+              "longitude": -96.79758
+            },
+            {
+              "latitude": 32.77638,
+              "longitude": -96.79822
+            },
+            {
+              "latitude": 32.77636,
+              "longitude": -96.7983
+            },
+            {
+              "latitude": 32.77633,
+              "longitude": -96.79839
+            },
+            {
+              "latitude": 32.77569,
+              "longitude": -96.79817
+            },
+            {
+              "latitude": 32.7756,
+              "longitude": -96.79812
+            },
+            {
+              "latitude": 32.77547,
+              "longitude": -96.79801
+            },
+            {
+              "latitude": 32.77508,
+              "longitude": -96.79759
+            },
+            {
+              "latitude": 32.77467,
+              "longitude": -96.79713
+            },
+            {
+              "latitude": 33.57422,
+              "longitude": -101.85525
+            },
+            {
+              "latitude": 33.57445,
+              "longitude": -101.85525
+            },
+            {
+              "latitude": 33.57489,
+              "longitude": -101.85526
+            },
+            {
+              "latitude": 33.57585,
+              "longitude": -101.85526
+            },
+            {
+              "latitude": 33.57615,
+              "longitude": -101.85526
+            },
+            {
+              "latitude": 33.57669,
+              "longitude": -101.85526
+            },
+            {
+              "latitude": 33.57705,
+              "longitude": -101.85525
+            },
+            {
+              "latitude": 33.57739,
+              "longitude": -101.85524
+            },
+            {
+              "latitude": 33.57781,
+              "longitude": -101.85519
+            },
+            {
+              "latitude": 33.5779,
+              "longitude": -101.85518
+            }
+          ]
+        },
+        {
+          "summary": {
+            "lengthInMeters": 894388,
+            "travelTimeInSeconds": 32201,
+            "trafficDelayInSeconds": 0,
+            "trafficLengthInMeters": 0,
+            "departureTime": "2026-10-10T23:46:01-05:00",
+            "arrivalTime": "2026-10-11T07:42:42-06:00",
+            "noTrafficTravelTimeInSeconds": 32306,
+            "historicTrafficTravelTimeInSeconds": 32336,
+            "liveTrafficIncidentsTravelTimeInSeconds": 32201
+          },
+          "points": [
+            {
+              "latitude": 33.5779,
+              "longitude": -101.85518
+            },
+            {
+              "latitude": 33.57809,
+              "longitude": -101.85516
+            },
+            {
+              "latitude": 33.57836,
+              "longitude": -101.85515
+            },
+            {
+              "latitude": 33.57848,
+              "longitude": -101.85514
+            },
+            {
+              "latitude": 33.57863,
+              "longitude": -101.85514
+            },
+            {
+              "latitude": 33.57896,
+              "longitude": -101.85513
+            },
+            {
+              "latitude": 33.57928,
+              "longitude": -101.85512
+            },
+            {
+              "latitude": 33.57934,
+              "longitude": -101.85512
+            },
+            {
+              "latitude": 33.57966,
+              "longitude": -101.85512
+            },
+            {
+              "latitude": 33.57989,
+              "longitude": -101.85511
+            },
+            {
+              "latitude": 39.73846,
+              "longitude": -104.99293
+            },
+            {
+              "latitude": 39.73847,
+              "longitude": -104.99164
+            },
+            {
+              "latitude": 39.73846,
+              "longitude": -104.99113
+            },
+            {
+              "latitude": 39.73846,
+              "longitude": -104.99098
+            },
+            {
+              "latitude": 39.73846,
+              "longitude": -104.99027
+            },
+            {
+              "latitude": 39.73856,
+              "longitude": -104.99027
+            },
+            {
+              "latitude": 39.73876,
+              "longitude": -104.99025
+            },
+            {
+              "latitude": 39.73897,
+              "longitude": -104.99026
+            },
+            {
+              "latitude": 39.7391,
+              "longitude": -104.99027
+            },
+            {
+              "latitude": 39.7392,
+              "longitude": -104.99027
+            }
+          ]
+        }
+      ],
+      "guidance": {
+        "instructions": [
+          {
+            "routeOffsetInMeters": 0,
+            "travelTimeInSeconds": 0,
+            "point": {
+              "latitude": 32.77667,
+              "longitude": -96.79699
+            },
+            "pointIndex": 0,
+            "instructionType": "LOCATION_DEPARTURE",
+            "street": "Marilla St",
+            "countryCode": "USA",
+            "stateCode": "TX",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "DEPART",
+            "message": "Leave from <street>Marilla St</street>"
+          },
+          {
+            "routeOffsetInMeters": 120,
+            "travelTimeInSeconds": 24,
+            "point": {
+              "latitude": 32.77638,
+              "longitude": -96.79822
+            },
+            "pointIndex": 2,
+            "instructionType": "TURN",
+            "street": "S Akard St",
+            "countryCode": "USA",
+            "stateCode": "TX",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": -90,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_LEFT",
+            "message": "Turn left onto <street>S Akard St</street>",
+            "combinedMessage": "Turn left onto <street>S Akard St</street> then keep left at <street>S Akard St</street>"
+          },
+          {
+            "routeOffsetInMeters": 221,
+            "travelTimeInSeconds": 48,
+            "point": {
+              "latitude": 32.7756,
+              "longitude": -96.79812
+            },
+            "pointIndex": 6,
+            "instructionType": "TURN",
+            "street": "S Akard St",
+            "countryCode": "USA",
+            "stateCode": "TX",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": -45,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_LEFT",
+            "message": "Keep left at <street>S Akard St</street>",
+            "combinedMessage": "Keep left at <street>S Akard St</street> then turn right onto <street>Canton St</street>"
+          },
+          {
+            "routeOffsetInMeters": 392,
+            "travelTimeInSeconds": 74,
+            "point": {
+              "latitude": 32.77447,
+              "longitude": -96.79689
+            },
+            "pointIndex": 10,
+            "instructionType": "TURN",
+            "street": "Canton St",
+            "countryCode": "USA",
+            "stateCode": "TX",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": 90,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_RIGHT",
+            "message": "Turn right onto <street>Canton St</street>",
+            "combinedMessage": "Turn right onto <street>Canton St</street> then keep left at <street>Canton St</street>"
+          },
+          {
+            "routeOffsetInMeters": 409,
+            "travelTimeInSeconds": 85,
+            "point": {
+              "latitude": 32.77435,
+              "longitude": -96.79701
+            },
+            "pointIndex": 11,
+            "instructionType": "TURN",
+            "street": "Canton St",
+            "countryCode": "USA",
+            "stateCode": "TX",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": -45,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_LEFT",
+            "message": "Keep left at <street>Canton St</street>",
+            "combinedMessage": "Keep left at <street>Canton St</street> then keep right at <street>Tom Landry Fwy</street>/<roadNumber>I-30 W</roadNumber> toward <signpostText>Ft Worth</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 911,
+            "travelTimeInSeconds": 208,
+            "point": {
+              "latitude": 32.77126,
+              "longitude": -96.80085
+            },
+            "pointIndex": 23,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "I-30 W"
+            ],
+            "street": "Tom Landry Fwy",
+            "countryCode": "USA",
+            "stateCode": "TX",
+            "signpostText": "Ft Worth",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": 45,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_RIGHT",
+            "message": "Keep right at <street>Tom Landry Fwy</street>/<roadNumber>I-30 W</roadNumber> toward <signpostText>Ft Worth</signpostText>",
+            "combinedMessage": "Keep right at <street>Tom Landry Fwy</street>/<roadNumber>I-30 W</roadNumber> toward <signpostText>Ft Worth</signpostText> then take the <roadNumber>I-30 W</roadNumber> freeway"
+          },
+          {
+            "routeOffsetInMeters": 1500,
+            "travelTimeInSeconds": 243,
+            "point": {
+              "latitude": 32.76914,
+              "longitude": -96.80638
+            },
+            "pointIndex": 50,
+            "instructionType": "ROAD_CHANGE",
+            "roadNumbers": [
+              "I-30 W"
+            ],
+            "street": "Tom Landry Fwy",
+            "countryCode": "USA",
+            "stateCode": "TX",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "ENTER_FREEWAY",
+            "message": "Take the <roadNumber>I-30 W</roadNumber> freeway"
+          },
+          {
+            "routeOffsetInMeters": 1600,
+            "travelTimeInSeconds": 246,
+            "point": {
+              "latitude": 32.76945,
+              "longitude": -96.80738
+            },
+            "pointIndex": 54,
+            "instructionType": "DIRECTION_INFO",
+            "roadNumbers": [
+              "I-30 W"
+            ],
+            "street": "Tom Landry Fwy",
+            "countryCode": "USA",
+            "stateCode": "TX",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "FOLLOW",
+            "message": "Follow <street>Tom Landry Fwy</street>/<roadNumber>I-30 W</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 1447903,
+            "travelTimeInSeconds": 51478,
+            "point": {
+              "latitude": 39.73452,
+              "longitude": -105.01512
+            },
+            "pointIndex": 11446,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "I-70 Bus E",
+              "US-287 S",
+              "US-40 E"
+            ],
+            "exitNumber": "210A",
+            "street": "W Colfax Ave",
+            "countryCode": "USA",
+            "stateCode": "CO",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": 45,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "MOTORWAY_EXIT_RIGHT",
+            "message": "Take exit <exitNumber>210A</exitNumber> on the right onto <street>W Colfax Ave</street>/<roadNumber>I-70 Bus E</roadNumber>/<roadNumber>US-287 S</roadNumber>/<roadNumber>US-40 E</roadNumber>",
+            "combinedMessage": "Take exit <exitNumber>210A</exitNumber> on the right onto <street>W Colfax Ave</street>/<roadNumber>I-70 Bus E</roadNumber>/<roadNumber>US-287 S</roadNumber>/<roadNumber>US-40 E</roadNumber> then turn right onto <street>W Colfax Ave</street>/<roadNumber>I-70 Bus E</roadNumber>/<roadNumber>US-287 S</roadNumber>/<roadNumber>US-40 E</roadNumber> toward <signpostText>Downtown Civic Center</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 1448544,
+            "travelTimeInSeconds": 51511,
+            "point": {
+              "latitude": 39.73984,
+              "longitude": -105.01251
+            },
+            "pointIndex": 11467,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "I-70 Bus E",
+              "US-287 S",
+              "US-40 E"
+            ],
+            "street": "W Colfax Ave",
+            "countryCode": "USA",
+            "stateCode": "CO",
+            "signpostText": "Downtown Civic Center",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": 90,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_RIGHT",
+            "message": "Turn right onto <street>W Colfax Ave</street>/<roadNumber>I-70 Bus E</roadNumber>/<roadNumber>US-287 S</roadNumber>/<roadNumber>US-40 E</roadNumber> toward <signpostText>Downtown Civic Center</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 1449748,
+            "travelTimeInSeconds": 51640,
+            "point": {
+              "latitude": 39.74003,
+              "longitude": -104.9988
+            },
+            "pointIndex": 11508,
+            "instructionType": "TURN",
+            "street": "N Speer Blvd",
+            "countryCode": "USA",
+            "stateCode": "CO",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": 90,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_RIGHT",
+            "message": "Turn right onto <street>N Speer Blvd</street>",
+            "combinedMessage": "Turn right onto <street>N Speer Blvd</street> then turn left onto <street>W 14th Ave</street>"
+          },
+          {
+            "routeOffsetInMeters": 1449946,
+            "travelTimeInSeconds": 51663,
+            "point": {
+              "latitude": 39.73848,
+              "longitude": -104.99765
+            },
+            "pointIndex": 11513,
+            "instructionType": "TURN",
+            "street": "W 14th Ave",
+            "countryCode": "USA",
+            "stateCode": "CO",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": -90,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_LEFT",
+            "message": "Turn left onto <street>W 14th Ave</street>"
+          },
+          {
+            "routeOffsetInMeters": 1450578,
+            "travelTimeInSeconds": 51779,
+            "point": {
+              "latitude": 39.73846,
+              "longitude": -104.99027
+            },
+            "pointIndex": 11531,
+            "instructionType": "LOCATION_ARRIVAL",
+            "street": "N Bannock St",
+            "countryCode": "USA",
+            "stateCode": "CO",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "ARRIVE",
+            "message": "You have arrived at <street>N Bannock St</street>"
+          },
+          {
+            "routeOffsetInMeters": 1450661,
+            "travelTimeInSeconds": 51820,
+            "point": {
+              "latitude": 39.7392,
+              "longitude": -104.99027
+            },
+            "pointIndex": 11536,
+            "instructionType": "LOCATION_ARRIVAL",
+            "street": "N Bannock St",
+            "countryCode": "USA",
+            "stateCode": "CO",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "ARRIVE",
+            "message": "You have arrived at <street>N Bannock St</street>"
+          }
+        ]
+      }
+    }
+  ]
+}

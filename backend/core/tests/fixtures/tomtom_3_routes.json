@@ -1,0 +1,1747 @@
+{
+  "routes": [
+    {
+      "summary": {
+        "lengthInMeters": 1107829,
+        "travelTimeInSeconds": 41204,
+        "trafficDelayInSeconds": 1282,
+        "trafficLengthInMeters": 30324,
+        "departureTime": "2026-10-10T16:18:56-07:00",
+        "arrivalTime": "2026-10-11T04:45:40-06:00",
+        "noTrafficTravelTimeInSeconds": 39411,
+        "historicTrafficTravelTimeInSeconds": 40799,
+        "liveTrafficIncidentsTravelTimeInSeconds": 41204
+      },
+      "legs": [
+        {
+          "summary": {
+            "lengthInMeters": 1107829,
+            "travelTimeInSeconds": 41204,
+            "trafficDelayInSeconds": 1282,
+            "trafficLengthInMeters": 30324,
+            "departureTime": "2026-10-10T16:18:56-07:00",
+            "arrivalTime": "2026-10-11T04:45:40-06:00",
+            "noTrafficTravelTimeInSeconds": 39411,
+            "historicTrafficTravelTimeInSeconds": 40799,
+            "liveTrafficIncidentsTravelTimeInSeconds": 41204
+          },
+          "points": [
+            {
+              "latitude": 34.05209,
+              "longitude": -118.24351
+            },
+            {
+              "latitude": 34.05217,
+              "longitude": -118.24345
+            },
+            {
+              "latitude": 34.05224,
+              "longitude": -118.24338
+            },
+            {
+              "latitude": 34.05234,
+              "longitude": -118.24328
+            },
+            {
+              "latitude": 34.05243,
+              "longitude": -118.2432
+            },
+            {
+              "latitude": 34.05268,
+              "longitude": -118.24298
+            },
+            {
+              "latitude": 34.05365,
+              "longitude": -118.24207
+            },
+            {
+              "latitude": 34.05375,
+              "longitude": -118.24198
+            },
+            {
+              "latitude": 34.05384,
+              "longitude": -118.24189
+            },
+            {
+              "latitude": 34.05409,
+              "longitude": -118.24165
+            },
+            {
+              "latitude": 36.91406,
+              "longitude": -113.87939
+            },
+            {
+              "latitude": 36.91481,
+              "longitude": -113.87813
+            },
+            {
+              "latitude": 36.91537,
+              "longitude": -113.87718
+            },
+            {
+              "latitude": 36.91627,
+              "longitude": -113.87564
+            },
+            {
+              "latitude": 36.91647,
+              "longitude": -113.87526
+            },
+            {
+              "latitude": 36.91664,
+              "longitude": -113.87489
+            },
+            {
+              "latitude": 36.91697,
+              "longitude": -113.87412
+            },
+            {
+              "latitude": 36.91717,
+              "longitude": -113.87357
+            },
+            {
+              "latitude": 36.91722,
+              "longitude": -113.87343
+            },
+            {
+              "latitude": 36.9175,
+              "longitude": -113.87255
+            },
+            {
+              "latitude": 40.76058,
+              "longitude": -111.89253
+            },
+            {
+              "latitude": 40.76058,
+              "longitude": -111.89231
+            },
+            {
+              "latitude": 40.76062,
+              "longitude": -111.89216
+            },
+            {
+              "latitude": 40.76064,
+              "longitude": -111.89204
+            },
+            {
+              "latitude": 40.76065,
+              "longitude": -111.89194
+            },
+            {
+              "latitude": 40.76066,
+              "longitude": -111.89121
+            },
+            {
+              "latitude": 40.76066,
+              "longitude": -111.89108
+            },
+            {
+              "latitude": 40.76066,
+              "longitude": -111.89099
+            },
+            {
+              "latitude": 40.76075,
+              "longitude": -111.89099
+            },
+            {
+              "latitude": 40.7608,
+              "longitude": -111.89099
+            }
+          ]
+        }
+      ],
+      "guidance": {
+        "instructions": [
+          {
+            "routeOffsetInMeters": 0,
+            "travelTimeInSeconds": 0,
+            "point": {
+              "latitude": 34.05209,
+              "longitude": -118.24351
+            },
+            "pointIndex": 0,
+            "instructionType": "LOCATION_DEPARTURE",
+            "street": "S Main St",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "DEPART",
+            "message": "Leave from <street>S Main St</street>"
+          },
+          {
+            "routeOffsetInMeters": 465,
+            "travelTimeInSeconds": 74,
+            "point": {
+              "latitude": 34.05542,
+              "longitude": -118.24045
+            },
+            "pointIndex": 16,
+            "instructionType": "TURN",
+            "street": "W Aliso St",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": 90,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_RIGHT",
+            "message": "Turn right onto <street>W Aliso St</street>",
+            "combinedMessage": "Turn right onto <street>W Aliso St</street> then keep left at <street>United States Highway 101 S</street>/<roadNumber>US-101 S</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 534,
+            "travelTimeInSeconds": 97,
+            "point": {
+              "latitude": 34.05506,
+              "longitude": -118.23985
+            },
+            "pointIndex": 20,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "US-101 S"
+            ],
+            "street": "United States Highway 101 S",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": -45,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_LEFT",
+            "message": "Keep left at <street>United States Highway 101 S</street>/<roadNumber>US-101 S</roadNumber>",
+            "combinedMessage": "Keep left at <street>United States Highway 101 S</street>/<roadNumber>US-101 S</roadNumber> then keep left at <street>United States Highway 101 S</street>/<roadNumber>US-101 S</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 875,
+            "travelTimeInSeconds": 137,
+            "point": {
+              "latitude": 34.05372,
+              "longitude": -118.23659
+            },
+            "pointIndex": 32,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "US-101 S"
+            ],
+            "street": "United States Highway 101 S",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": -45,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_LEFT",
+            "message": "Keep left at <street>United States Highway 101 S</street>/<roadNumber>US-101 S</roadNumber>",
+            "combinedMessage": "Keep left at <street>United States Highway 101 S</street>/<roadNumber>US-101 S</roadNumber> then keep left at <street>Santa Ana Fwy</street>/<roadNumber>US-101 S</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 1584,
+            "travelTimeInSeconds": 170,
+            "point": {
+              "latitude": 34.05302,
+              "longitude": -118.22896
+            },
+            "pointIndex": 48,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "US-101 S"
+            ],
+            "street": "Santa Ana Fwy",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": -45,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_LEFT",
+            "message": "Keep left at <street>Santa Ana Fwy</street>/<roadNumber>US-101 S</roadNumber>",
+            "combinedMessage": "Keep left at <street>Santa Ana Fwy</street>/<roadNumber>US-101 S</roadNumber> then keep left at <street>San Bernardino Fwy E</street> toward <signpostText>San Bernardino</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 1866,
+            "travelTimeInSeconds": 184,
+            "point": {
+              "latitude": 34.05253,
+              "longitude": -118.22597
+            },
+            "pointIndex": 60,
+            "instructionType": "TURN",
+            "exitNumber": "1D",
+            "street": "San Bernardino Fwy E",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "signpostText": "San Bernardino",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": -45,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_LEFT",
+            "message": "Keep left at <street>San Bernardino Fwy E</street> toward <signpostText>San Bernardino</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 6530,
+            "travelTimeInSeconds": 362,
+            "point": {
+              "latitude": 34.05837,
+              "longitude": -118.17802
+            },
+            "pointIndex": 148,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "I-10 E"
+            ],
+            "street": "Interstate Highway 10 E",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "signpostText": "Valley Bl",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": -45,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_LEFT",
+            "message": "Keep left at <street>Interstate Highway 10 E</street>/<roadNumber>I-10 E</roadNumber> toward <signpostText>Valley Bl</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 7035,
+            "travelTimeInSeconds": 381,
+            "point": {
+              "latitude": 34.06052,
+              "longitude": -118.17321
+            },
+            "pointIndex": 151,
+            "instructionType": "DIRECTION_INFO",
+            "roadNumbers": [
+              "I-10 E"
+            ],
+            "street": "Interstate Highway 10 E",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "signpostText": "San Bernardino",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "FOLLOW",
+            "message": "Follow <street>Interstate Highway 10 E</street>/<roadNumber>I-10 E</roadNumber> toward <signpostText>San Bernardino</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 177879,
+            "travelTimeInSeconds": 8470,
+            "point": {
+              "latitude": 34.87497,
+              "longitude": -117.07153
+            },
+            "pointIndex": 2053,
+            "instructionType": "DIRECTION_INFO",
+            "roadNumbers": [
+              "I-15 N"
+            ],
+            "street": "Interstate Highway 15 N",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "signpostText": "Needles",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "FOLLOW",
+            "message": "Follow <street>Interstate Highway 15 N</street>/<roadNumber>I-15 N</roadNumber> toward <signpostText>Needles</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 183656,
+            "travelTimeInSeconds": 8684,
+            "point": {
+              "latitude": 34.88581,
+              "longitude": -117.01294
+            },
+            "pointIndex": 2113,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "I-15 N"
+            ],
+            "street": "Interstate Highway 15 N",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "signpostText": "Las Vegas",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": -45,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_LEFT",
+            "message": "Keep left at <street>Interstate Highway 15 N</street>/<roadNumber>I-15 N</roadNumber> toward <signpostText>Las Vegas</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 184161,
+            "travelTimeInSeconds": 8703,
+            "point": {
+              "latitude": 34.88681,
+              "longitude": -117.0076
+            },
+            "pointIndex": 2121,
+            "instructionType": "DIRECTION_INFO",
+            "roadNumbers": [
+              "I-15 N"
+            ],
+            "street": "Interstate Highway 15 N",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "signpostText": "Spring Mtn Road",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "FOLLOW",
+            "message": "Follow <street>Interstate Highway 15 N</street>/<roadNumber>I-15 N</roadNumber> toward <signpostText>Spring Mtn Road</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 425672,
+            "travelTimeInSeconds": 17525,
+            "point": {
+              "latitude": 36.11562,
+              "longitude": -115.18048
+            },
+            "pointIndex": 3368,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "I-15 N"
+            ],
+            "street": "Interstate Highway 15 N",
+            "countryCode": "USA",
+            "stateCode": "NV",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": 0,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "STRAIGHT",
+            "message": "Keep straight on at <street>Interstate Highway 15 N</street>/<roadNumber>I-15 N</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 429676,
+            "travelTimeInSeconds": 17672,
+            "point": {
+              "latitude": 36.14849,
+              "longitude": -115.16708
+            },
+            "pointIndex": 3432,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "I-15 N"
+            ],
+            "street": "Interstate Highway 15 N",
+            "countryCode": "USA",
+            "stateCode": "NV",
+            "signpostText": "Neon Gateway",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": -45,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_LEFT",
+            "message": "Keep left at <street>Interstate Highway 15 N</street>/<roadNumber>I-15 N</roadNumber> toward <signpostText>Neon Gateway</signpostText>",
+            "combinedMessage": "Keep left at <street>Interstate Highway 15 N</street>/<roadNumber>I-15 N</roadNumber> toward <signpostText>Neon Gateway</signpostText> then keep right at <street>Interstate Highway 15 N</street>/<roadNumber>I-15 N</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 430157,
+            "travelTimeInSeconds": 17688,
+            "point": {
+              "latitude": 36.15195,
+              "longitude": -115.16389
+            },
+            "pointIndex": 3439,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "I-15 N"
+            ],
+            "street": "Interstate Highway 15 N",
+            "countryCode": "USA",
+            "stateCode": "NV",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": 45,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_RIGHT",
+            "message": "Keep right at <street>Interstate Highway 15 N</street>/<roadNumber>I-15 N</roadNumber>",
+            "combinedMessage": "Keep right at <street>Interstate Highway 15 N</street>/<roadNumber>I-15 N</roadNumber> then keep left at <street>Interstate Highway 15 N</street>/<roadNumber>I-15 N</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 1045034,
+            "travelTimeInSeconds": 38823,
+            "point": {
+              "latitude": 40.28368,
+              "longitude": -111.72495
+            },
+            "pointIndex": 8118,
+            "instructionType": "DIRECTION_INFO",
+            "roadNumbers": [
+              "I-15 N"
+            ],
+            "street": "Interstate Highway 15 N",
+            "countryCode": "USA",
+            "stateCode": "UT",
+            "signpostText": "800",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "FOLLOW",
+            "message": "Follow <street>Interstate Highway 15 N</street>/<roadNumber>I-15 N</roadNumber> toward <signpostText>800</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 1105361,
+            "travelTimeInSeconds": 40891,
+            "point": {
+              "latitude": 40.75254,
+              "longitude": -111.91075
+            },
+            "pointIndex": 8941,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "UT-269"
+            ],
+            "exitNumber": "306",
+            "street": "W 600 S",
+            "countryCode": "USA",
+            "stateCode": "UT",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": 45,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "MOTORWAY_EXIT_RIGHT",
+            "message": "Take exit <exitNumber>306</exitNumber> on the right onto <street>W 600 S</street>/<roadNumber>UT-269</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 1106599,
+            "travelTimeInSeconds": 40971,
+            "point": {
+              "latitude": 40.75628,
+              "longitude": -111.89976
+            },
+            "pointIndex": 8976,
+            "instructionType": "TURN",
+            "street": "S 300 W",
+            "countryCode": "USA",
+            "stateCode": "UT",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": -90,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_LEFT",
+            "message": "Turn left onto <street>S 300 W</street>",
+            "combinedMessage": "Turn left onto <street>S 300 W</street> then turn right onto <street>W 400 S</street>/<roadNumber>US-89 S</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 1107087,
+            "travelTimeInSeconds": 41063,
+            "point": {
+              "latitude": 40.76054,
+              "longitude": -111.89958
+            },
+            "pointIndex": 8993,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "US-89 S"
+            ],
+            "street": "W 400 S",
+            "countryCode": "USA",
+            "stateCode": "UT",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": 90,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_RIGHT",
+            "message": "Turn right onto <street>W 400 S</street>/<roadNumber>US-89 S</roadNumber>",
+            "combinedMessage": "Turn right onto <street>W 400 S</street>/<roadNumber>US-89 S</roadNumber> then turn left onto <street>S Main St</street>"
+          },
+          {
+            "routeOffsetInMeters": 1107701,
+            "travelTimeInSeconds": 41137,
+            "point": {
+              "latitude": 40.76058,
+              "longitude": -111.89231
+            },
+            "pointIndex": 9009,
+            "instructionType": "TURN",
+            "street": "S Main St",
+            "countryCode": "USA",
+            "stateCode": "UT",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": -90,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_LEFT",
+            "message": "Turn left onto <street>S Main St</street>",
+            "combinedMessage": "Turn left onto <street>S Main St</street> then you have arrived at <street>S Main St</street>"
+          },
+          {
+            "routeOffsetInMeters": 1107829,
+            "travelTimeInSeconds": 41204,
+            "point": {
+              "latitude": 40.7608,
+              "longitude": -111.89099
+            },
+            "pointIndex": 9017,
+            "instructionType": "LOCATION_ARRIVAL",
+            "street": "S Main St",
+            "countryCode": "USA",
+            "stateCode": "UT",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "ARRIVE",
+            "message": "You have arrived at <street>S Main St</street>"
+          }
+        ]
+      }
+    },
+    {
+      "summary": {
+        "lengthInMeters": 1273937,
+        "travelTimeInSeconds": 50330,
+        "trafficDelayInSeconds": 763,
+        "trafficLengthInMeters": 10625,
+        "departureTime": "2026-10-10T16:18:56-07:00",
+        "arrivalTime": "2026-10-11T07:17:46-06:00",
+        "noTrafficTravelTimeInSeconds": 49652,
+        "historicTrafficTravelTimeInSeconds": 50342,
+        "liveTrafficIncidentsTravelTimeInSeconds": 50330,
+        "deviationDistance": 21,
+        "deviationTime": 7,
+        "deviationPoint": {
+          "latitude": 34.05224,
+          "longitude": -118.24338
+        }
+      },
+      "legs": [
+        {
+          "summary": {
+            "lengthInMeters": 1273937,
+            "travelTimeInSeconds": 50330,
+            "trafficDelayInSeconds": 763,
+            "trafficLengthInMeters": 10625,
+            "departureTime": "2026-10-10T16:18:56-07:00",
+            "arrivalTime": "2026-10-11T07:17:46-06:00",
+            "noTrafficTravelTimeInSeconds": 49652,
+            "historicTrafficTravelTimeInSeconds": 50342,
+            "liveTrafficIncidentsTravelTimeInSeconds": 50330
+          },
+          "points": [
+            {
+              "latitude": 34.05209,
+              "longitude": -118.24351
+            },
+            {
+              "latitude": 34.05217,
+              "longitude": -118.24345
+            },
+            {
+              "latitude": 34.05224,
+              "longitude": -118.24338
+            },
+            {
+              "latitude": 34.05232,
+              "longitude": -118.24349
+            },
+            {
+              "latitude": 34.05238,
+              "longitude": -118.24359
+            },
+            {
+              "latitude": 34.05262,
+              "longitude": -118.24395
+            },
+            {
+              "latitude": 34.05269,
+              "longitude": -118.24405
+            },
+            {
+              "latitude": 34.05275,
+              "longitude": -118.24412
+            },
+            {
+              "latitude": 34.05283,
+              "longitude": -118.2442
+            },
+            {
+              "latitude": 34.0529,
+              "longitude": -118.2443
+            },
+            {
+              "latitude": 38.01888,
+              "longitude": -117.97119
+            },
+            {
+              "latitude": 38.01923,
+              "longitude": -117.96428
+            },
+            {
+              "latitude": 38.01933,
+              "longitude": -117.96255
+            },
+            {
+              "latitude": 38.01996,
+              "longitude": -117.95009
+            },
+            {
+              "latitude": 38.02,
+              "longitude": -117.94922
+            },
+            {
+              "latitude": 38.0204,
+              "longitude": -117.9415
+            },
+            {
+              "latitude": 38.02081,
+              "longitude": -117.93345
+            },
+            {
+              "latitude": 38.02086,
+              "longitude": -117.93282
+            },
+            {
+              "latitude": 38.02092,
+              "longitude": -117.93225
+            },
+            {
+              "latitude": 38.02108,
+              "longitude": -117.93129
+            },
+            {
+              "latitude": 40.76058,
+              "longitude": -111.89253
+            },
+            {
+              "latitude": 40.76058,
+              "longitude": -111.89231
+            },
+            {
+              "latitude": 40.76062,
+              "longitude": -111.89216
+            },
+            {
+              "latitude": 40.76064,
+              "longitude": -111.89204
+            },
+            {
+              "latitude": 40.76065,
+              "longitude": -111.89194
+            },
+            {
+              "latitude": 40.76066,
+              "longitude": -111.89121
+            },
+            {
+              "latitude": 40.76066,
+              "longitude": -111.89108
+            },
+            {
+              "latitude": 40.76066,
+              "longitude": -111.89099
+            },
+            {
+              "latitude": 40.76075,
+              "longitude": -111.89099
+            },
+            {
+              "latitude": 40.7608,
+              "longitude": -111.89099
+            }
+          ]
+        }
+      ],
+      "guidance": {
+        "instructions": [
+          {
+            "routeOffsetInMeters": 0,
+            "travelTimeInSeconds": 0,
+            "point": {
+              "latitude": 34.05209,
+              "longitude": -118.24351
+            },
+            "pointIndex": 0,
+            "instructionType": "LOCATION_DEPARTURE",
+            "street": "S Main St",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "DEPART",
+            "message": "Leave from <street>S Main St</street>"
+          },
+          {
+            "routeOffsetInMeters": 21,
+            "travelTimeInSeconds": 7,
+            "point": {
+              "latitude": 34.05224,
+              "longitude": -118.24338
+            },
+            "pointIndex": 2,
+            "instructionType": "TURN",
+            "street": "W 1st St",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": -90,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_LEFT",
+            "message": "Turn left onto <street>W 1st St</street>",
+            "combinedMessage": "Turn left onto <street>W 1st St</street> then turn right onto <street>N Broadway</street>"
+          },
+          {
+            "routeOffsetInMeters": 272,
+            "travelTimeInSeconds": 62,
+            "point": {
+              "latitude": 34.05367,
+              "longitude": -118.24548
+            },
+            "pointIndex": 16,
+            "instructionType": "TURN",
+            "street": "N Broadway",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": 90,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_RIGHT",
+            "message": "Turn right onto <street>N Broadway</street>"
+          },
+          {
+            "routeOffsetInMeters": 865,
+            "travelTimeInSeconds": 179,
+            "point": {
+              "latitude": 34.05774,
+              "longitude": -118.24136
+            },
+            "pointIndex": 48,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "US-101 N"
+            ],
+            "street": "United States Highway 101 N",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "signpostText": "Hollywood",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": 90,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_RIGHT",
+            "message": "Turn right onto <street>United States Highway 101 N</street>/<roadNumber>US-101 N</roadNumber> toward <signpostText>Hollywood</signpostText>",
+            "combinedMessage": "Turn right onto <street>United States Highway 101 N</street>/<roadNumber>US-101 N</roadNumber> toward <signpostText>Hollywood</signpostText> then keep left at <street>United States Highway 101 N</street>/<roadNumber>US-101 N</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 1285,
+            "travelTimeInSeconds": 230,
+            "point": {
+              "latitude": 34.05856,
+              "longitude": -118.24464
+            },
+            "pointIndex": 69,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "US-101 N"
+            ],
+            "street": "United States Highway 101 N",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": -45,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_LEFT",
+            "message": "Keep left at <street>United States Highway 101 N</street>/<roadNumber>US-101 N</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 1700,
+            "travelTimeInSeconds": 312,
+            "point": {
+              "latitude": 34.06138,
+              "longitude": -118.24756
+            },
+            "pointIndex": 78,
+            "instructionType": "DIRECTION_INFO",
+            "roadNumbers": [
+              "US-101 N"
+            ],
+            "street": "United States Highway 101 N",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "signpostText": "Ventura",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "FOLLOW",
+            "message": "Follow <street>United States Highway 101 N</street>/<roadNumber>US-101 N</roadNumber> toward <signpostText>Ventura</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 17420,
+            "travelTimeInSeconds": 1685,
+            "point": {
+              "latitude": 34.1484,
+              "longitude": -118.37229
+            },
+            "pointIndex": 383,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "CA-170 N"
+            ],
+            "street": "California State Route 170 N",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "signpostText": "Sacramento",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": -45,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_LEFT",
+            "message": "Keep left at <street>California State Route 170 N</street>/<roadNumber>CA-170 N</roadNumber> toward <signpostText>Sacramento</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 17910,
+            "travelTimeInSeconds": 1704,
+            "point": {
+              "latitude": 34.15194,
+              "longitude": -118.37543
+            },
+            "pointIndex": 392,
+            "instructionType": "DIRECTION_INFO",
+            "roadNumbers": [
+              "CA-170 N"
+            ],
+            "street": "California State Route 170 N",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "signpostText": "Sacramento",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "FOLLOW",
+            "message": "Follow <street>California State Route 170 N</street>/<roadNumber>CA-170 N</roadNumber> toward <signpostText>Sacramento</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 85485,
+            "travelTimeInSeconds": 4398,
+            "point": {
+              "latitude": 34.48539,
+              "longitude": -118.14663
+            },
+            "pointIndex": 1380,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "CA-14 N"
+            ],
+            "street": "California State Route 14 N",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": 45,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_RIGHT",
+            "message": "Keep right at <street>California State Route 14 N</street>/<roadNumber>CA-14 N</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 88902,
+            "travelTimeInSeconds": 4528,
+            "point": {
+              "latitude": 34.50276,
+              "longitude": -118.11789
+            },
+            "pointIndex": 1429,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "CA-14 N"
+            ],
+            "street": "California State Route 14 N",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": 45,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_RIGHT",
+            "message": "Keep right at <street>California State Route 14 N</street>/<roadNumber>CA-14 N</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 92052,
+            "travelTimeInSeconds": 4647,
+            "point": {
+              "latitude": 34.52881,
+              "longitude": -118.11346
+            },
+            "pointIndex": 1481,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "CA-14 N"
+            ],
+            "street": "California State Route 14 N",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": 45,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_RIGHT",
+            "message": "Keep right at <street>California State Route 14 N</street>/<roadNumber>CA-14 N</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 94904,
+            "travelTimeInSeconds": 4753,
+            "point": {
+              "latitude": 34.54918,
+              "longitude": -118.13124
+            },
+            "pointIndex": 1522,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "CA-14 N"
+            ],
+            "street": "California State Route 14 N",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": 45,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_RIGHT",
+            "message": "Keep right at <street>California State Route 14 N</street>/<roadNumber>CA-14 N</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 95409,
+            "travelTimeInSeconds": 4772,
+            "point": {
+              "latitude": 34.5537,
+              "longitude": -118.13188
+            },
+            "pointIndex": 1526,
+            "instructionType": "DIRECTION_INFO",
+            "roadNumbers": [
+              "CA-14 N"
+            ],
+            "street": "California State Route 14 N",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "FOLLOW",
+            "message": "Follow <street>California State Route 14 N</street>/<roadNumber>CA-14 N</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 153652,
+            "travelTimeInSeconds": 7002,
+            "point": {
+              "latitude": 35.06508,
+              "longitude": -118.17776
+            },
+            "pointIndex": 2003,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "CA-14"
+            ],
+            "street": "State Highway 14",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": 45,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "BEAR_RIGHT",
+            "message": "Bear right at <street>State Highway 14</street>/<roadNumber>CA-14</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 1077902,
+            "travelTimeInSeconds": 43362,
+            "point": {
+              "latitude": 40.73822,
+              "longitude": -114.05217
+            },
+            "pointIndex": 8126,
+            "instructionType": "DIRECTION_INFO",
+            "roadNumbers": [
+              "I-80 E"
+            ],
+            "street": "Interstate Highway 80 E",
+            "countryCode": "USA",
+            "stateCode": "NV",
+            "signpostText": "Ogden",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "FOLLOW",
+            "message": "Follow <street>Interstate Highway 80 E</street>/<roadNumber>I-80 E</roadNumber> toward <signpostText>Ogden</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 1271115,
+            "travelTimeInSeconds": 49993,
+            "point": {
+              "latitude": 40.7603,
+              "longitude": -111.91516
+            },
+            "pointIndex": 8991,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "UT-269"
+            ],
+            "exitNumber": "121",
+            "street": "W 600 S",
+            "countryCode": "USA",
+            "stateCode": "UT",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": 45,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "MOTORWAY_EXIT_RIGHT",
+            "message": "Take exit <exitNumber>121</exitNumber> on the right onto <street>W 600 S</street>/<roadNumber>UT-269</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 1272707,
+            "travelTimeInSeconds": 50095,
+            "point": {
+              "latitude": 40.75628,
+              "longitude": -111.89976
+            },
+            "pointIndex": 9041,
+            "instructionType": "TURN",
+            "street": "S 300 W",
+            "countryCode": "USA",
+            "stateCode": "UT",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": -90,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_LEFT",
+            "message": "Turn left onto <street>S 300 W</street>",
+            "combinedMessage": "Turn left onto <street>S 300 W</street> then turn right onto <street>W 400 S</street>/<roadNumber>US-89 S</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 1273195,
+            "travelTimeInSeconds": 50187,
+            "point": {
+              "latitude": 40.76054,
+              "longitude": -111.89958
+            },
+            "pointIndex": 9058,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "US-89 S"
+            ],
+            "street": "W 400 S",
+            "countryCode": "USA",
+            "stateCode": "UT",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": 90,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_RIGHT",
+            "message": "Turn right onto <street>W 400 S</street>/<roadNumber>US-89 S</roadNumber>",
+            "combinedMessage": "Turn right onto <street>W 400 S</street>/<roadNumber>US-89 S</roadNumber> then turn left onto <street>S Main St</street>"
+          },
+          {
+            "routeOffsetInMeters": 1273809,
+            "travelTimeInSeconds": 50261,
+            "point": {
+              "latitude": 40.76058,
+              "longitude": -111.89231
+            },
+            "pointIndex": 9074,
+            "instructionType": "TURN",
+            "street": "S Main St",
+            "countryCode": "USA",
+            "stateCode": "UT",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": -90,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_LEFT",
+            "message": "Turn left onto <street>S Main St</street>",
+            "combinedMessage": "Turn left onto <street>S Main St</street> then you have arrived at <street>S Main St</street>"
+          },
+          {
+            "routeOffsetInMeters": 1273937,
+            "travelTimeInSeconds": 50330,
+            "point": {
+              "latitude": 40.7608,
+              "longitude": -111.89099
+            },
+            "pointIndex": 9082,
+            "instructionType": "LOCATION_ARRIVAL",
+            "street": "S Main St",
+            "countryCode": "USA",
+            "stateCode": "UT",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "ARRIVE",
+            "message": "You have arrived at <street>S Main St</street>"
+          }
+        ]
+      }
+    },
+    {
+      "summary": {
+        "lengthInMeters": 1662935,
+        "travelTimeInSeconds": 60881,
+        "trafficDelayInSeconds": 670,
+        "trafficLengthInMeters": 8461,
+        "departureTime": "2026-10-10T16:18:56-07:00",
+        "arrivalTime": "2026-10-11T10:13:37-06:00",
+        "noTrafficTravelTimeInSeconds": 59947,
+        "historicTrafficTravelTimeInSeconds": 60532,
+        "liveTrafficIncidentsTravelTimeInSeconds": 60881,
+        "deviationDistance": 21,
+        "deviationTime": 7,
+        "deviationPoint": {
+          "latitude": 34.05224,
+          "longitude": -118.24338
+        }
+      },
+      "legs": [
+        {
+          "summary": {
+            "lengthInMeters": 1662935,
+            "travelTimeInSeconds": 60881,
+            "trafficDelayInSeconds": 670,
+            "trafficLengthInMeters": 8461,
+            "departureTime": "2026-10-10T16:18:56-07:00",
+            "arrivalTime": "2026-10-11T10:13:37-06:00",
+            "noTrafficTravelTimeInSeconds": 59947,
+            "historicTrafficTravelTimeInSeconds": 60532,
+            "liveTrafficIncidentsTravelTimeInSeconds": 60881
+          },
+          "points": [
+            {
+              "latitude": 34.05209,
+              "longitude": -118.24351
+            },
+            {
+              "latitude": 34.05217,
+              "longitude": -118.24345
+            },
+            {
+              "latitude": 34.05224,
+              "longitude": -118.24338
+            },
+            {
+              "latitude": 34.05232,
+              "longitude": -118.24349
+            },
+            {
+              "latitude": 34.05238,
+              "longitude": -118.24359
+            },
+            {
+              "latitude": 34.05262,
+              "longitude": -118.24395
+            },
+            {
+              "latitude": 34.05269,
+              "longitude": -118.24405
+            },
+            {
+              "latitude": 34.05275,
+              "longitude": -118.24412
+            },
+            {
+              "latitude": 34.05283,
+              "longitude": -118.2442
+            },
+            {
+              "latitude": 34.0529,
+              "longitude": -118.2443
+            },
+            {
+              "latitude": 38.93939,
+              "longitude": -121.05155
+            },
+            {
+              "latitude": 38.94033,
+              "longitude": -121.05105
+            },
+            {
+              "latitude": 38.94065,
+              "longitude": -121.05089
+            },
+            {
+              "latitude": 38.9409,
+              "longitude": -121.05076
+            },
+            {
+              "latitude": 38.94109,
+              "longitude": -121.05065
+            },
+            {
+              "latitude": 38.94138,
+              "longitude": -121.05047
+            },
+            {
+              "latitude": 38.94161,
+              "longitude": -121.0503
+            },
+            {
+              "latitude": 38.94182,
+              "longitude": -121.05013
+            },
+            {
+              "latitude": 38.94221,
+              "longitude": -121.04975
+            },
+            {
+              "latitude": 38.94259,
+              "longitude": -121.04933
+            },
+            {
+              "latitude": 40.76058,
+              "longitude": -111.89253
+            },
+            {
+              "latitude": 40.76058,
+              "longitude": -111.89231
+            },
+            {
+              "latitude": 40.76062,
+              "longitude": -111.89216
+            },
+            {
+              "latitude": 40.76064,
+              "longitude": -111.89204
+            },
+            {
+              "latitude": 40.76065,
+              "longitude": -111.89194
+            },
+            {
+              "latitude": 40.76066,
+              "longitude": -111.89121
+            },
+            {
+              "latitude": 40.76066,
+              "longitude": -111.89108
+            },
+            {
+              "latitude": 40.76066,
+              "longitude": -111.89099
+            },
+            {
+              "latitude": 40.76075,
+              "longitude": -111.89099
+            },
+            {
+              "latitude": 40.7608,
+              "longitude": -111.89099
+            }
+          ]
+        }
+      ],
+      "guidance": {
+        "instructions": [
+          {
+            "routeOffsetInMeters": 0,
+            "travelTimeInSeconds": 0,
+            "point": {
+              "latitude": 34.05209,
+              "longitude": -118.24351
+            },
+            "pointIndex": 0,
+            "instructionType": "LOCATION_DEPARTURE",
+            "street": "S Main St",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "DEPART",
+            "message": "Leave from <street>S Main St</street>"
+          },
+          {
+            "routeOffsetInMeters": 21,
+            "travelTimeInSeconds": 7,
+            "point": {
+              "latitude": 34.05224,
+              "longitude": -118.24338
+            },
+            "pointIndex": 2,
+            "instructionType": "TURN",
+            "street": "W 1st St",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": -90,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_LEFT",
+            "message": "Turn left onto <street>W 1st St</street>",
+            "combinedMessage": "Turn left onto <street>W 1st St</street> then turn right onto <street>N Broadway</street>"
+          },
+          {
+            "routeOffsetInMeters": 272,
+            "travelTimeInSeconds": 62,
+            "point": {
+              "latitude": 34.05367,
+              "longitude": -118.24548
+            },
+            "pointIndex": 16,
+            "instructionType": "TURN",
+            "street": "N Broadway",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": 90,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_RIGHT",
+            "message": "Turn right onto <street>N Broadway</street>"
+          },
+          {
+            "routeOffsetInMeters": 865,
+            "travelTimeInSeconds": 179,
+            "point": {
+              "latitude": 34.05774,
+              "longitude": -118.24136
+            },
+            "pointIndex": 48,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "US-101 N"
+            ],
+            "street": "United States Highway 101 N",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "signpostText": "Hollywood",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": 90,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_RIGHT",
+            "message": "Turn right onto <street>United States Highway 101 N</street>/<roadNumber>US-101 N</roadNumber> toward <signpostText>Hollywood</signpostText>",
+            "combinedMessage": "Turn right onto <street>United States Highway 101 N</street>/<roadNumber>US-101 N</roadNumber> toward <signpostText>Hollywood</signpostText> then keep left at <street>United States Highway 101 N</street>/<roadNumber>US-101 N</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 1285,
+            "travelTimeInSeconds": 230,
+            "point": {
+              "latitude": 34.05856,
+              "longitude": -118.24464
+            },
+            "pointIndex": 69,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "US-101 N"
+            ],
+            "street": "United States Highway 101 N",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": -45,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_LEFT",
+            "message": "Keep left at <street>United States Highway 101 N</street>/<roadNumber>US-101 N</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 1700,
+            "travelTimeInSeconds": 312,
+            "point": {
+              "latitude": 34.06138,
+              "longitude": -118.24756
+            },
+            "pointIndex": 78,
+            "instructionType": "DIRECTION_INFO",
+            "roadNumbers": [
+              "US-101 N"
+            ],
+            "street": "United States Highway 101 N",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "signpostText": "Ventura",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "FOLLOW",
+            "message": "Follow <street>United States Highway 101 N</street>/<roadNumber>US-101 N</roadNumber> toward <signpostText>Ventura</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 17420,
+            "travelTimeInSeconds": 1685,
+            "point": {
+              "latitude": 34.1484,
+              "longitude": -118.37229
+            },
+            "pointIndex": 383,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "CA-170 N"
+            ],
+            "street": "California State Route 170 N",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "signpostText": "Sacramento",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": -45,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_LEFT",
+            "message": "Keep left at <street>California State Route 170 N</street>/<roadNumber>CA-170 N</roadNumber> toward <signpostText>Sacramento</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 17910,
+            "travelTimeInSeconds": 1704,
+            "point": {
+              "latitude": 34.15194,
+              "longitude": -118.37543
+            },
+            "pointIndex": 392,
+            "instructionType": "DIRECTION_INFO",
+            "roadNumbers": [
+              "CA-170 N"
+            ],
+            "street": "California State Route 170 N",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "signpostText": "Sacramento",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "FOLLOW",
+            "message": "Follow <street>California State Route 170 N</street>/<roadNumber>CA-170 N</roadNumber> toward <signpostText>Sacramento</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 594151,
+            "travelTimeInSeconds": 23340,
+            "point": {
+              "latitude": 38.37651,
+              "longitude": -121.362
+            },
+            "pointIndex": 6166,
+            "instructionType": "DIRECTION_INFO",
+            "roadNumbers": [
+              "CA-99 N"
+            ],
+            "street": "S Sacramento Fwy",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "FOLLOW",
+            "message": "Follow <street>S Sacramento Fwy</street>/<roadNumber>CA-99 N</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 605227,
+            "travelTimeInSeconds": 23751,
+            "point": {
+              "latitude": 38.46633,
+              "longitude": -121.41506
+            },
+            "pointIndex": 6267,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "CA-99 N"
+            ],
+            "street": "S Sacramento Fwy",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": -45,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_LEFT",
+            "message": "Keep left at <street>S Sacramento Fwy</street>/<roadNumber>CA-99 N</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 605732,
+            "travelTimeInSeconds": 23770,
+            "point": {
+              "latitude": 38.4701,
+              "longitude": -121.41827
+            },
+            "pointIndex": 6276,
+            "instructionType": "DIRECTION_INFO",
+            "roadNumbers": [
+              "CA-99 N"
+            ],
+            "street": "S Sacramento Fwy",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "FOLLOW",
+            "message": "Follow <street>S Sacramento Fwy</street>/<roadNumber>CA-99 N</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 616172,
+            "travelTimeInSeconds": 24157,
+            "point": {
+              "latitude": 38.55039,
+              "longitude": -121.47386
+            },
+            "pointIndex": 6395,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "I-80 Bus E"
+            ],
+            "street": "Capital City Fwy E",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": -45,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_LEFT",
+            "message": "Keep left at <street>Capital City Fwy E</street>/<roadNumber>I-80 Bus E</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 616677,
+            "travelTimeInSeconds": 24176,
+            "point": {
+              "latitude": 38.55492,
+              "longitude": -121.4742
+            },
+            "pointIndex": 6402,
+            "instructionType": "DIRECTION_INFO",
+            "roadNumbers": [
+              "I-80 Bus E"
+            ],
+            "street": "Capital City Fwy E",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "signpostText": "Reno",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "FOLLOW",
+            "message": "Follow <street>Capital City Fwy E</street>/<roadNumber>I-80 Bus E</roadNumber> toward <signpostText>Reno</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 622417,
+            "travelTimeInSeconds": 24389,
+            "point": {
+              "latitude": 38.59588,
+              "longitude": -121.44388
+            },
+            "pointIndex": 6518,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "I-80 Bus E"
+            ],
+            "street": "Capital City Fwy E",
+            "countryCode": "USA",
+            "stateCode": "CA",
+            "signpostText": "Reno",
+            "junctionType": "BIFURCATION",
+            "turnAngleInDecimalDegrees": -45,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "KEEP_LEFT",
+            "message": "Keep left at <street>Capital City Fwy E</street>/<roadNumber>I-80 Bus E</roadNumber> toward <signpostText>Reno</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 859754,
+            "travelTimeInSeconds": 33076,
+            "point": {
+              "latitude": 39.56638,
+              "longitude": -119.48549
+            },
+            "pointIndex": 9784,
+            "instructionType": "DIRECTION_INFO",
+            "roadNumbers": [
+              "I-80 E"
+            ],
+            "street": "Interstate 80 E",
+            "countryCode": "USA",
+            "stateCode": "NV",
+            "signpostText": "Ogden",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "FOLLOW",
+            "message": "Follow <street>Interstate 80 E</street>/<roadNumber>I-80 E</roadNumber> toward <signpostText>Ogden</signpostText>"
+          },
+          {
+            "routeOffsetInMeters": 1660114,
+            "travelTimeInSeconds": 60537,
+            "point": {
+              "latitude": 40.7603,
+              "longitude": -111.91516
+            },
+            "pointIndex": 14258,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "UT-269"
+            ],
+            "exitNumber": "121",
+            "street": "W 600 S",
+            "countryCode": "USA",
+            "stateCode": "UT",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": 45,
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "MOTORWAY_EXIT_RIGHT",
+            "message": "Take exit <exitNumber>121</exitNumber> on the right onto <street>W 600 S</street>/<roadNumber>UT-269</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 1661705,
+            "travelTimeInSeconds": 60641,
+            "point": {
+              "latitude": 40.75628,
+              "longitude": -111.89976
+            },
+            "pointIndex": 14308,
+            "instructionType": "TURN",
+            "street": "S 300 W",
+            "countryCode": "USA",
+            "stateCode": "UT",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": -90,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_LEFT",
+            "message": "Turn left onto <street>S 300 W</street>",
+            "combinedMessage": "Turn left onto <street>S 300 W</street> then turn right onto <street>W 400 S</street>/<roadNumber>US-89 S</roadNumber>"
+          },
+          {
+            "routeOffsetInMeters": 1662193,
+            "travelTimeInSeconds": 60736,
+            "point": {
+              "latitude": 40.76054,
+              "longitude": -111.89958
+            },
+            "pointIndex": 14325,
+            "instructionType": "TURN",
+            "roadNumbers": [
+              "US-89 S"
+            ],
+            "street": "W 400 S",
+            "countryCode": "USA",
+            "stateCode": "UT",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": 90,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_RIGHT",
+            "message": "Turn right onto <street>W 400 S</street>/<roadNumber>US-89 S</roadNumber>",
+            "combinedMessage": "Turn right onto <street>W 400 S</street>/<roadNumber>US-89 S</roadNumber> then turn left onto <street>S Main St</street>"
+          },
+          {
+            "routeOffsetInMeters": 1662808,
+            "travelTimeInSeconds": 60810,
+            "point": {
+              "latitude": 40.76058,
+              "longitude": -111.89231
+            },
+            "pointIndex": 14341,
+            "instructionType": "TURN",
+            "street": "S Main St",
+            "countryCode": "USA",
+            "stateCode": "UT",
+            "junctionType": "REGULAR",
+            "turnAngleInDecimalDegrees": -90,
+            "possibleCombineWithNext": true,
+            "drivingSide": "RIGHT",
+            "maneuver": "TURN_LEFT",
+            "message": "Turn left onto <street>S Main St</street>",
+            "combinedMessage": "Turn left onto <street>S Main St</street> then you have arrived at <street>S Main St</street>"
+          },
+          {
+            "routeOffsetInMeters": 1662935,
+            "travelTimeInSeconds": 60881,
+            "point": {
+              "latitude": 40.7608,
+              "longitude": -111.89099
+            },
+            "pointIndex": 14349,
+            "instructionType": "LOCATION_ARRIVAL",
+            "street": "S Main St",
+            "countryCode": "USA",
+            "stateCode": "UT",
+            "possibleCombineWithNext": false,
+            "drivingSide": "RIGHT",
+            "maneuver": "ARRIVE",
+            "message": "You have arrived at <street>S Main St</street>"
+          }
+        ]
+      }
+    }
+  ]
+}

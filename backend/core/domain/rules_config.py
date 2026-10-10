@@ -66,3 +66,6 @@ PRECIP_DECIMALS: int = 2
 # Departure window limits
 DEPARTURE_PAST_GRACE_HOURS: int = 1
 DEPARTURE_MAX_DAYS_AHEAD: int = 7
+
+# Routing provider constants
+TRUCK_MAX_SPEED_KMH: int = 105

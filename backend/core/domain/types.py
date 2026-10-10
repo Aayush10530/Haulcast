@@ -380,3 +380,57 @@ class Recommendation:
             object.__setattr__(self, "ranked", tuple(self.ranked))
         if not self.ranked:
             raise ValueError("ranked cannot be empty")
+
+
+@dataclass(frozen=True, slots=True)
+class Place:
+    """Geocoded place with label and coordinate."""
+
+    label: str
+    coordinate: Coordinate
+
+    def __post_init__(self) -> None:
+        if not self.label or not self.label.strip():
+            raise ValueError("label cannot be empty")
+
+
+@dataclass(frozen=True, slots=True)
+class GridCell:
+    """Weather grid cell coordinate at 0.1 degree resolution."""
+
+    lat: float
+    lon: float
+
+    def __post_init__(self) -> None:
+        if not math.isfinite(self.lat) or not (-90.0 <= self.lat <= 90.0):
+            raise ValueError(f"lat must be between -90 and 90, got {self.lat}")
+        if not math.isfinite(self.lon) or not (-180.0 <= self.lon <= 180.0):
+            raise ValueError(f"lon must be between -180 and 180, got {self.lon}")
+
+
+@dataclass(frozen=True, slots=True)
+class RawRoute:
+    """Raw route candidate returned by a routing provider before analysis."""
+
+    provider_id: str
+    polyline: tuple[Coordinate, ...]
+    distance_miles: float
+    duration_seconds: float
+    timeline: Timeline
+    via_summary: str | None = None
+
+    def __post_init__(self) -> None:
+        if not self.provider_id or not self.provider_id.strip():
+            raise ValueError("provider_id cannot be empty")
+        if not isinstance(self.polyline, tuple):
+            object.__setattr__(self, "polyline", tuple(self.polyline))
+        if len(self.polyline) < 2:
+            raise ValueError("polyline must contain at least 2 points")
+        if not math.isfinite(self.distance_miles) or self.distance_miles <= 0.0:
+            raise ValueError(
+                f"distance_miles must be a positive finite number, got {self.distance_miles}"
+            )
+        if not math.isfinite(self.duration_seconds) or self.duration_seconds < 0.0:
+            raise ValueError(
+                f"duration_seconds must be non-negative finite, got {self.duration_seconds}"
+            )
