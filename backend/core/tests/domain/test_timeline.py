@@ -33,12 +33,14 @@ def test_elapsed_at_piecewise_three_speeds_returns_interpolated_seconds() -> Non
     # Seg 1: 0 to 30 mi at 30 mph -> duration 30/30 * 3600 = 3600 s. Point: (30.0, 3600.0)
     # Seg 2: 30 to 90 mi (60 mi) at 60 mph -> duration 60/60 * 3600 = 3600 s. Point: (90.0, 7200.0)
     # Seg 3: 90 to 100 mi (10 mi) at 40 mph -> duration 10/40 * 3600 = 900 s. Point: (100.0, 8100.0)
-    tl = Timeline.from_points([
-        (0.0, 0.0),
-        (30.0, 3600.0),
-        (90.0, 7200.0),
-        (100.0, 8100.0),
-    ])
+    tl = Timeline.from_points(
+        [
+            (0.0, 0.0),
+            (30.0, 3600.0),
+            (90.0, 7200.0),
+            (100.0, 8100.0),
+        ]
+    )
 
     assert elapsed_at(tl, 15.0) == pytest.approx(1800.0)
     assert elapsed_at(tl, 30.0) == 3600.0
@@ -60,21 +62,25 @@ def test_elapsed_at_above_total_clamps_to_total_seconds() -> None:
 
 def test_elapsed_at_duplicate_distance_points_returns_later_elapsed() -> None:
     # Delay/stop at mile 20 from t=1200s to t=1800s
-    tl = Timeline.from_points([
-        (0.0, 0.0),
-        (20.0, 1200.0),
-        (20.0, 1800.0),
-        (50.0, 3600.0),
-    ])
+    tl = Timeline.from_points(
+        [
+            (0.0, 0.0),
+            (20.0, 1200.0),
+            (20.0, 1800.0),
+            (50.0, 3600.0),
+        ]
+    )
     assert elapsed_at(tl, 20.0) == 1800.0
 
 
 def test_elapsed_at_exact_interior_vertex_returns_exact_elapsed() -> None:
-    tl = Timeline.from_points([
-        (0.0, 0.0),
-        (25.0, 1500.0),
-        (50.0, 3000.0),
-    ])
+    tl = Timeline.from_points(
+        [
+            (0.0, 0.0),
+            (25.0, 1500.0),
+            (50.0, 3000.0),
+        ]
+    )
     assert elapsed_at(tl, 25.0) == 1500.0
 
 
@@ -205,12 +211,14 @@ def test_etas_for_checkpoints_piecewise_integration_monotonic_and_endpoints_matc
     # 50 to 150 mi (100 mi): 50 mph -> 7200 s (cum 14400 s)
     # 150 to 210 mi (60 mi): 60 mph -> 3600 s (cum 18000 s)
     total_seconds = 18000.0
-    tl = Timeline.from_points([
-        (0.0, 0.0),
-        (50.0, 7200.0),
-        (150.0, 14400.0),
-        (210.0, total_seconds),
-    ])
+    tl = Timeline.from_points(
+        [
+            (0.0, 0.0),
+            (50.0, 7200.0),
+            (150.0, 14400.0),
+            (210.0, total_seconds),
+        ]
+    )
 
     departure = datetime.datetime(2026, 10, 15, 6, 0, 0, tzinfo=datetime.UTC)
     etas = etas_for_checkpoints(departure, tl, checkpoints)

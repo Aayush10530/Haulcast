@@ -11,9 +11,7 @@ def constant_speed_timeline(total_miles: float, total_seconds: float) -> Timelin
     if not math.isfinite(total_miles) or total_miles <= 0.0:
         raise ValueError(f"total_miles must be a positive finite number, got {total_miles}")
     if not math.isfinite(total_seconds) or total_seconds < 0.0:
-        raise ValueError(
-            f"total_seconds must be a non-negative finite number, got {total_seconds}"
-        )
+        raise ValueError(f"total_seconds must be a non-negative finite number, got {total_seconds}")
 
     return Timeline.from_points([(0.0, 0.0), (total_miles, total_seconds)])
 
