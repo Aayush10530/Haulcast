@@ -114,7 +114,7 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 |---|---|---|---|
 | F-000 | Provider spike (TomTom + Open-Meteo) | P0 | done |
 | F-001 | Project scaffold (backend Django/DRF, frontend Vite/React/TS, tooling) | P1 | done |
-| F-010 | Domain core: types, rules_config, risk assessment | P2 | planned |
+| F-010 | Domain core: types, rules_config, risk assessment | P2 | done |
 | F-011 | Domain core: geometry (haversine, interpolation) & sampling | P2 | planned |
 | F-012 | Domain core: timeline & ETA interpolation | P2 | planned |
 | F-013 | Domain core: weather alignment & hourly interpolation | P2 | planned |
@@ -185,3 +185,4 @@ _None yet._
 |---|---|---|---|---|---|
 | P0 | Provider spike, decisions | 0.75 | 0.75 | 0.75 | Evaluated Open-Meteo batching, TomTom truck routing, fallback, determinism |
 | P1 | Scaffold, tooling | 0.5 | 0.5 | 1.25 | Backend Django 5.2/DRF scaffold, Frontend React 19/Vite/TS/MUI v9, tests & audits clean |
+| P2 (part 1) | F-010 risk rules & types | 0.25 | 0.25 | 1.50 | Pure domain risk classification, load rules, describe formatting, 100% test coverage |
