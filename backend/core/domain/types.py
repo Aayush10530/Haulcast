@@ -1,3 +1,4 @@
+import datetime
 import math
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -212,3 +213,101 @@ class WeatherSeries:
                 f"wind={len(self.wind_mph.values)}, rain={len(self.rain_in_hr.values)}, "
                 f"snow={len(self.snow_in_hr.values)}"
             )
+
+
+@dataclass(frozen=True, slots=True)
+class AssessedCheckpoint:
+    """Checkpoint evaluated with weather measurements and risk classification."""
+
+    checkpoint: Checkpoint
+    eta_utc: datetime.datetime
+    tz_name: str
+    sample: WeatherSample | None
+    assessment: RiskAssessment | None
+    reason: str | None
+
+    def __post_init__(self) -> None:
+        if self.eta_utc.tzinfo is None or self.eta_utc.tzinfo.utcoffset(self.eta_utc) is None:
+            raise ValueError(f"eta_utc must be a timezone-aware datetime, got {self.eta_utc}")
+        if (self.sample is None) != (self.assessment is None):
+            raise ValueError("sample and assessment must both be None or both be provided")
+        if (self.reason is None) != (self.assessment is None):
+            raise ValueError("reason must be provided if and only if assessment is provided")
+
+
+@dataclass(frozen=True, slots=True)
+class MilesByLevel:
+    """Miles covered per risk level along a route corridor."""
+
+    low: float
+    moderate: float
+    high: float
+    severe: float
+    no_travel: float
+
+    def __post_init__(self) -> None:
+        for name, val in (
+            ("low", self.low),
+            ("moderate", self.moderate),
+            ("high", self.high),
+            ("severe", self.severe),
+            ("no_travel", self.no_travel),
+        ):
+            if not math.isfinite(val) or val < 0.0:
+                raise ValueError(f"{name} miles must be a non-negative finite number, got {val}")
+
+    def for_level(self, level: RiskLevel) -> float:
+        """Return the miles covered for a specific RiskLevel."""
+        match level:
+            case RiskLevel.LOW:
+                return self.low
+            case RiskLevel.MODERATE:
+                return self.moderate
+            case RiskLevel.HIGH:
+                return self.high
+            case RiskLevel.SEVERE:
+                return self.severe
+            case RiskLevel.NO_TRAVEL:
+                return self.no_travel
+
+
+@dataclass(frozen=True, slots=True)
+class RouteSummary:
+    """Aggregated risk and distance summary for an analyzed route corridor."""
+
+    distance_miles: float
+    duration_seconds: float
+    miles_by_level: MilesByLevel
+    unavailable_miles: float
+    avg_risk_score: float | None
+    max_level: RiskLevel | None
+    unavailable_checkpoints: int
+
+    def __post_init__(self) -> None:
+        if not math.isfinite(self.distance_miles) or self.distance_miles <= 0.0:
+            raise ValueError(
+                f"distance_miles must be a positive finite number, got {self.distance_miles}"
+            )
+        if not math.isfinite(self.duration_seconds) or self.duration_seconds < 0.0:
+            raise ValueError(
+                f"duration_seconds must be non-negative finite, got {self.duration_seconds}"
+            )
+        if not math.isfinite(self.unavailable_miles) or self.unavailable_miles < 0.0:
+            raise ValueError(
+                f"unavailable_miles must be non-negative finite, got {self.unavailable_miles}"
+            )
+        if self.avg_risk_score is not None and (
+            not math.isfinite(self.avg_risk_score) or not (0.0 <= self.avg_risk_score <= 4.0)
+        ):
+            raise ValueError(
+                f"avg_risk_score must be between 0.0 and 4.0 or None, got {self.avg_risk_score}"
+            )
+        if self.unavailable_checkpoints < 0:
+            raise ValueError(
+                f"unavailable_checkpoints must be non-negative, got {self.unavailable_checkpoints}"
+            )
+
+    @property
+    def has_no_travel(self) -> bool:
+        """True when max_level is NO_TRAVEL, independent of how small the covered miles are."""
+        return self.max_level == RiskLevel.NO_TRAVEL

@@ -52,6 +52,8 @@ def precip_at(series: HourlySeries, t: datetime.datetime) -> float | None:
 
     Returns the value at index idx + 1 (the 1-hour accumulation bucket ending at that time).
     Returns None if out of bounds or if the bucket value is missing.
+    Times earlier than start_epoch return None even though the first bucket would cover the
+    preceding hour; harmless because fetch windows start 3 hours in the past.
     """
     if t.tzinfo is None or t.tzinfo.utcoffset(t) is None:
         raise ValueError(f"t must be a timezone-aware datetime, got {t}")

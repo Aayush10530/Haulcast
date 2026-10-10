@@ -95,8 +95,8 @@ All frozen dataclasses. Times are timezone-aware UTC `datetime`. Distances in mi
 - `WeatherSeries(cell, utc_offset_seconds, tz_name, wind_mph: Mapping[epoch,float], rain_in: ..., snow_in: ...)` hourly, keyed by epoch seconds
 - `WeatherSample(wind_mph, rain_in_hr, snow_in_hr)` already rounded per A-03
 - `RiskAssessment(level, table_level, driver, load_rule_applied, per_condition_levels)`
-- `AssessedCheckpoint(checkpoint, eta_utc, sample|None, risk|None, local_time, local_tz)`
-- `RouteSummary(distance_miles, duration_seconds, miles_by_level, avg_risk_score, max_level, has_no_travel, delta_vs_fastest_seconds)`
+- `AssessedCheckpoint(checkpoint, eta_utc, tz_name, sample|None, assessment|None, reason|None)`
+- `RouteSummary(distance_miles, duration_seconds, miles_by_level, unavailable_miles, avg_risk_score, max_level, unavailable_checkpoints)`
 - `AnalyzedRoute(id, label, polyline, checkpoints, summary, rank, is_recommended)`
 - `Recommendation(route_id, decided_by, headline, comparisons)`
 
