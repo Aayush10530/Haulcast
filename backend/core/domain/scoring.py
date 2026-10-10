@@ -79,6 +79,7 @@ def summarize_route(
 
     level_miles_lists: dict[RiskLevel, list[float]] = {lvl: [] for lvl in RiskLevel}
     unavailable_coverages: list[float] = []
+    assessed_coverages: list[float] = []
     assessed_levels: list[RiskLevel] = []
     assessed_products: list[float] = []
 
@@ -88,6 +89,7 @@ def summarize_route(
         else:
             level = cp.assessment.level
             level_miles_lists[level].append(cov)
+            assessed_coverages.append(cov)
             assessed_levels.append(level)
             assessed_products.append(int(level) * cov)
 
@@ -101,13 +103,17 @@ def summarize_route(
     unavailable_miles = math.fsum(unavailable_coverages)
     unavailable_checkpoints = len(unavailable_coverages)
 
-    assessed_miles = total_coverage - unavailable_miles
-    if assessed_miles == 0.0:
+    assessed_miles = math.fsum(assessed_coverages)
+    if not assessed_levels:
         avg_risk_score = None
         max_level = None
     else:
-        avg_risk_score = math.fsum(assessed_products) / assessed_miles
         max_level = max(assessed_levels)
+        if assessed_miles <= 0.0:
+            avg_risk_score = None
+        else:
+            raw_avg = math.fsum(assessed_products) / assessed_miles
+            avg_risk_score = min(4.0, max(0.0, raw_avg))
 
     return RouteSummary(
         distance_miles=distance_miles,

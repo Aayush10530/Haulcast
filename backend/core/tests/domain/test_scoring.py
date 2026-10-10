@@ -165,6 +165,63 @@ def test_summarize_route_all_low_returns_zero_average() -> None:
     assert not summary.has_no_travel
 
 
+def test_summarize_route_unavailable_with_all_assessed_no_travel_returns_exactly_four_average() -> (
+    None
+):
+    cps = [
+        _make_dummy_checkpoint(0, 0.0, 0.0, 50.0),
+        _make_dummy_checkpoint(1, 50.0, 50.0, 100.0),
+    ]
+    assessed = [
+        _make_dummy_assessed(cps[0], None),
+        _make_dummy_assessed(cps[1], RiskLevel.NO_TRAVEL),
+    ]
+
+    summary = summarize_route(assessed, distance_miles=100.0, duration_seconds=5000.0)
+
+    assert summary.avg_risk_score == 4.0
+    assert summary.max_level == RiskLevel.NO_TRAVEL
+    assert summary.has_no_travel
+    assert summary.unavailable_miles == 50.0
+    assert summary.miles_by_level.no_travel == 50.0
+
+
+def test_summarize_route_all_assessed_low_with_unavailable_returns_zero_average() -> None:
+    cps = [
+        _make_dummy_checkpoint(0, 0.0, 0.0, 40.0),
+        _make_dummy_checkpoint(1, 40.0, 40.0, 100.0),
+    ]
+    assessed = [
+        _make_dummy_assessed(cps[0], None),
+        _make_dummy_assessed(cps[1], RiskLevel.LOW),
+    ]
+
+    summary = summarize_route(assessed, distance_miles=100.0, duration_seconds=5000.0)
+
+    assert summary.avg_risk_score == 0.0
+    assert summary.max_level == RiskLevel.LOW
+    assert not summary.has_no_travel
+    assert summary.unavailable_miles == 40.0
+    assert summary.miles_by_level.low == 60.0
+
+
+def test_summarize_route_assessed_miles_zero_with_levels_returns_none_average() -> None:
+    cps = [
+        _make_dummy_checkpoint(0, 0.0, 0.0, 0.0),
+        _make_dummy_checkpoint(1, 0.0, 0.0, 10.0),
+    ]
+    assessed = [
+        _make_dummy_assessed(cps[0], RiskLevel.LOW),
+        _make_dummy_assessed(cps[1], None),
+    ]
+
+    summary = summarize_route(assessed, distance_miles=10.0, duration_seconds=1000.0)
+
+    assert summary.max_level == RiskLevel.LOW
+    assert summary.avg_risk_score is None
+    assert summary.unavailable_miles == 10.0
+
+
 def test_summarize_route_single_no_travel_tiny_coverage_sets_has_no_travel() -> None:
     cps = [
         _make_dummy_checkpoint(0, 0.0, 0.0, 99.99),
