@@ -119,7 +119,7 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-012 | Domain core: timeline & ETA interpolation | P2 | done |
 | F-013 | Domain core: weather alignment & hourly interpolation | P2 | done |
 | F-014 | Domain core: scoring (miles by level, avg risk, delta) | P2 | done |
-| F-015 | Domain core: route ranking & deterministic recommendation | P2 | planned |
+| F-015 | Domain core: route ranking & deterministic recommendation | P2 | done |
 | F-016 | Timezone conversion: local departure to UTC with DST edge cases (nonexistent local time rejected, ambiguous local time uses the first occurrence), UTC to local display, departure window check (now minus 1 h to now plus 7 days) | P2 | planned |
 | F-020 | Provider base protocols & typed error hierarchy | P3 | planned |
 | F-021 | Routing provider adapter (truck mode, polyline, timeline) | P3 | planned |
@@ -192,3 +192,4 @@ _None yet._
 | P2 (F-012) | Timeline & ETA interpolation | 0.25 | 0.15 | 2.00 | Pure domain Timeline dataclass, linear ETA interpolation, timezones & clamping, 100% test coverage |
 | P2 (F-013) | Weather time alignment | 0.25 | 0.15 | 2.15 | HourlySeries & WeatherSeries, wind linear interpolation, precip bucket rule, 100% test coverage |
 | P2 (F-014) | Scoring & route summary | 0.25 | 0.25 | 2.40 | AssessedCheckpoint, MilesByLevel, RouteSummary, fsum numerical precision, 100% test coverage |
+| P2 (F-015) | Route ranking & recommendation | 0.25 | 0.20 | 2.60 | Lexicographic sort key, DecidingFactor mapping, headline templates, time clause, 100% test coverage |

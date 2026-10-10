@@ -311,3 +311,72 @@ class RouteSummary:
     def has_no_travel(self) -> bool:
         """True when max_level is NO_TRAVEL, independent of how small the covered miles are."""
         return self.max_level == RiskLevel.NO_TRAVEL
+
+
+class DecidingFactor(StrEnum):
+    """Criterion that determined the recommended route."""
+
+    ONLY_OPTION = "only_option"
+    NO_DATA = "no_data"
+    NO_TRAVEL = "no_travel"
+    SEVERE_MILES = "severe_miles"
+    HIGH_MILES = "high_miles"
+    AVG_RISK = "avg_risk"
+    TRAVEL_TIME = "travel_time"
+    TIE = "tie"
+
+
+@dataclass(frozen=True, slots=True)
+class RankingInput:
+    """Candidate route and its summary to be evaluated for ranking."""
+
+    route_id: str
+    label: str
+    summary: RouteSummary
+
+    def __post_init__(self) -> None:
+        if not self.route_id or not self.route_id.strip():
+            raise ValueError("route_id cannot be empty")
+        if not self.label or not self.label.strip():
+            raise ValueError("label cannot be empty")
+
+
+@dataclass(frozen=True, slots=True)
+class RankedRoute:
+    """Position and duration delta of an evaluated route candidate."""
+
+    route_id: str
+    rank: int
+    delta_vs_fastest_seconds: float
+
+    def __post_init__(self) -> None:
+        if not self.route_id or not self.route_id.strip():
+            raise ValueError("route_id cannot be empty")
+        if self.rank < 1:
+            raise ValueError(f"rank must be a positive 1-based integer, got {self.rank}")
+        if not math.isfinite(self.delta_vs_fastest_seconds) or self.delta_vs_fastest_seconds < 0.0:
+            raise ValueError(
+                f"delta_vs_fastest_seconds must be a non-negative finite number, "
+                f"got {self.delta_vs_fastest_seconds}"
+            )
+
+
+@dataclass(frozen=True, slots=True)
+class Recommendation:
+    """Overall recommendation decision, narrative headline, and ranked list."""
+
+    route_id: str
+    decided_by: DecidingFactor
+    headline: str
+    no_safe_route: bool
+    ranked: tuple[RankedRoute, ...]
+
+    def __post_init__(self) -> None:
+        if not self.route_id or not self.route_id.strip():
+            raise ValueError("route_id cannot be empty")
+        if not self.headline or not self.headline.strip():
+            raise ValueError("headline cannot be empty")
+        if not isinstance(self.ranked, tuple):
+            object.__setattr__(self, "ranked", tuple(self.ranked))
+        if not self.ranked:
+            raise ValueError("ranked cannot be empty")
