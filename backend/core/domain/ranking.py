@@ -10,6 +10,16 @@ from core.domain.types import (
     Recommendation,
 )
 
+_POSITION_TO_FACTOR: tuple[DecidingFactor, ...] = (
+    DecidingFactor.NO_DATA,
+    DecidingFactor.NO_TRAVEL,
+    DecidingFactor.NO_TRAVEL,
+    DecidingFactor.SEVERE_MILES,
+    DecidingFactor.HIGH_MILES,
+    DecidingFactor.AVG_RISK,
+    DecidingFactor.TRAVEL_TIME,
+)
+
 
 def _route_sort_key(inp: RankingInput) -> tuple[bool, bool, float, float, float, float, float]:
     summary = inp.summary
@@ -38,138 +48,117 @@ def _format_time_clause(delta_seconds: float) -> str:
     return f" It is {duration} slower than the fastest route."
 
 
-def rank_routes(inputs: Sequence[RankingInput]) -> Recommendation:
-    """Rank candidate routes and produce an explainable recommendation."""
+def _deciding_factor(winner: RankingInput, runner: RankingInput | None) -> DecidingFactor:
+    if runner is None:
+        return DecidingFactor.ONLY_OPTION
+    k_win = _route_sort_key(winner)
+    k_run = _route_sort_key(runner)
+    for idx, (w_val, r_val) in enumerate(zip(k_win, k_run, strict=True)):
+        if w_val != r_val:
+            return _POSITION_TO_FACTOR[idx]
+    return DecidingFactor.TIE
+
+
+def _comparison_message(
+    decided_by: DecidingFactor, winner: RankingInput, runner: RankingInput
+) -> str:
+    w_sum, r_sum, r_lbl = winner.summary, runner.summary, runner.label
+    match decided_by:
+        case DecidingFactor.NO_DATA:
+            return (
+                f"{winner.label} is recommended because weather data was "
+                f"unavailable for the other routes."
+            )
+        case DecidingFactor.NO_TRAVEL:
+            if not w_sum.has_no_travel:
+                return f"{winner.label} avoids the No Travel conditions found on {r_lbl}."
+            w_nt, r_nt = w_sum.miles_by_level.no_travel, r_sum.miles_by_level.no_travel
+            return (
+                f"{winner.label} has fewer No Travel miles ({w_nt:.1f} vs {r_nt:.1f} on {r_lbl})."
+            )
+        case DecidingFactor.SEVERE_MILES:
+            w_s, r_s = w_sum.miles_by_level.severe, r_sum.miles_by_level.severe
+            return f"{winner.label} has {w_s:.1f} Severe miles vs {r_s:.1f} on {r_lbl}."
+        case DecidingFactor.HIGH_MILES:
+            w_h, r_h = w_sum.miles_by_level.high, r_sum.miles_by_level.high
+            return (
+                f"{winner.label} has {w_h:.1f} High miles vs {r_h:.1f} on {r_lbl}, "
+                f"with equal Severe miles."
+            )
+        case DecidingFactor.AVG_RISK:
+            w_a, r_a = w_sum.avg_risk_score or 0.0, r_sum.avg_risk_score or 0.0
+            return (
+                f"{winner.label} has lower average risk ({w_a:.2f} vs {r_a:.2f} on {r_lbl}), "
+                f"with equal Severe and High miles."
+            )
+        case DecidingFactor.TIE:
+            return f"{winner.label} and {r_lbl} are equivalent; {winner.label} is listed first."
+
+
+def _build_headline(
+    decided_by: DecidingFactor,
+    winner: RankingInput,
+    runner: RankingInput | None,
+    delta: float,
+    no_safe_route: bool,
+) -> str:
+    if no_safe_route:
+        w_nt = winner.summary.miles_by_level.no_travel
+        return (
+            f"No route avoids No Travel conditions. "
+            f"{winner.label} has the least ({w_nt:.1f} mi). Consider delaying departure."
+        )
+    if decided_by == DecidingFactor.ONLY_OPTION:
+        return f"Only one route is available: {winner.label}."
+    if decided_by == DecidingFactor.TRAVEL_TIME:
+        return f"{winner.label} is the fastest route with equal weather risk."
+
+    assert runner is not None
+    msg = _comparison_message(decided_by, winner, runner)
+    return f"{msg}{_format_time_clause(delta)}"
+
+
+def _validate_inputs(inputs: Sequence[RankingInput]) -> None:
     if not inputs:
         raise ValueError("inputs sequence cannot be empty")
-
     seen_ids: set[str] = set()
     for inp in inputs:
         if inp.route_id in seen_ids:
             raise ValueError(f"Duplicate route_id found: {inp.route_id}")
         seen_ids.add(inp.route_id)
 
-    min_duration = min(inp.summary.duration_seconds for inp in inputs)
+
+def rank_routes(inputs: Sequence[RankingInput]) -> Recommendation:
+    """Rank candidate routes and produce an explainable recommendation."""
+    _validate_inputs(inputs)
+
+    min_dur = min(inp.summary.duration_seconds for inp in inputs)
     sorted_inputs = sorted(inputs, key=_route_sort_key)
 
-    ranked_routes = tuple(
+    ranked = tuple(
         RankedRoute(
             route_id=inp.route_id,
             rank=idx + 1,
-            delta_vs_fastest_seconds=max(0.0, inp.summary.duration_seconds - min_duration),
+            delta_vs_fastest_seconds=max(0.0, inp.summary.duration_seconds - min_dur),
         )
         for idx, inp in enumerate(sorted_inputs)
     )
 
     winner = sorted_inputs[0]
-    winner_delta = ranked_routes[0].delta_vs_fastest_seconds
+    runner = sorted_inputs[1] if len(sorted_inputs) > 1 else None
+    has_data = any(inp.summary.avg_risk_score is not None for inp in inputs)
+    all_no_travel = all(inp.summary.has_no_travel for inp in inputs)
+    no_safe_route = all_no_travel and has_data
 
-    has_any_data = any(inp.summary.avg_risk_score is not None for inp in inputs)
-    all_have_no_travel = all(inp.summary.has_no_travel for inp in inputs)
-    no_safe_route = all_have_no_travel and has_any_data
-
-    if len(sorted_inputs) == 1:
-        decided_by = DecidingFactor.ONLY_OPTION
-    else:
-        runner = sorted_inputs[1]
-        k_win = _route_sort_key(winner)
-        k_run = _route_sort_key(runner)
-        diff_pos = None
-        for i in range(len(k_win)):
-            if k_win[i] != k_run[i]:
-                diff_pos = i
-                break
-
-        if diff_pos is None:
-            decided_by = DecidingFactor.TIE
-        elif diff_pos == 0:
-            decided_by = DecidingFactor.NO_DATA
-        elif diff_pos in (1, 2):
-            decided_by = DecidingFactor.NO_TRAVEL
-        elif diff_pos == 3:
-            decided_by = DecidingFactor.SEVERE_MILES
-        elif diff_pos == 4:
-            decided_by = DecidingFactor.HIGH_MILES
-        elif diff_pos == 5:
-            decided_by = DecidingFactor.AVG_RISK
-        else:
-            decided_by = DecidingFactor.TRAVEL_TIME
-
-    if no_safe_route:
-        w_nt = winner.summary.miles_by_level.no_travel
-        headline = (
-            f"No route avoids No Travel conditions. "
-            f"{winner.label} has the least ({w_nt:.1f} mi). Consider delaying departure."
-        )
-    else:
-        time_clause = _format_time_clause(winner_delta)
-        match decided_by:
-            case DecidingFactor.ONLY_OPTION:
-                headline = f"Only one route is available: {winner.label}."
-            case DecidingFactor.NO_DATA:
-                headline = (
-                    f"{winner.label} is recommended because weather data was "
-                    f"unavailable for the other routes.{time_clause}"
-                )
-            case DecidingFactor.NO_TRAVEL:
-                runner = sorted_inputs[1]
-                if not winner.summary.has_no_travel:
-                    headline = (
-                        f"{winner.label} avoids the No Travel conditions found on "
-                        f"{runner.label}.{time_clause}"
-                    )
-                else:
-                    w_nt = winner.summary.miles_by_level.no_travel
-                    r_nt = runner.summary.miles_by_level.no_travel
-                    headline = (
-                        f"{winner.label} has fewer No Travel miles ({w_nt:.1f} vs {r_nt:.1f} on "
-                        f"{runner.label}).{time_clause}"
-                    )
-            case DecidingFactor.SEVERE_MILES:
-                runner = sorted_inputs[1]
-                w_sev = winner.summary.miles_by_level.severe
-                r_sev = runner.summary.miles_by_level.severe
-                headline = (
-                    f"{winner.label} has {w_sev:.1f} Severe miles vs {r_sev:.1f} on "
-                    f"{runner.label}.{time_clause}"
-                )
-            case DecidingFactor.HIGH_MILES:
-                runner = sorted_inputs[1]
-                w_high = winner.summary.miles_by_level.high
-                r_high = runner.summary.miles_by_level.high
-                headline = (
-                    f"{winner.label} has {w_high:.1f} High miles vs {r_high:.1f} on "
-                    f"{runner.label}, with equal Severe miles.{time_clause}"
-                )
-            case DecidingFactor.AVG_RISK:
-                runner = sorted_inputs[1]
-                w_avg = (
-                    winner.summary.avg_risk_score
-                    if winner.summary.avg_risk_score is not None
-                    else 0.0
-                )
-                r_avg = (
-                    runner.summary.avg_risk_score
-                    if runner.summary.avg_risk_score is not None
-                    else 0.0
-                )
-                headline = (
-                    f"{winner.label} has lower average risk ({w_avg:.2f} vs {r_avg:.2f} on "
-                    f"{runner.label}), with equal Severe and High miles.{time_clause}"
-                )
-            case DecidingFactor.TRAVEL_TIME:
-                headline = f"{winner.label} is the fastest route with equal weather risk."
-            case DecidingFactor.TIE:
-                runner = sorted_inputs[1]
-                headline = (
-                    f"{winner.label} and {runner.label} are equivalent; "
-                    f"{winner.label} is listed first.{time_clause}"
-                )
+    decided_by = _deciding_factor(winner, runner)
+    headline = _build_headline(
+        decided_by, winner, runner, ranked[0].delta_vs_fastest_seconds, no_safe_route
+    )
 
     return Recommendation(
         route_id=winner.route_id,
         decided_by=decided_by,
         headline=headline,
         no_safe_route=no_safe_route,
-        ranked=ranked_routes,
+        ranked=ranked,
     )
