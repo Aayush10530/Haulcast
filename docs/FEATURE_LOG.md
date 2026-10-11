@@ -173,6 +173,14 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 
 ## 4. Changes
 
+### C-005 Removal of Built-in Example Trip Button
+- Date: 2026-10-12
+- Type: change
+- Phase: P4
+- Summary: Removed "Try an example trip" button and example preset actions from TripForm and ResultsPanel per user request. Users enter origin and destination directly to analyze trips. Updated TripForm and integration tests to use test fixtures without relying on UI example buttons.
+- Files: frontend/src/features/trip-form/TripForm.tsx, frontend/src/features/results/ResultsPanel.tsx, frontend/src/features/trip-form/TripForm.test.tsx, frontend/src/features/results/ResultsPanel.test.tsx, frontend/src/App.test.tsx
+- Status: done
+
 ### C-004 StormRoute Operations Console Redesign
 - Date: 2026-10-11
 - Type: change

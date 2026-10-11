@@ -13,7 +13,6 @@ export interface ResultsPanelProps {
   isLoading?: boolean;
   error?: string | null;
   onRetry?: () => void;
-  onTryExample?: () => void;
   selectedRouteId: string | null;
   onSelectRoute: (routeId: string) => void;
   onSelectCheckpoint?: (checkpoint: CheckpointDTO) => void;
@@ -25,7 +24,6 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
   isLoading = false,
   error = null,
   onRetry,
-  onTryExample,
   selectedRouteId,
   onSelectRoute,
   onSelectCheckpoint,
@@ -137,26 +135,6 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
         >
           Enter trip details and click Generate routes to see weather-aware options.
         </Typography>
-        {onTryExample && (
-          <Button
-            variant="text"
-            onClick={onTryExample}
-            data-testid="results-idle-example-button"
-            sx={{
-              color: colorTokens.brand,
-              fontFamily: typographyTokens.fontFamilyUi,
-              fontSize: '0.8125rem',
-              fontWeight: 600,
-              textTransform: 'none',
-              '&:hover': {
-                backgroundColor: 'transparent',
-                textDecoration: 'underline',
-              },
-            }}
-          >
-            Or try an example trip
-          </Button>
-        )}
       </Paper>
     );
   }

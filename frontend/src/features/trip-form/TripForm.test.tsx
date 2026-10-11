@@ -5,7 +5,15 @@ import { ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AnalyzeResponse } from '../../api/types';
 import { theme } from '../../theme/theme';
-import { TripForm } from './TripForm';
+import { TripForm, TripFormValues } from './TripForm';
+import { EXAMPLE_DESTINATION, EXAMPLE_ORIGIN } from './validateTripForm';
+
+const mockTripValues: Partial<TripFormValues> = {
+  origin: EXAMPLE_ORIGIN,
+  destination: EXAMPLE_DESTINATION,
+  departure_local: '2026-10-15T08:00',
+  load_weight_lb: 42000,
+};
 
 const mockAnalyzeResponse: AnalyzeResponse = {
   request: {
@@ -72,6 +80,7 @@ const mockAnalyzeResponse: AnalyzeResponse = {
 function renderTripForm(props: {
   onSuccess?: (analysis: AnalyzeResponse) => void;
   disabled?: boolean;
+  initialValues?: Partial<TripFormValues>;
 } = {}) {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -115,16 +124,17 @@ describe('TripForm Component', () => {
     expect(screen.getByTestId('generate-routes-button')).toHaveTextContent(
       'Generate routes',
     );
-    expect(screen.getByTestId('example-trip-button')).toHaveTextContent(
-      'Try an example trip',
-    );
   });
 
-  it('fills example trip values when example button is clicked', () => {
-    renderTripForm();
-
-    const exampleButton = screen.getByTestId('example-trip-button');
-    fireEvent.click(exampleButton);
+  it('initializes form with provided initialValues', () => {
+    renderTripForm({
+      initialValues: {
+        origin: EXAMPLE_ORIGIN,
+        destination: EXAMPLE_DESTINATION,
+        load_weight_lb: 42000,
+        departure_local: '2026-10-15T08:00',
+      },
+    });
 
     const originInput = screen.getByLabelText('Origin') as HTMLInputElement;
     const destInput = screen.getByLabelText('Destination') as HTMLInputElement;
@@ -134,14 +144,16 @@ describe('TripForm Component', () => {
     expect(originInput.value).toBe('Dallas, TX');
     expect(destInput.value).toBe('Denver, CO');
     expect(loadInput.value).toBe('42,000');
-    expect(departureInput.value).toMatch(/^\d{4}-\d{2}-\d{2}T08:00$/);
+    expect(departureInput.value).toBe('2026-10-15T08:00');
   });
 
   it('swaps origin and destination when swap button is clicked', () => {
-    renderTripForm();
-
-    // Populate using example trip first
-    fireEvent.click(screen.getByTestId('example-trip-button'));
+    renderTripForm({
+      initialValues: {
+        origin: EXAMPLE_ORIGIN,
+        destination: EXAMPLE_DESTINATION,
+      },
+    });
 
     const originInput = screen.getByLabelText('Origin') as HTMLInputElement;
     const destInput = screen.getByLabelText('Destination') as HTMLInputElement;
@@ -175,10 +187,15 @@ describe('TripForm Component', () => {
     );
 
     const handleSuccess = vi.fn();
-    renderTripForm({ onSuccess: handleSuccess });
-
-    // Fill form with example button
-    fireEvent.click(screen.getByTestId('example-trip-button'));
+    renderTripForm({
+      onSuccess: handleSuccess,
+      initialValues: {
+        origin: EXAMPLE_ORIGIN,
+        destination: EXAMPLE_DESTINATION,
+        load_weight_lb: 42000,
+        departure_local: '2026-10-15T08:00',
+      },
+    });
 
     // Select 25 mi interval
     fireEvent.click(screen.getByTestId('interval-25'));
@@ -196,10 +213,8 @@ describe('TripForm Component', () => {
       destination: { label: 'Denver, CO', lat: 39.7392, lon: -104.9903 },
       load_weight_lb: 42000,
       interval: 25,
+      departure_local: '2026-10-15T08:00',
     });
-    expect((capturedBody as { departure_local: string }).departure_local).toMatch(
-      /^\d{4}-\d{2}-\d{2}T08:00$/,
-    );
   });
 
   it('disables submit button and shows "Finding routes..." while pending', async () => {
@@ -223,9 +238,7 @@ describe('TripForm Component', () => {
       }),
     );
 
-    renderTripForm();
-
-    fireEvent.click(screen.getByTestId('example-trip-button'));
+    renderTripForm({ initialValues: mockTripValues });
 
     const submitButton = screen.getByTestId('generate-routes-button');
     fireEvent.click(submitButton);
@@ -264,9 +277,7 @@ describe('TripForm Component', () => {
       }),
     );
 
-    renderTripForm();
-
-    fireEvent.click(screen.getByTestId('example-trip-button'));
+    renderTripForm({ initialValues: mockTripValues });
 
     const submitButton = screen.getByTestId('generate-routes-button');
     fireEvent.click(submitButton);
@@ -311,9 +322,7 @@ describe('TripForm Component', () => {
     );
 
     const handleSuccess = vi.fn();
-    renderTripForm({ onSuccess: handleSuccess });
-
-    fireEvent.click(screen.getByTestId('example-trip-button'));
+    renderTripForm({ onSuccess: handleSuccess, initialValues: mockTripValues });
 
     const submitButton = screen.getByTestId('generate-routes-button');
     fireEvent.click(submitButton);
@@ -372,7 +381,7 @@ describe('TripForm Component', () => {
       }),
     );
 
-    renderTripForm();
+    renderTripForm({ initialValues: mockTripValues });
 
     const loadInput = screen.getByLabelText('Load weight') as HTMLInputElement;
     expect(screen.getByText('lb')).toBeInTheDocument();
@@ -380,10 +389,6 @@ describe('TripForm Component', () => {
     // Type raw digits
     fireEvent.change(loadInput, { target: { value: '55000' } });
     expect(loadInput.value).toBe('55,000');
-
-    // Fill the rest with example trip and re-type
-    fireEvent.click(screen.getByTestId('example-trip-button'));
-    expect(loadInput.value).toBe('42,000');
 
     fireEvent.change(loadInput, { target: { value: '80500' } });
     expect(loadInput.value).toBe('80,500');

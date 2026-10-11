@@ -17,15 +17,13 @@ describe('ResultsPanel', () => {
     expect(screen.getByTestId('results-loading-skeletons')).toBeInTheDocument();
   });
 
-  it('renders idle state with short text and example trip hint', () => {
-    const handleTryExample = vi.fn();
+  it('renders idle state with short text', () => {
     render(
       <ResultsPanel
         analysis={null}
         isLoading={false}
         selectedRouteId={null}
         onSelectRoute={vi.fn()}
-        onTryExample={handleTryExample}
       />,
     );
 
@@ -35,11 +33,6 @@ describe('ResultsPanel', () => {
         'Enter trip details and click Generate routes to see weather-aware options.',
       ),
     ).toBeInTheDocument();
-
-    const exampleBtn = screen.getByTestId('results-idle-example-button');
-    expect(exampleBtn).toHaveTextContent('Or try an example trip');
-    fireEvent.click(exampleBtn);
-    expect(handleTryExample).toHaveBeenCalled();
   });
 
   it('renders error alert with retry button', () => {

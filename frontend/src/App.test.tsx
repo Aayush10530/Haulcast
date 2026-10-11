@@ -169,6 +169,31 @@ describe('App Component Shell & Responsive Layouts', () => {
             json: async () => goldenAnalysis,
           };
         }
+        if (url.includes('/api/geocode/')) {
+          if (url.includes('Dallas')) {
+            return {
+              ok: true,
+              status: 200,
+              json: async () => [
+                { label: 'Dallas, TX', lat: 32.7767, lon: -96.797 },
+              ],
+            };
+          }
+          if (url.includes('Denver')) {
+            return {
+              ok: true,
+              status: 200,
+              json: async () => [
+                { label: 'Denver, CO', lat: 39.7392, lon: -104.9903 },
+              ],
+            };
+          }
+          return {
+            ok: true,
+            status: 200,
+            json: async () => [],
+          };
+        }
         return {
           ok: true,
           status: 200,
@@ -180,8 +205,25 @@ describe('App Component Shell & Responsive Layouts', () => {
     setViewportWidth(1100);
     renderWithProviders();
 
-    // Click example trip and generate routes
-    fireEvent.click(screen.getByTestId('example-trip-button'));
+    // Type and select Origin
+    const originInput = screen.getByLabelText('Origin');
+    fireEvent.focus(originInput);
+    fireEvent.change(originInput, { target: { value: 'Dallas' } });
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: 'Dallas, TX' })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('option', { name: 'Dallas, TX' }));
+
+    // Type and select Destination
+    const destInput = screen.getByLabelText('Destination');
+    fireEvent.focus(destInput);
+    fireEvent.change(destInput, { target: { value: 'Denver' } });
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: 'Denver, CO' })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('option', { name: 'Denver, CO' }));
+
+    // Click generate routes
     fireEvent.click(screen.getByTestId('generate-routes-button'));
 
     await waitFor(() => {

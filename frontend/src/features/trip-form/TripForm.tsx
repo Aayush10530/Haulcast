@@ -20,16 +20,15 @@ import { useAnalyzeTrip } from '../../hooks/useAnalyzeTrip';
 import { colorTokens, shapeTokens, typographyTokens } from '../../theme/tokens';
 import { PlaceAutocomplete } from './PlaceAutocomplete';
 import {
-  EXAMPLE_DESTINATION,
-  EXAMPLE_ORIGIN,
   formatDepartureSpelledOut,
   formatLoadWeightDisplay,
   getNextFullHourLocal,
-  getTomorrow8amLocal,
   TripFormErrors,
   TripFormValues,
   validateTripForm,
 } from './validateTripForm';
+
+export type { TripFormValues };
 
 const SwapIcon: React.FC = () => (
   <svg
@@ -51,14 +50,32 @@ const SwapIcon: React.FC = () => (
 export interface TripFormProps {
   onSuccess?: (analysis: AnalyzeResponse) => void;
   disabled?: boolean;
+  initialValues?: Partial<TripFormValues>;
 }
 
-export const TripForm: React.FC<TripFormProps> = ({ onSuccess, disabled = false }) => {
-  const [origin, setOrigin] = useState<PlaceDTO | null>(null);
-  const [destination, setDestination] = useState<PlaceDTO | null>(null);
-  const [departureLocal, setDepartureLocal] = useState<string>(getNextFullHourLocal());
-  const [loadWeightLb, setLoadWeightLb] = useState<number | ''>(40000);
-  const [interval, setInterval] = useState<IntervalOption>('auto');
+export const TripForm: React.FC<TripFormProps> = ({
+  onSuccess,
+  disabled = false,
+  initialValues,
+}) => {
+  const [origin, setOrigin] = useState<PlaceDTO | null>(initialValues?.origin ?? null);
+  const [destination, setDestination] = useState<PlaceDTO | null>(
+    initialValues?.destination ?? null
+  );
+  const [departureLocal, setDepartureLocal] = useState<string>(
+    initialValues?.departure_local ?? getNextFullHourLocal()
+  );
+  const [loadWeightLb, setLoadWeightLb] = useState<number | ''>(() => {
+    if (initialValues?.load_weight_lb !== undefined) {
+      if (typeof initialValues.load_weight_lb === 'number') {
+        return initialValues.load_weight_lb;
+      }
+      const parsed = parseInt(initialValues.load_weight_lb, 10);
+      return isNaN(parsed) ? '' : parsed;
+    }
+    return 40000;
+  });
+  const [interval, setInterval] = useState<IntervalOption>(initialValues?.interval ?? 'auto');
 
   const [clientErrors, setClientErrors] = useState<TripFormErrors>({});
   const [serverFieldErrors, setServerFieldErrors] = useState<Record<string, string>>({});
@@ -96,17 +113,6 @@ export const TripForm: React.FC<TripFormProps> = ({ onSuccess, disabled = false 
       delete next.load_weight_lb;
       return next;
     });
-  };
-
-  const handleExampleTrip = () => {
-    setOrigin(EXAMPLE_ORIGIN);
-    setDestination(EXAMPLE_DESTINATION);
-    setDepartureLocal(getTomorrow8amLocal());
-    setLoadWeightLb(42000);
-    setInterval('auto');
-    setClientErrors({});
-    setServerFieldErrors({});
-    setGeneralError(null);
   };
 
   const submitForm = () => {
@@ -444,20 +450,6 @@ export const TripForm: React.FC<TripFormProps> = ({ onSuccess, disabled = false 
         }}
       >
         {isPending ? 'Finding routes...' : 'Generate routes →'}
-      </Button>
-
-      <Button
-        type="button"
-        variant="text"
-        onClick={handleExampleTrip}
-        disabled={isPending}
-        data-testid="example-trip-button"
-        sx={{
-          alignSelf: 'center',
-          fontFamily: typographyTokens.fontFamilyUi,
-        }}
-      >
-        Try an example trip
       </Button>
     </Box>
   );
