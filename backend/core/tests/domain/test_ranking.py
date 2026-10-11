@@ -379,6 +379,36 @@ def test_ranking_deltas_computed_against_fastest_of_all_inputs() -> None:
     assert by_id["r1"].delta_vs_fastest_seconds == 2000.0
 
 
+def test_ranking_winner_slower_than_fastest_compares_with_fastest_route() -> None:
+    # A fastest with avg risk 0.13
+    # B slower 48 min with avg 0.00
+    # C slowest with avg 0.00
+    # gives winner B, decided_by AVG_RISK
+    r_a = RankingInput(
+        "r1",
+        "Route A",
+        _make_summary(avg_risk_score=0.13, duration_seconds=3600.0),
+    )
+    r_b = RankingInput(
+        "r2",
+        "Route B",
+        _make_summary(avg_risk_score=0.00, duration_seconds=3600.0 + 48 * 60),
+    )
+    r_c = RankingInput(
+        "r3",
+        "Route C",
+        _make_summary(avg_risk_score=0.00, duration_seconds=3600.0 + 60 * 60),
+    )
+    rec = rank_routes([r_a, r_b, r_c])
+
+    assert rec.route_id == "r2"
+    assert rec.decided_by == DecidingFactor.AVG_RISK
+    assert rec.headline == (
+        "Route B has lower average risk (0.00 vs 0.13 on Route A), with equal Severe and "
+        "High miles. It is 48 min slower than the fastest route."
+    )
+
+
 @pytest.mark.parametrize(
     ("delta_sec", "expected_clause"),
     [
