@@ -396,16 +396,16 @@ class Place:
 
 @dataclass(frozen=True, slots=True)
 class GridCell:
-    """Weather grid cell coordinate at 0.1 degree resolution."""
+    """Weather grid cell index at discrete resolution (e.g. 0.1 degree)."""
 
-    lat: float
-    lon: float
+    lat_index: int
+    lon_index: int
 
     def __post_init__(self) -> None:
-        if not math.isfinite(self.lat) or not (-90.0 <= self.lat <= 90.0):
-            raise ValueError(f"lat must be between -90 and 90, got {self.lat}")
-        if not math.isfinite(self.lon) or not (-180.0 <= self.lon <= 180.0):
-            raise ValueError(f"lon must be between -180 and 180, got {self.lon}")
+        if not isinstance(self.lat_index, int) or isinstance(self.lat_index, bool):
+            raise TypeError(f"lat_index must be an int, got {type(self.lat_index)}")
+        if not isinstance(self.lon_index, int) or isinstance(self.lon_index, bool):
+            raise TypeError(f"lon_index must be an int, got {type(self.lon_index)}")
 
 
 @dataclass(frozen=True, slots=True)

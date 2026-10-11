@@ -124,7 +124,7 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-020 | Provider base protocols & typed error hierarchy | P3 | done |
 | F-021 | Routing provider adapter (truck mode, polyline, timeline) | P3 | done |
 | F-022 | Route selection service (dedupe, detour filtering, via-fallback) | P3 | done |
-| F-023 | Open-Meteo provider adapter & per-cell cache | P3 | planned |
+| F-023 | Open-Meteo provider adapter & per-cell cache | P3 | done |
 | F-024 | Geocoding adapter & `/api/geocode/` endpoint | P3 | planned |
 | F-025 | Trip analysis service orchestrator (verify timeline.total_miles is within 0.01 mi of route distance, else raise ProviderBadResponse; assessed checkpoints built via assess_checkpoint) | P3 | planned |
 | F-026 | API layer: serializers, validation, container, `/api/trips/analyze/` (per-scope throttles: analyze, heatmap, geocode) | P3 | planned |
@@ -197,3 +197,4 @@ _None yet._
 | P2 (F-016) | Timezone conversion & departure window | 0.25 | 0.15 | 2.75 | local_to_utc, utc_to_local, DST gap & fold=0 resolution, window validation, 100% test coverage |
 | P3a (F-020, F-021) | Provider base interfaces & TomTom adapter | 0.50 | 0.35 | 3.10 | Protocols, typed errors, in-memory fakes, TomTom truck adapter with retries/timeline, live tests |
 | P3b (F-022) | Route diversity & selection service | 0.50 | 0.25 | 3.35 | Pure domain route diversity & selection (grid hash, 100% coverage), RouteSelectionService with parallel via fallback & caching (100% coverage) |
+| P3c (F-023) | Open-Meteo weather adapter & cache | 0.50 | 0.35 | 3.70 | Grid snapping/centering, DjangoCache & InMemoryTTLCache, OpenMeteoWeatherProvider (chunking, threading, index mapping, rain sum, retry), live script |

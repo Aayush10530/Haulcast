@@ -534,7 +534,7 @@ def test_fakes_suite() -> None:
     fake_weather = FakeWeatherProvider()
     tz = fake_weather.get_timezone(origin)
     assert tz == "America/Chicago"
-    series = fake_weather.get_series([GridCell(lat=32.8, lon=-96.8)])
+    series = fake_weather.get_series([GridCell(lat_index=328, lon_index=-968)])
     assert series == {}
     err_weather = FakeWeatherProvider(error=ProviderRateLimited("rate limit"))
     with pytest.raises(ProviderRateLimited):
@@ -571,18 +571,16 @@ def test_place_validation() -> None:
 
 
 def test_grid_cell_validation() -> None:
-    cell = GridCell(lat=32.8, lon=-96.8)
-    assert cell.lat == 32.8
-    assert cell.lon == -96.8
+    cell = GridCell(lat_index=328, lon_index=-968)
+    assert cell.lat_index == 328
+    assert cell.lon_index == -968
 
-    with pytest.raises(ValueError, match="lat must be between -90 and 90"):
-        GridCell(lat=91.0, lon=0.0)
-    with pytest.raises(ValueError, match="lon must be between -180 and 180"):
-        GridCell(lat=0.0, lon=181.0)
-    with pytest.raises(ValueError, match="lat must be between -90 and 90"):
-        GridCell(lat=float("nan"), lon=0.0)
-    with pytest.raises(ValueError, match="lon must be between -180 and 180"):
-        GridCell(lat=0.0, lon=float("inf"))
+    with pytest.raises(TypeError, match="lat_index must be an int"):
+        GridCell(lat_index="328", lon_index=0)  # type: ignore[arg-type]
+    with pytest.raises(TypeError, match="lon_index must be an int"):
+        GridCell(lat_index=0, lon_index=3.14)  # type: ignore[arg-type]
+    with pytest.raises(TypeError, match="lat_index must be an int"):
+        GridCell(lat_index=True, lon_index=0)  # type: ignore[arg-type]
 
 
 def test_raw_route_validation() -> None:
