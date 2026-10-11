@@ -188,8 +188,6 @@ class OpenMeteoWeatherProvider:
 
             return resp
 
-        raise ProviderUnavailable("Weather provider request failed after retries")
-
     def _fetch_chunk(
         self,
         chunk: Sequence[GridCell],

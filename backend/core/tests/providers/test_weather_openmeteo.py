@@ -588,3 +588,39 @@ def test_timezone_error_cases(respx_mock: respx.MockRouter, mock_client: httpx.C
     )
     with pytest.raises(ProviderBadResponse, match="Timezone not found"):
         provider.get_timezone(coord)
+
+
+@respx.mock(assert_all_mocked=True)
+def test_hourly_parsing_fallback_to_none_for_missing_and_invalid_values(
+    respx_mock: respx.MockRouter, mock_client: httpx.Client
+) -> None:
+    cell = GridCell(lat_index=328, lon_index=-968)
+    cache = InMemoryTTLCache()
+    provider = OpenMeteoWeatherProvider(cache=cache, client=mock_client)
+
+    payload = {
+        "latitude": 32.8,
+        "longitude": -96.8,
+        "timezone": "America/Chicago",
+        "hourly": {
+            "time": [1700000000, 1700003600, 1700007200],
+            "wind_speed_10m": [None, "invalid_wind", 15.0],
+            "rain": ["invalid_rain", 0.1, 0.0],
+            "showers": [0.0, "invalid_shower", 0.0],
+            "snowfall": [None, "invalid_snow", 0.5],
+        },
+    }
+
+    respx_mock.get(url__startswith=OPENMETEO_FORECAST_URL).mock(
+        return_value=httpx.Response(200, json=payload)
+    )
+
+    series_map = provider.get_series([cell])
+    series = series_map[cell]
+
+    # wind: None, None, 15.0
+    assert series.wind_mph.values == (None, None, 15.0)
+    # rain: None, None, 0.0
+    assert series.rain_in_hr.values == (None, None, 0.0)
+    # snow: None, None, 0.5
+    assert series.snow_in_hr.values == (None, None, 0.5)
