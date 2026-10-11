@@ -129,7 +129,7 @@ describe('App Component Shell & Responsive Layouts', () => {
     const results = screen.getByTestId('region-results');
 
     // All 3 regions exist with their proper labels
-    expect(tripForm).toHaveTextContent('Trip form');
+    expect(tripForm).toHaveTextContent('Trip planning');
     expect(map).toHaveTextContent('Map');
     expect(results).toHaveTextContent('Results');
 
@@ -155,6 +155,50 @@ describe('App Component Shell & Responsive Layouts', () => {
     expect(tripForm).toBeVisible();
     expect(map).not.toBeVisible();
     expect(results).not.toBeVisible();
+  });
+
+  it('shows temporary plain line with route count and headline in results region on success', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockImplementation(async (url: string) => {
+        if (url.includes('/api/trips/analyze/')) {
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({
+              recommended_route_id: 'route_b',
+              recommendation: {
+                route_id: 'route_b',
+                decided_by: 'severe_miles',
+                headline: 'Route B has 0 Severe miles vs 34 on Route A.',
+                comparisons: [],
+              },
+              routes: [{ id: 'route_b' }, { id: 'route_a' }, { id: 'route_c' }],
+              warnings: [],
+              meta: { elapsed_ms: 1200 },
+            }),
+          };
+        }
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ status: 'ok' }),
+        };
+      }),
+    );
+
+    setViewportWidth(1100);
+    renderWithProviders();
+
+    // Click example trip and generate routes
+    fireEvent.click(screen.getByTestId('example-trip-button'));
+    fireEvent.click(screen.getByTestId('generate-routes-button'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('results-summary')).toHaveTextContent(
+        '3 routes: Route B has 0 Severe miles vs 34 on Route A.',
+      );
+    });
   });
 
   describe('Breakpoint Layouts below and above 900 px and 1440 px', () => {

@@ -8,6 +8,8 @@ import {
   useTheme,
 } from '@mui/material';
 import { useHealthCheck } from './api/client';
+import { AnalyzeResponse } from './api/types';
+import { TripForm } from './features/trip-form';
 import { colorTokens, shapeTokens, typographyTokens } from './theme/tokens';
 
 type MobileTab = 'plan' | 'map' | 'routes';
@@ -91,6 +93,7 @@ export const App: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [activeTab, setActiveTab] = useState<MobileTab>('plan');
+  const [tripAnalysis, setTripAnalysis] = useState<AnalyzeResponse | null>(null);
   const { data, isError } = useHealthCheck();
 
   const isOnline = !isError && data?.status === 'ok';
@@ -236,18 +239,12 @@ export const App: React.FC = () => {
             overflowY: 'auto',
           }}
         >
-          <Typography
-            variant="h2"
-            sx={{
-              fontFamily: typographyTokens.fontFamilyUi,
-              fontSize: typographyTokens.sectionHeading.fontSize,
-              lineHeight: typographyTokens.sectionHeading.lineHeight,
-              fontWeight: typographyTokens.sectionHeading.fontWeight,
-              color: colorTokens.text,
+          <TripForm
+            onSuccess={(analysis) => {
+              setTripAnalysis(analysis);
+              setActiveTab('routes');
             }}
-          >
-            Trip form
-          </Typography>
+          />
         </Box>
 
         {/* Region 2: Map */}
@@ -321,6 +318,20 @@ export const App: React.FC = () => {
           >
             Results
           </Typography>
+          {tripAnalysis && (
+            <Typography
+              data-testid="results-summary"
+              sx={{
+                fontFamily: typographyTokens.fontFamilyUi,
+                fontSize: typographyTokens.body.fontSize,
+                lineHeight: typographyTokens.body.lineHeight,
+                color: colorTokens.text,
+                mt: 2,
+              }}
+            >
+              {tripAnalysis.routes.length} routes: {tripAnalysis.recommendation.headline}
+            </Typography>
+          )}
         </Box>
       </Box>
 
