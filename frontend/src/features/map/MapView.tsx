@@ -17,10 +17,9 @@ export interface MapViewProps {
   isVisible?: boolean;
 }
 
-const CARTO_DARK_URL =
-  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-const CARTO_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+const OSM_TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+const OSM_ATTRIBUTION =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 export const MapView: React.FC<MapViewProps> = ({
   analysis,
@@ -52,10 +51,10 @@ export const MapView: React.FC<MapViewProps> = ({
         style={{ width: '100%', height: '100%' }}
       >
         <TileLayer
-          url={CARTO_DARK_URL}
-          attribution={CARTO_ATTRIBUTION}
-          subdomains="abcd"
+          url={OSM_TILE_URL}
+          attribution={OSM_ATTRIBUTION}
           maxZoom={19}
+          className="osm-dark-tiles"
         />
 
         <ZoomControl position="topright" />

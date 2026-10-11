@@ -127,7 +127,7 @@ Checked against vendor docs on 2026-10-10 unless marked UNVERIFIED. Re-check any
 - Timeline: `instructionsType=tagged` with `computeTravelTimeFor=all` returns `guidance.instructions` with strictly monotonic, cumulative `routeOffsetInMeters` and `travelTimeInSeconds` spanning the entire route across legs with 0s difference against route summary totals.
 - Geocoding: TomTom Search v2 (`/search/2/search/{query}.json`) with `typeahead=true` and `countrySet=US` returns top 5 relevant US cities in <300ms.
 
-**Map tiles:** OSM or CARTO raster tiles with attribution. Keep traffic low.
+**Map tiles:** OpenStreetMap public tiles, light use, attribution shown.
 
 ## 7. Environment variables
 

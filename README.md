@@ -40,7 +40,7 @@ flowchart LR
 
 - **Backend**: Python 3.13, Django 5.2, Django REST Framework, HTTPX, Respx, Pytest.
 - **Frontend**: React 19, Vite, TypeScript (strict), Material UI (MUI), Leaflet / React-Leaflet, TanStack Query.
-- **External Providers**: TomTom Routing & Geocoding APIs, Open-Meteo Weather API.
+- **External Providers**: TomTom Routing & Geocoding APIs, Open-Meteo Weather API, OpenStreetMap (OpenStreetMap public tiles, light use, attribution shown).
 
 ---
 

@@ -4,8 +4,13 @@
 .haulcast-map-container {
   width: 100%;
   height: 100%;
-  background-color: #07171C;
+  background-color: #0B1418;
   outline: none;
+}
+
+/* OpenStreetMap tile dark filter (applied only to tile layer) */
+.osm-dark-tiles {
+  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9) saturate(0.5);
 }
 
 /* Custom dark popup styling */
