@@ -7,8 +7,10 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
+import { useIsMutating } from '@tanstack/react-query';
 import { useHealthCheck } from './api/client';
 import { AnalyzeResponse } from './api/types';
+import { ResultsPanel } from './features/results';
 import { TripForm } from './features/trip-form';
 import { colorTokens, shapeTokens, typographyTokens } from './theme/tokens';
 
@@ -94,9 +96,19 @@ export const App: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [activeTab, setActiveTab] = useState<MobileTab>('plan');
   const [tripAnalysis, setTripAnalysis] = useState<AnalyzeResponse | null>(null);
+  const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
+  const isAnalyzing = useIsMutating({ mutationKey: ['analyzeTrip'] }) > 0;
   const { data, isError } = useHealthCheck();
 
   const isOnline = !isError && data?.status === 'ok';
+
+  const handleAnalysisSuccess = (analysis: AnalyzeResponse) => {
+    setTripAnalysis(analysis);
+    setSelectedRouteId(analysis.recommended_route_id);
+    if (isMobile) {
+      setActiveTab('routes');
+    }
+  };
 
   return (
     <Box
@@ -239,12 +251,7 @@ export const App: React.FC = () => {
             overflowY: 'auto',
           }}
         >
-          <TripForm
-            onSuccess={(analysis) => {
-              setTripAnalysis(analysis);
-              setActiveTab('routes');
-            }}
-          />
+          <TripForm onSuccess={handleAnalysisSuccess} />
         </Box>
 
         {/* Region 2: Map */}
@@ -306,32 +313,12 @@ export const App: React.FC = () => {
             overflowY: 'auto',
           }}
         >
-          <Typography
-            variant="h2"
-            sx={{
-              fontFamily: typographyTokens.fontFamilyUi,
-              fontSize: typographyTokens.sectionHeading.fontSize,
-              lineHeight: typographyTokens.sectionHeading.lineHeight,
-              fontWeight: typographyTokens.sectionHeading.fontWeight,
-              color: colorTokens.text,
-            }}
-          >
-            Results
-          </Typography>
-          {tripAnalysis && (
-            <Typography
-              data-testid="results-summary"
-              sx={{
-                fontFamily: typographyTokens.fontFamilyUi,
-                fontSize: typographyTokens.body.fontSize,
-                lineHeight: typographyTokens.body.lineHeight,
-                color: colorTokens.text,
-                mt: 2,
-              }}
-            >
-              {tripAnalysis.routes.length} routes: {tripAnalysis.recommendation.headline}
-            </Typography>
-          )}
+          <ResultsPanel
+            analysis={tripAnalysis}
+            isLoading={isAnalyzing}
+            selectedRouteId={selectedRouteId}
+            onSelectRoute={setSelectedRouteId}
+          />
         </Box>
       </Box>
 

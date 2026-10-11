@@ -1,74 +1,161 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import { RiskLevelKey, riskColors } from '../theme/riskColors';
-import { typographyTokens } from '../theme/tokens';
-
-export interface RiskSegment {
-  level: RiskLevelKey;
-  miles: number;
-}
+import { RiskLevelKey } from '../api/types';
+import { riskColors } from '../theme/riskColors';
+import { colorTokens, typographyTokens } from '../theme/tokens';
+import { formatMiles } from '../utils/format';
 
 export interface RiskStripProps {
-  segments?: RiskSegment[];
-  totalMiles?: number;
+  milesByLevel: Record<RiskLevelKey, number>;
+  unavailableMiles?: number;
 }
 
-export const RiskStrip: React.FC<RiskStripProps> = ({
-  segments = [],
-  totalMiles = 0,
-}) => {
-  const labelParts = segments
-    .filter((s) => s.miles > 0)
-    .map((s) => `${riskColors[s.level].label}: ${s.miles} mi`);
+const ORDERED_LEVELS: RiskLevelKey[] = ['low', 'moderate', 'high', 'severe', 'no_travel'];
 
-  const ariaLabel =
-    labelParts.length > 0
-      ? `Risk breakdown: ${labelParts.join(', ')}`
-      : 'No risk segments';
+export const RiskStrip: React.FC<RiskStripProps> = ({
+  milesByLevel,
+  unavailableMiles = 0,
+}) => {
+  const low = milesByLevel?.low || 0;
+  const moderate = milesByLevel?.moderate || 0;
+  const high = milesByLevel?.high || 0;
+  const severe = milesByLevel?.severe || 0;
+  const noTravel = milesByLevel?.no_travel || 0;
+  const unavail = unavailableMiles || 0;
+
+  const total = low + moderate + high + severe + noTravel + unavail;
+
+  // Handle all-zero state
+  if (total <= 0) {
+    return (
+      <Box sx={{ width: '100%' }}>
+        <Box
+          role="img"
+          aria-label="Risk distribution: no risk data"
+          data-testid="risk-strip-bar"
+          sx={{
+            height: 8,
+            width: '100%',
+            backgroundColor: colorTokens.surfaceRaised,
+            border: `1px solid ${colorTokens.border}`,
+            borderRadius: '4px',
+          }}
+        />
+        <Typography
+          sx={{
+            fontFamily: typographyTokens.fontFamilyMono,
+            fontSize: '0.75rem',
+            color: colorTokens.textMuted,
+            mt: 0.5,
+          }}
+        >
+          No risk data
+        </Typography>
+      </Box>
+    );
+  }
+
+  // Handle all-unavailable state
+  if (unavail > 0 && total === unavail) {
+    return (
+      <Box sx={{ width: '100%' }}>
+        <Box
+          role="img"
+          aria-label="Risk distribution: forecast unavailable"
+          data-testid="risk-strip-bar"
+          sx={{
+            height: 8,
+            width: '100%',
+            backgroundColor: colorTokens.surfaceRaised,
+            border: `1px solid ${colorTokens.border}`,
+            borderRadius: '4px',
+          }}
+        />
+        <Typography
+          sx={{
+            fontFamily: typographyTokens.fontFamilyMono,
+            fontSize: '0.75rem',
+            color: colorTokens.textMuted,
+            mt: 0.5,
+          }}
+        >
+          Forecast unavailable
+        </Typography>
+      </Box>
+    );
+  }
+
+  // Compose nonzero high-risk caption
+  const captionParts: string[] = [];
+  if (noTravel > 0) {
+    captionParts.push(`No Travel ${formatMiles(noTravel)}`);
+  }
+  if (severe > 0) {
+    captionParts.push(`Severe ${formatMiles(severe)}`);
+  }
+  if (high > 0) {
+    captionParts.push(`High ${formatMiles(high)}`);
+  }
+  const captionText =
+    captionParts.length > 0 ? captionParts.join(' · ') : '0 Severe or High miles';
+
+  // Full accessible label
+  const ariaLabel = `Risk distribution: Low ${formatMiles(low)}, Moderate ${formatMiles(moderate)}, High ${formatMiles(high)}, Severe ${formatMiles(severe)}, No Travel ${formatMiles(noTravel)}${unavail > 0 ? `, Unavailable ${formatMiles(unavail)}` : ''}`;
 
   return (
     <Box sx={{ width: '100%' }}>
       <Box
         role="img"
         aria-label={ariaLabel}
+        data-testid="risk-strip-bar"
         sx={{
           height: 8,
           width: '100%',
           display: 'flex',
-          borderRadius: '2px',
           overflow: 'hidden',
-          backgroundColor: '#E4ECEB',
+          borderRadius: '4px',
+          backgroundColor: colorTokens.surfaceRaised,
         }}
       >
-        {segments.map((seg, idx) => {
-          const pct = totalMiles > 0 ? (seg.miles / totalMiles) * 100 : 0;
+        {ORDERED_LEVELS.map((level) => {
+          const miles = milesByLevel[level] || 0;
+          if (miles <= 0) return null;
+          const pct = (miles / total) * 100;
           return (
             <Box
-              key={`${seg.level}-${idx}`}
+              key={level}
+              data-testid={`risk-segment-${level}`}
               sx={{
                 width: `${pct}%`,
                 height: '100%',
-                backgroundColor: riskColors[seg.level].background,
+                backgroundColor: riskColors[level].background,
               }}
             />
           );
         })}
+        {unavail > 0 && (
+          <Box
+            data-testid="risk-segment-unavailable"
+            sx={{
+              width: `${(unavail / total) * 100}%`,
+              height: '100%',
+              backgroundColor: colorTokens.border,
+            }}
+          />
+        )}
       </Box>
-      {labelParts.length > 0 && (
-        <Typography
-          variant="caption"
-          sx={{
-            fontFamily: typographyTokens.fontFamilyMono,
-            fontSize: typographyTokens.mono.fontSize,
-            lineHeight: typographyTokens.mono.lineHeight,
-            color: 'text.secondary',
-            mt: 0.5,
-            display: 'block',
-          }}
-        >
-          {labelParts.join(' · ')}
-        </Typography>
-      )}
+      <Typography
+        data-testid="risk-strip-caption"
+        sx={{
+          fontFamily: typographyTokens.fontFamilyMono,
+          fontSize: '0.75rem',
+          lineHeight: 1.4,
+          color: colorTokens.textMuted,
+          mt: 0.5,
+        }}
+      >
+        {captionText}
+      </Typography>
     </Box>
   );
 };

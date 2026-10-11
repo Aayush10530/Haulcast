@@ -165,6 +165,7 @@ Add a row for every dependency (CODING_RULES §9). Empty until P1.
 | `react` | `19.3.0` | Frontend | React 19 UI library | P1 |
 | `react-dom` | `19.3.0` | Frontend | React 19 DOM renderer | P1 |
 | `@mui/material` | `9.4.0` | Frontend | Material UI v9 (first-class React 19 peer support) | P1 |
+| `@mui/icons-material` | `9.4.0` | Frontend | Driver icons (Air, WaterDrop, AcUnit, Scale) per DESIGN.md §6 | P4b |
 | `@emotion/react` | `11.14.0` | Frontend | Emotion CSS-in-JS engine for MUI v9 | P1 |
 | `@emotion/styled` | `11.14.1` | Frontend | Emotion styled API for MUI v9 | P1 |
 | `@tanstack/react-query` | `5.104.0` | Frontend | Async server state and query management | P1 |

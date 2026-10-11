@@ -137,9 +137,9 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-026 | API layer: serializers, validation, container, `/api/trips/analyze/` (per-scope throttles: analyze, heatmap, geocode) | P3 | done |
 | F-030 | Frontend API client, typed DTOs, error parsing | P4 | done |
 | F-031 | TripForm & PlaceAutocomplete with validation | P4 | done |
-| F-032 | Results UI: RecommendationBanner, RouteCards, CheckpointTable | P4 | planned |
+| F-032 | Results UI: RecommendationBanner, RouteCards, CheckpointTable | P4 | done |
 | F-033 | MapView: canvas render, route polylines, checkpoint markers, legend; remove map placeholder text | P4 | planned |
-| F-034 | UX states: idle, loading skeletons, error retry, no-safe-route alert | P4 | planned |
+| F-034 | UX states: idle, loading skeletons, error retry, no-safe-route alert | P4 | done |
 | F-040 | Heatmap backend: corridor grid generation & `/api/trips/heatmap/` | P5 | planned |
 | F-041 | Heatmap frontend: useHeatmap, HeatmapLayer, 0-48h slider controls | P5 | planned |
 | F-050 | Polish: responsive layout & mobile testing | P6 | planned |
@@ -205,6 +205,13 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 - Summary: Pinned exact dependencies audited >= 14 days old as of 2026-10-10. Backend: Django 5.2.17 + DRF 3.18.1 on Python 3.13; Frontend: React 19.3.0 + MUI 9.4.0 + Vite 6.4.3 + Vitest 4.1.11. pip-audit and npm audit zero vulnerabilities.
 - Status: done
 
+### P-002 Material UI Icons Dependency
+- Date: 2026-10-11
+- Type: dependency
+- Phase: P4
+- Summary: Pinned exact @mui/icons-material 9.4.0 (published 2026-08-27, ~45 days old, matching @mui/material 9.4.0). Imported directly per path (e.g. @mui/icons-material/Air) to avoid barrel imports.
+- Status: done
+
 ---
 
 ## 7. Open questions
@@ -239,3 +246,4 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | P4 (shell) | Dark theme & responsive app shell | 0.50 | 0.30 | 4.75 | DESIGN.md v2 tokens, risk colors (#07171C text, 100% WCAG AA), theme.ts, StormRoute header, 3-column / 2-column / mobile tab responsive shell, GET /api/health/ status dot |
 | P4a (F-030, F-031) | API types, client & trip form | 0.50 | 0.25 | 5.00 | ARCHITECTURE §8 DTOs, AppError client with 60s timeout, useDebouncedValue, useGeocodeSearch, useAnalyzeTrip, PlaceAutocomplete, TripForm with swap/example, validateTripForm, 40 tests |
 | P4 (fix) | Departure clarity & load weight formatting | 0.15 | 0.10 | 5.10 | Spelled-out departure helper without timezone shift, thousands separator formatting on load weight input, "lb" adornment, raw number storage, 45 tests |
+| P4b (F-032, F-034) | Results panel & checkpoint list | 0.75 | 0.35 | 5.45 | ResultsPanel, RecommendationBanner, WarningsList, RouteList, RouteCard, CheckpointList, RiskStrip, RiskChip, formatters, fixtures, 67 tests |

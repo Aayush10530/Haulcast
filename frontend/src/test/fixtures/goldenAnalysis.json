@@ -1,0 +1,216 @@
+{
+  "request": {
+    "origin": { "label": "Dallas, TX", "lat": 32.7767, "lon": -96.797 },
+    "destination": { "label": "Denver, CO", "lat": 39.7392, "lon": -104.9903 },
+    "departure_utc": "2026-10-12T13:00:00Z",
+    "departure_local": "2026-10-12T08:00",
+    "origin_timezone": "America/Chicago",
+    "load_weight_lb": 42000,
+    "interval_miles": 25,
+    "interval_mode": "auto"
+  },
+  "recommended_route_id": "route_b",
+  "recommendation": {
+    "route_id": "route_b",
+    "decided_by": "severe_miles",
+    "headline": "Route B has 0 Severe miles vs 34 on Route A (47 min slower).",
+    "comparisons": [
+      {
+        "route_id": "route_a",
+        "severe_miles": 34.0,
+        "high_miles": 51.0,
+        "avg_risk_score": 0.95,
+        "duration_seconds": 41280
+      }
+    ]
+  },
+  "routes": [
+    {
+      "id": "route_a",
+      "label": "Route A",
+      "tags": ["fastest"],
+      "rank": 2,
+      "via": "US-287 N",
+      "distance_miles": 785.0,
+      "duration_seconds": 41280,
+      "departure_utc": "2026-10-12T13:00:00Z",
+      "arrival_utc": "2026-10-13T00:28:00Z",
+      "arrival_local": "2026-10-12T18:28:00-06:00",
+      "geometry": [
+        [32.7767, -96.797],
+        [35.222, -101.8313],
+        [39.7392, -104.9903]
+      ],
+      "summary": {
+        "miles_by_level": {
+          "low": 500,
+          "moderate": 200,
+          "high": 51,
+          "severe": 34,
+          "no_travel": 0
+        },
+        "avg_risk_score": 0.95,
+        "max_level": "severe",
+        "has_no_travel": false,
+        "delta_vs_fastest_seconds": 0
+      },
+      "checkpoints": []
+    },
+    {
+      "id": "route_b",
+      "label": "Route B",
+      "tags": ["recommended"],
+      "rank": 1,
+      "via": "I-35 N, I-70 W",
+      "distance_miles": 801.2,
+      "duration_seconds": 44100,
+      "departure_utc": "2026-10-12T13:00:00Z",
+      "arrival_utc": "2026-10-13T01:15:00Z",
+      "arrival_local": "2026-10-12T19:15:00-06:00",
+      "geometry": [
+        [32.7767, -96.797],
+        [37.6872, -97.3301],
+        [39.7392, -104.9903]
+      ],
+      "summary": {
+        "miles_by_level": {
+          "low": 600,
+          "moderate": 150,
+          "high": 51.2,
+          "severe": 0,
+          "no_travel": 0
+        },
+        "avg_risk_score": 0.62,
+        "max_level": "high",
+        "has_no_travel": false,
+        "delta_vs_fastest_seconds": 2820
+      },
+      "checkpoints": [
+        {
+          "index": 0,
+          "mile": 0,
+          "lat": 32.7767,
+          "lon": -96.797,
+          "eta_utc": "2026-10-12T13:00:00Z",
+          "eta_local": "2026-10-12T08:00:00-05:00",
+          "local_tz": "America/Chicago",
+          "covers_miles": [0, 25],
+          "weather": { "wind_mph": 12, "rain_in_hr": 0, "snow_in_hr": 0 },
+          "risk": {
+            "level": "low",
+            "driver": "none",
+            "load_rule_applied": false,
+            "reason": "Calm morning conditions"
+          }
+        },
+        {
+          "index": 1,
+          "mile": 120.5,
+          "lat": 35.4676,
+          "lon": -97.5164,
+          "eta_utc": "2026-10-12T15:00:00Z",
+          "eta_local": "2026-10-12T10:00:00-05:00",
+          "local_tz": "America/Chicago",
+          "covers_miles": [100, 150],
+          "weather": { "wind_mph": 38, "rain_in_hr": 0.3, "snow_in_hr": 0 },
+          "risk": {
+            "level": "high",
+            "driver": "wind",
+            "load_rule_applied": true,
+            "reason": "Crosswinds gusting to 38 mph for 42,000 lb load"
+          }
+        },
+        {
+          "index": 2,
+          "mile": 350.0,
+          "lat": 37.6872,
+          "lon": -97.3301,
+          "eta_utc": "2026-10-12T18:45:00Z",
+          "eta_local": "2026-10-12T13:45:00-05:00",
+          "local_tz": "America/Chicago",
+          "covers_miles": [325, 375],
+          "weather": null,
+          "risk": null
+        },
+        {
+          "index": 3,
+          "mile": 520.0,
+          "lat": 39.3538,
+          "lon": -102.2688,
+          "eta_utc": "2026-10-12T21:30:00Z",
+          "eta_local": "2026-10-12T15:30:00-06:00",
+          "local_tz": "America/Denver",
+          "covers_miles": [500, 550],
+          "weather": { "wind_mph": 22, "rain_in_hr": 0, "snow_in_hr": 0.75 },
+          "risk": {
+            "level": "moderate",
+            "driver": "snow",
+            "load_rule_applied": false,
+            "reason": "Light snow dusting with reduced visibility"
+          }
+        },
+        {
+          "index": 4,
+          "mile": 801.2,
+          "lat": 39.7392,
+          "lon": -104.9903,
+          "eta_utc": "2026-10-13T01:15:00Z",
+          "eta_local": "2026-10-12T19:15:00-06:00",
+          "local_tz": "America/Denver",
+          "covers_miles": [775, 801.2],
+          "weather": { "wind_mph": 8, "rain_in_hr": 0, "snow_in_hr": 0 },
+          "risk": {
+            "level": "low",
+            "driver": "none",
+            "load_rule_applied": false,
+            "reason": "Clear conditions at destination"
+          }
+        }
+      ]
+    },
+    {
+      "id": "route_c",
+      "label": "Route C",
+      "tags": [],
+      "rank": 3,
+      "via": "US-84 W, I-25 N",
+      "distance_miles": 840.5,
+      "duration_seconds": 46560,
+      "departure_utc": "2026-10-12T13:00:00Z",
+      "arrival_utc": "2026-10-13T01:56:00Z",
+      "arrival_local": "2026-10-12T19:56:00-06:00",
+      "geometry": [
+        [32.7767, -96.797],
+        [35.199, -103.725],
+        [39.7392, -104.9903]
+      ],
+      "summary": {
+        "miles_by_level": {
+          "low": 700,
+          "moderate": 100,
+          "high": 40.5,
+          "severe": 0,
+          "no_travel": 0
+        },
+        "avg_risk_score": 0.45,
+        "max_level": "high",
+        "has_no_travel": false,
+        "delta_vs_fastest_seconds": 5280
+      },
+      "checkpoints": []
+    }
+  ],
+  "warnings": [
+    {
+      "code": "HIGH_WIND_WATCH",
+      "message": "High wind gusts expected along the I-70 corridor."
+    }
+  ],
+  "meta": {
+    "routing_provider": "tomtom",
+    "weather_provider": "open-meteo",
+    "weather_cells": 38,
+    "route_count": 3,
+    "elapsed_ms": 2450
+  }
+}

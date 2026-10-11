@@ -8,6 +8,7 @@ import { AnalyzeResponse, TripRequestPayload } from '../api/types';
  */
 export function useAnalyzeTrip() {
   return useMutation<AnalyzeResponse, AppError, TripRequestPayload>({
+    mutationKey: ['analyzeTrip'],
     mutationFn: (payload: TripRequestPayload) => analyzeTrip(payload),
   });
 }

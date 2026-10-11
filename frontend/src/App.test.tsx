@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { theme } from './theme/theme';
+import { goldenAnalysis } from './test/fixtures/goldenAnalysis';
 import { App } from './App';
 
 function renderWithProviders() {
@@ -131,7 +132,7 @@ describe('App Component Shell & Responsive Layouts', () => {
     // All 3 regions exist with their proper labels
     expect(tripForm).toHaveTextContent('Trip planning');
     expect(map).toHaveTextContent('Map');
-    expect(results).toHaveTextContent('Results');
+    expect(results).toHaveTextContent('Route options');
 
     // Initial state: Plan tab is active
     expect(tripForm).toBeVisible();
@@ -157,7 +158,7 @@ describe('App Component Shell & Responsive Layouts', () => {
     expect(results).not.toBeVisible();
   });
 
-  it('shows temporary plain line with route count and headline in results region on success', async () => {
+  it('renders results panel with recommendation banner and route options on success', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockImplementation(async (url: string) => {
@@ -165,18 +166,7 @@ describe('App Component Shell & Responsive Layouts', () => {
           return {
             ok: true,
             status: 200,
-            json: async () => ({
-              recommended_route_id: 'route_b',
-              recommendation: {
-                route_id: 'route_b',
-                decided_by: 'severe_miles',
-                headline: 'Route B has 0 Severe miles vs 34 on Route A.',
-                comparisons: [],
-              },
-              routes: [{ id: 'route_b' }, { id: 'route_a' }, { id: 'route_c' }],
-              warnings: [],
-              meta: { elapsed_ms: 1200 },
-            }),
+            json: async () => goldenAnalysis,
           };
         }
         return {
@@ -195,8 +185,11 @@ describe('App Component Shell & Responsive Layouts', () => {
     fireEvent.click(screen.getByTestId('generate-routes-button'));
 
     await waitFor(() => {
-      expect(screen.getByTestId('results-summary')).toHaveTextContent(
-        '3 routes: Route B has 0 Severe miles vs 34 on Route A.',
+      expect(screen.getByTestId('results-title')).toHaveTextContent(
+        'Route options (3)',
+      );
+      expect(screen.getByTestId('recommendation-banner')).toHaveTextContent(
+        'Route B has 0 Severe miles vs 34 on Route A (47 min slower).',
       );
     });
   });
