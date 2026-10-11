@@ -170,6 +170,14 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 
 ## 5. Fixes
 
+### X-002 Responsive Layouts and Mobile Tab Bar Below 1440 px
+- Date: 2026-10-11
+- Type: fix
+- Phase: P4
+- Summary: Replaced unconditional HTML `hidden` attribute with breakpoint-aware visibility so map region shows in 1100 px two-column layout; mounted mobile tab bar only below 900 px with safe-area padding and 100dvh root height.
+- Files: frontend/src/App.tsx, frontend/src/App.test.tsx, frontend/src/test/setup.ts
+- Status: done
+
 ### X-001 Comparison with Fastest Route in Recommendation
 - Date: 2026-10-11
 - Type: fix

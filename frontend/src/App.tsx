@@ -4,6 +4,8 @@ import {
   BottomNavigationAction,
   Box,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { useHealthCheck } from './api/client';
 import { colorTokens, shapeTokens, typographyTokens } from './theme/tokens';
@@ -86,6 +88,8 @@ const RoutesIcon: React.FC = () => (
 );
 
 export const App: React.FC = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [activeTab, setActiveTab] = useState<MobileTab>('plan');
   const { data, isError } = useHealthCheck();
 
@@ -96,7 +100,7 @@ export const App: React.FC = () => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100vh',
+        height: '100dvh',
         width: '100vw',
         overflow: 'hidden',
         backgroundColor: colorTokens.canvas,
@@ -183,8 +187,10 @@ export const App: React.FC = () => {
         component="main"
         sx={{
           flex: 1,
+          minHeight: 0,
           display: 'grid',
           overflow: 'hidden',
+          mb: isMobile ? 'calc(56px + env(safe-area-inset-bottom, 0px))' : 0,
           gridTemplateColumns: {
             xs: '1fr',
             md: `${shapeTokens.twoColumnLeftWidth}px 1fr`,
@@ -192,7 +198,7 @@ export const App: React.FC = () => {
           },
           gridTemplateRows: {
             xs: '1fr',
-            md: '1fr 1fr',
+            md: 'minmax(0, 1fr) minmax(0, 1fr)',
             xl: '1fr',
           },
           gridTemplateAreas: {
@@ -212,14 +218,12 @@ export const App: React.FC = () => {
           component="aside"
           aria-label="Trip form"
           data-testid="region-trip-form"
-          hidden={activeTab !== 'plan'}
+          hidden={isMobile ? activeTab !== 'plan' : false}
           sx={{
             gridArea: 'form',
-            display: {
-              xs: activeTab === 'plan' ? 'flex' : 'none',
-              md: 'flex !important',
-            },
+            display: isMobile ? (activeTab === 'plan' ? 'flex' : 'none') : 'flex',
             flexDirection: 'column',
+            minHeight: 0,
             p: 2,
             boxSizing: 'border-box',
             backgroundColor: colorTokens.surface,
@@ -251,16 +255,14 @@ export const App: React.FC = () => {
           component="section"
           aria-label="Map"
           data-testid="region-map"
-          hidden={activeTab !== 'map'}
+          hidden={isMobile ? activeTab !== 'map' : false}
           sx={{
             gridArea: 'map',
-            display: {
-              xs: activeTab === 'map' ? 'flex' : 'none',
-              md: 'flex !important',
-            },
+            display: isMobile ? (activeTab === 'map' ? 'flex' : 'none') : 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
+            minHeight: 0,
             p: 2,
             boxSizing: 'border-box',
             backgroundColor: colorTokens.canvas,
@@ -285,14 +287,12 @@ export const App: React.FC = () => {
           component="aside"
           aria-label="Results"
           data-testid="region-results"
-          hidden={activeTab !== 'routes'}
+          hidden={isMobile ? activeTab !== 'routes' : false}
           sx={{
             gridArea: 'results',
-            display: {
-              xs: activeTab === 'routes' ? 'flex' : 'none',
-              md: 'flex !important',
-            },
+            display: isMobile ? (activeTab === 'routes' ? 'flex' : 'none') : 'flex',
             flexDirection: 'column',
+            minHeight: 0,
             p: 2,
             boxSizing: 'border-box',
             backgroundColor: colorTokens.surface,
@@ -325,49 +325,57 @@ export const App: React.FC = () => {
       </Box>
 
       {/* Mobile bottom tab bar per DESIGN.md §5 (< 900 px) */}
-      <BottomNavigation
-        value={activeTab}
-        onChange={(_, newValue: MobileTab) => setActiveTab(newValue)}
-        showLabels
-        sx={{
-          display: { xs: 'flex', md: 'none' },
-          height: 56,
-          flexShrink: 0,
-          backgroundColor: colorTokens.surface,
-          borderTop: `1px solid ${colorTokens.border}`,
-          '& .MuiBottomNavigationAction-root': {
-            minHeight: 48,
-            minWidth: 48,
-            color: colorTokens.textMuted,
-            '&.Mui-selected': {
-              color: colorTokens.brand,
+      {isMobile && (
+        <BottomNavigation
+          value={activeTab}
+          onChange={(_, newValue: MobileTab) => setActiveTab(newValue)}
+          showLabels
+          sx={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1000,
+            height: 'calc(56px + env(safe-area-inset-bottom, 0px))',
+            pb: 'env(safe-area-inset-bottom, 0px)',
+            boxSizing: 'border-box',
+            flexShrink: 0,
+            backgroundColor: colorTokens.surface,
+            borderTop: `1px solid ${colorTokens.border}`,
+            '& .MuiBottomNavigationAction-root': {
+              minHeight: 48,
+              minWidth: 48,
+              color: colorTokens.textMuted,
+              '&.Mui-selected': {
+                color: colorTokens.brand,
+              },
+              '&:focus-visible': {
+                outline: `2px solid ${colorTokens.brand}`,
+                outlineOffset: '-2px',
+              },
             },
-            '&:focus-visible': {
-              outline: `2px solid ${colorTokens.brand}`,
-              outlineOffset: '-2px',
-            },
-          },
-        }}
-      >
-        <BottomNavigationAction
-          label="Plan"
-          value="plan"
-          icon={<PlanIcon />}
-          data-testid="tab-plan"
-        />
-        <BottomNavigationAction
-          label="Map"
-          value="map"
-          icon={<MapIcon />}
-          data-testid="tab-map"
-        />
-        <BottomNavigationAction
-          label="Routes"
-          value="routes"
-          icon={<RoutesIcon />}
-          data-testid="tab-routes"
-        />
-      </BottomNavigation>
+          }}
+        >
+          <BottomNavigationAction
+            label="Plan"
+            value="plan"
+            icon={<PlanIcon />}
+            data-testid="tab-plan"
+          />
+          <BottomNavigationAction
+            label="Map"
+            value="map"
+            icon={<MapIcon />}
+            data-testid="tab-map"
+          />
+          <BottomNavigationAction
+            label="Routes"
+            value="routes"
+            icon={<RoutesIcon />}
+            data-testid="tab-routes"
+          />
+        </BottomNavigation>
+      )}
     </Box>
   );
 };

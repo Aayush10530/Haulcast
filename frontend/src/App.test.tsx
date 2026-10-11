@@ -24,6 +24,31 @@ function renderWithProviders() {
   );
 }
 
+function setViewportWidth(width: number) {
+  window.innerWidth = width;
+  window.matchMedia = vi.fn().mockImplementation((query: string) => {
+    const maxWidthMatch = query.match(/max-width:\s*([\d.]+)px/);
+    const minWidthMatch = query.match(/min-width:\s*([\d.]+)px/);
+    let matches = true;
+    if (maxWidthMatch && width > parseFloat(maxWidthMatch[1])) {
+      matches = false;
+    }
+    if (minWidthMatch && width < parseFloat(minWidthMatch[1])) {
+      matches = false;
+    }
+    return {
+      matches,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    };
+  });
+}
+
 describe('App Component Shell & Responsive Layouts', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -95,6 +120,8 @@ describe('App Component Shell & Responsive Layouts', () => {
       }),
     );
 
+    setViewportWidth(390);
+
     renderWithProviders();
 
     const tripForm = screen.getByTestId('region-trip-form');
@@ -128,5 +155,63 @@ describe('App Component Shell & Responsive Layouts', () => {
     expect(tripForm).toBeVisible();
     expect(map).not.toBeVisible();
     expect(results).not.toBeVisible();
+  });
+
+  describe('Breakpoint Layouts below and above 900 px and 1440 px', () => {
+    it.each([390, 800])(
+      'renders mobile layout at %i px with fixed tab bar, Plan selected, and active region visible',
+      (width) => {
+        setViewportWidth(width);
+        renderWithProviders();
+
+        // Fixed bottom tab bar exists below 900 px
+        const tabPlan = screen.getByTestId('tab-plan');
+        const tabMap = screen.getByTestId('tab-map');
+        const tabRoutes = screen.getByTestId('tab-routes');
+        expect(tabPlan).toBeInTheDocument();
+        expect(tabMap).toBeInTheDocument();
+        expect(tabRoutes).toBeInTheDocument();
+
+        // Plan tab is selected by default
+        expect(tabPlan).toHaveClass('Mui-selected');
+
+        // Active region (Plan / Trip form) is visible above the tab bar, other regions hidden
+        expect(screen.getByTestId('region-trip-form')).toBeVisible();
+        expect(screen.getByTestId('region-map')).not.toBeVisible();
+        expect(screen.getByTestId('region-results')).not.toBeVisible();
+      },
+    );
+
+    it('renders two-column layout at 1100 px without tab bar and with map region visible', () => {
+      setViewportWidth(1100);
+      renderWithProviders();
+
+      // Tab bar does NOT exist at 1100 px (>= 900 px)
+      expect(screen.queryByTestId('tab-plan')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('tab-map')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('tab-routes')).not.toBeInTheDocument();
+
+      // In the two-column layout, the map region exists and is visible
+      const mapRegion = screen.getByTestId('region-map');
+      expect(mapRegion).toBeInTheDocument();
+      expect(mapRegion).toBeVisible();
+
+      // 400 px left panel regions also exist and are visible
+      expect(screen.getByTestId('region-trip-form')).toBeVisible();
+      expect(screen.getByTestId('region-results')).toBeVisible();
+    });
+
+    it('renders three-column layout at 1440 px without tab bar and with all regions visible', () => {
+      setViewportWidth(1440);
+      renderWithProviders();
+
+      // Tab bar does NOT exist at 1440 px
+      expect(screen.queryByTestId('tab-plan')).not.toBeInTheDocument();
+
+      // All 3 regions exist and are visible
+      expect(screen.getByTestId('region-trip-form')).toBeVisible();
+      expect(screen.getByTestId('region-map')).toBeVisible();
+      expect(screen.getByTestId('region-results')).toBeVisible();
+    });
   });
 });
