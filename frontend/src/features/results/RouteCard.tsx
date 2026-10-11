@@ -3,7 +3,13 @@ import { Box, Chip, CircularProgress, Paper, Typography } from '@mui/material';
 import { RouteDTO } from '../../api/types';
 import { RiskStrip } from '../../components/RiskStrip';
 import { colorTokens, typographyTokens } from '../../theme/tokens';
-import { formatDelta, formatDuration, formatLocalTime, formatMiles } from '../../utils/format';
+import {
+  formatDelta,
+  formatDuration,
+  formatLocalTime,
+  formatMiles,
+  formatRiskScore,
+} from '../../utils/format';
 
 export interface RouteCardProps {
   route: RouteDTO;
@@ -31,20 +37,30 @@ export const RouteCard: React.FC<RouteCardProps> = ({
   const hasRecommendedTag = route.tags?.includes('recommended') || isRecommended;
   const hasFastestTag = route.tags?.includes('fastest');
 
-  // Avg risk ring calculation (scale 0-4 mapped to 0-100%)
+  // Avg risk ring calculation (scale 0-4 mapped to 0-100% via avg_risk_score * 25)
   const avgRisk = route.summary?.avg_risk_score;
-  const progressValue = avgRisk !== null && avgRisk !== undefined ? Math.min(100, (avgRisk / 4) * 100) : 0;
-  // Scaled integer score (matching 28, 42, 61 style in mockup)
-  const scoreInt = avgRisk !== null && avgRisk !== undefined ? Math.max(12, Math.round(avgRisk * 30 + 15)) : 25;
+  const scoreInt = formatRiskScore(avgRisk);
+  const isDataAvailable = scoreInt !== null;
+  const progressValue = isDataAvailable ? scoreInt : 0;
+  const scoreDisplay = isDataAvailable ? String(scoreInt) : '--';
 
   // Determine ring color based on risk score
-  const ringColor =
-    scoreInt <= 32 ? '#00E676' : scoreInt <= 48 ? '#00D2FF' : scoreInt <= 65 ? '#E8872B' : '#E5484D';
+  const ringColor = !isDataAvailable
+    ? '#3A3A3A'
+    : scoreInt <= 25
+    ? '#00E676'
+    : scoreInt <= 50
+    ? '#00D2FF'
+    : scoreInt <= 75
+    ? '#E8872B'
+    : '#E5484D';
 
   // Weather miles breakdown
   const severeMiles = Math.round(route.summary?.miles_by_level?.severe || 0);
   const highMiles = Math.round(route.summary?.miles_by_level?.high || 0);
   const moderateMiles = Math.round(route.summary?.miles_by_level?.moderate || 0);
+  const unavailableMiles = Math.round(route.summary?.unavailable_miles || 0);
+
 
   // Delta line
   const deltaSec = route.summary?.delta_vs_fastest_seconds || 0;
@@ -101,6 +117,40 @@ export const RouteCard: React.FC<RouteCardProps> = ({
         </Typography>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {!isDataAvailable ? (
+            <Chip
+              size="small"
+              label="Weather Unavailable"
+              data-testid="tag-unavailable"
+              sx={{
+                height: 20,
+                borderRadius: '10px',
+                backgroundColor: 'rgba(255, 75, 75, 0.15)',
+                color: '#FF6B6B',
+                border: '1px solid rgba(255, 75, 75, 0.3)',
+                fontFamily: typographyTokens.fontFamilyUi,
+                fontWeight: 600,
+                fontSize: '0.65rem',
+                px: 0.5,
+              }}
+            />
+          ) : unavailableMiles > 0 ? (
+            <Chip
+              size="small"
+              label={`${unavailableMiles} mi unmonitored`}
+              sx={{
+                height: 20,
+                borderRadius: '10px',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                color: colorTokens.textMuted,
+                fontFamily: typographyTokens.fontFamilyUi,
+                fontWeight: 600,
+                fontSize: '0.65rem',
+                px: 0.5,
+              }}
+            />
+          ) : null}
+
           {hasRecommendedTag && (
             <Chip
               size="small"
@@ -224,13 +274,14 @@ export const RouteCard: React.FC<RouteCardProps> = ({
             <Typography
               sx={{
                 fontFamily: typographyTokens.fontFamilyMono,
-                fontSize: '14px',
+                fontSize: scoreDisplay === '--' ? '12px' : '14px',
                 fontWeight: 700,
-                color: '#FFFFFF',
+                color: isDataAvailable ? '#FFFFFF' : colorTokens.textMuted,
                 lineHeight: 1,
               }}
+              title={isDataAvailable ? `Risk Score: ${scoreDisplay}/100 (formula: round(avg_risk * 25))` : 'Weather data unavailable'}
             >
-              {scoreInt}
+              {scoreDisplay}
             </Typography>
             {/* Hidden for test assertion compatibility */}
             <Typography data-testid="avg-risk-score" sx={{ display: 'none' }}>
@@ -256,7 +307,7 @@ export const RouteCard: React.FC<RouteCardProps> = ({
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
             <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#E5484D' }} />
             <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#FFFFFF' }}>
-              {severeMiles} mi
+              {isDataAvailable ? `${severeMiles} mi` : '-- mi'}
             </Typography>
           </Box>
           <Typography sx={{ fontSize: '10px', color: '#E5484D', fontWeight: 600, pl: 1.5 }}>
@@ -269,7 +320,7 @@ export const RouteCard: React.FC<RouteCardProps> = ({
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
             <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#E8872B' }} />
             <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#FFFFFF' }}>
-              {highMiles} mi
+              {isDataAvailable ? `${highMiles} mi` : '-- mi'}
             </Typography>
           </Box>
           <Typography sx={{ fontSize: '10px', color: '#E8872B', fontWeight: 600, pl: 1.5 }}>
@@ -282,7 +333,7 @@ export const RouteCard: React.FC<RouteCardProps> = ({
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
             <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#E2C044' }} />
             <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#FFFFFF' }}>
-              {moderateMiles} mi
+              {isDataAvailable ? `${moderateMiles} mi` : '-- mi'}
             </Typography>
           </Box>
           <Typography sx={{ fontSize: '10px', color: '#E2C044', fontWeight: 600, pl: 1.5 }}>

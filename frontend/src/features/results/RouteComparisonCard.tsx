@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Paper, Typography } from '@mui/material';
 import { RouteDTO } from '../../api/types';
 import { colorTokens, shapeTokens, typographyTokens } from '../../theme/tokens';
-import { formatDuration, formatMiles } from '../../utils/format';
+import { formatDuration, formatMiles, formatRiskScore } from '../../utils/format';
 
 export interface RouteComparisonCardProps {
   routes: RouteDTO[];
@@ -238,35 +238,51 @@ export const RouteComparisonCard: React.FC<RouteComparisonCardProps> = ({ routes
             </tr>
             <tr>
               <Box component="td" sx={{ color: colorTokens.textMuted }}>Severe Miles</Box>
-              {routes.map((r) => (
-                <td key={r.id} style={{ color: '#E5484D', fontWeight: 600 }}>
-                  {Math.round(r.summary?.miles_by_level?.severe || 0)} mi
-                </td>
-              ))}
+              {routes.map((r) => {
+                const isAvail = r.summary?.avg_risk_score !== null && r.summary?.avg_risk_score !== undefined;
+                return (
+                  <td key={r.id} style={{ color: '#E5484D', fontWeight: 600 }}>
+                    {isAvail ? `${Math.round(r.summary?.miles_by_level?.severe || 0)} mi` : '-- mi'}
+                  </td>
+                );
+              })}
             </tr>
             <tr>
               <Box component="td" sx={{ color: colorTokens.textMuted }}>High Miles</Box>
-              {routes.map((r) => (
-                <td key={r.id} style={{ color: '#E8872B', fontWeight: 600 }}>
-                  {Math.round(r.summary?.miles_by_level?.high || 0)} mi
-                </td>
-              ))}
+              {routes.map((r) => {
+                const isAvail = r.summary?.avg_risk_score !== null && r.summary?.avg_risk_score !== undefined;
+                return (
+                  <td key={r.id} style={{ color: '#E8872B', fontWeight: 600 }}>
+                    {isAvail ? `${Math.round(r.summary?.miles_by_level?.high || 0)} mi` : '-- mi'}
+                  </td>
+                );
+              })}
             </tr>
             <tr>
               <Box component="td" sx={{ color: colorTokens.textMuted }}>Moderate Miles</Box>
-              {routes.map((r) => (
-                <td key={r.id} style={{ color: '#E2C044', fontWeight: 600 }}>
-                  {Math.round(r.summary?.miles_by_level?.moderate || 0)} mi
-                </td>
-              ))}
+              {routes.map((r) => {
+                const isAvail = r.summary?.avg_risk_score !== null && r.summary?.avg_risk_score !== undefined;
+                return (
+                  <td key={r.id} style={{ color: '#E2C044', fontWeight: 600 }}>
+                    {isAvail ? `${Math.round(r.summary?.miles_by_level?.moderate || 0)} mi` : '-- mi'}
+                  </td>
+                );
+              })}
             </tr>
             <tr>
               <Box component="td" sx={{ color: colorTokens.textMuted }}>Avg. Risk Score</Box>
               {routes.map((r) => {
-                const score = Math.round((r.summary?.avg_risk_score || 0) * 25);
-                const scoreColor = score <= 30 ? '#00E676' : score <= 50 ? '#FFD166' : '#FF3366';
+                const score = formatRiskScore(r.summary?.avg_risk_score);
+                if (score === null) {
+                  return (
+                    <td key={r.id} style={{ color: colorTokens.textMuted, fontWeight: 700 }}>
+                      --
+                    </td>
+                  );
+                }
+                const scoreColor = score <= 25 ? '#00E676' : score <= 50 ? '#00D2FF' : score <= 75 ? '#E8872B' : '#E5484D';
                 return (
-                  <td key={r.id} style={{ color: scoreColor, fontWeight: 700 }}>
+                  <td key={r.id} style={{ color: scoreColor, fontWeight: 700 }} title="Formula: round(avg_risk * 25)">
                     {score}
                   </td>
                 );

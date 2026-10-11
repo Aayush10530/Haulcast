@@ -150,3 +150,17 @@ export function formatDelta(deltaSeconds: number): string {
   const minutes = totalMinutes % 60;
   return `+${hours} h ${String(minutes).padStart(2, '0')} min`;
 }
+
+/**
+ * Scales an average risk score (0.0 to 4.0 scale: Low=0, Mod=1, High=2, Severe=3, No Travel=4)
+ * to an integer percentage score (0 to 100):
+ * score = Math.round(avgRisk * 25)
+ * Returns null if avgRisk is null, undefined, or NaN (e.g. weather data unavailable).
+ */
+export function formatRiskScore(avgRisk?: number | null): number | null {
+  if (avgRisk === null || avgRisk === undefined || isNaN(avgRisk)) {
+    return null;
+  }
+  return Math.max(0, Math.min(100, Math.round(avgRisk * 25)));
+}
+

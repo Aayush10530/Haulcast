@@ -5,6 +5,7 @@ import {
   formatDuration,
   formatLocalTime,
   formatMiles,
+  formatRiskScore,
 } from './format';
 
 describe('format utilities', () => {
@@ -136,4 +137,28 @@ describe('format utilities', () => {
       }
     });
   });
+
+  describe('formatRiskScore', () => {
+    it('scales avgRisk (0-4) to integer 0-100 percentage score', () => {
+      expect(formatRiskScore(0.0)).toBe(0);
+      expect(formatRiskScore(0.62)).toBe(16);
+      expect(formatRiskScore(0.95)).toBe(24);
+      expect(formatRiskScore(1.0)).toBe(25);
+      expect(formatRiskScore(2.0)).toBe(50);
+      expect(formatRiskScore(3.0)).toBe(75);
+      expect(formatRiskScore(4.0)).toBe(100);
+    });
+
+    it('returns null when avgRisk is null, undefined, or NaN', () => {
+      expect(formatRiskScore(null)).toBeNull();
+      expect(formatRiskScore(undefined)).toBeNull();
+      expect(formatRiskScore(NaN)).toBeNull();
+    });
+
+    it('clamps values to 0-100 bounds', () => {
+      expect(formatRiskScore(-1.0)).toBe(0);
+      expect(formatRiskScore(5.0)).toBe(100);
+    });
+  });
 });
+

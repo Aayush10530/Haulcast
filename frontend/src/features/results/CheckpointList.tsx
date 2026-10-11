@@ -205,11 +205,17 @@ function getRiskPillStyle(level?: RiskLevelKey) {
         shadow: '0 0 16px 2px rgba(139, 92, 246, 0.75)',
       };
     case 'low':
-    default:
       return {
         bg: '#10B981',
         text: '#07171C',
         label: 'Low',
+        shadow: 'none',
+      };
+    default:
+      return {
+        bg: 'rgba(51, 65, 85, 0.8)',
+        text: '#CBD5E1',
+        label: 'Unavailable',
         shadow: 'none',
       };
   }
@@ -240,12 +246,18 @@ function getAlertBannerStyle(level?: RiskLevelKey) {
         textColor: '#FCD34D',
       };
     case 'low':
-    default:
       return {
         bg: 'rgba(6, 44, 30, 0.85)',
         border: '1px solid rgba(16, 185, 129, 0.35)',
         iconColor: '#10B981',
         textColor: '#6EE7B7',
+      };
+    default:
+      return {
+        bg: 'rgba(30, 41, 59, 0.85)',
+        border: '1px solid rgba(100, 116, 139, 0.35)',
+        iconColor: '#94A3B8',
+        textColor: '#CBD5E1',
       };
   }
 }
@@ -390,24 +402,28 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
           const alertStyle = getAlertBannerStyle(cp.risk?.level);
 
           const weather = cp.weather;
-          const windMph = weather?.wind_mph ? Math.round(weather.wind_mph) : 0;
-          const rainInHr = weather?.rain_in_hr !== undefined ? weather.rain_in_hr.toFixed(2) : '0.00';
-          const snowInHr = weather?.snow_in_hr !== undefined ? weather.snow_in_hr.toFixed(1) : '0.0';
+          const isWeatherAvailable = weather !== null && weather !== undefined;
+          const windMph = isWeatherAvailable && weather.wind_mph !== undefined ? Math.round(weather.wind_mph) : null;
+          const rainInHr = isWeatherAvailable && weather.rain_in_hr !== undefined ? weather.rain_in_hr.toFixed(2) : null;
+          const snowInHr = isWeatherAvailable && weather.snow_in_hr !== undefined ? weather.snow_in_hr.toFixed(1) : null;
 
-          const conditionText =
-            (weather?.snow_in_hr || 0) > 0.05
-              ? 'Heavy Snow'
-              : (weather?.rain_in_hr || 0) > 0.15
-              ? 'Heavy Rain'
-              : (weather?.rain_in_hr || 0) > 0.02
-              ? 'Moderate Rain'
-              : (weather?.wind_mph || 0) > 30
-              ? 'High Winds'
-              : 'Clear Skies';
+          const conditionText = !isWeatherAvailable
+            ? 'Forecast Unavailable'
+            : (weather?.snow_in_hr || 0) > 0.05
+            ? 'Heavy Snow'
+            : (weather?.rain_in_hr || 0) > 0.15
+            ? 'Heavy Rain'
+            : (weather?.rain_in_hr || 0) > 0.02
+            ? 'Moderate Rain'
+            : (weather?.wind_mph || 0) > 30
+            ? 'High Winds'
+            : 'Clear Skies';
 
           const warningText =
             cp.risk?.reason ||
-            (cp.risk?.level === 'severe' || cp.risk?.level === 'no_travel'
+            (!isWeatherAvailable
+              ? 'Weather forecast is unavailable for this checkpoint. Drive alert.'
+              : cp.risk?.level === 'severe' || cp.risk?.level === 'no_travel'
               ? 'Severe weather conditions. Proceed with caution.'
               : cp.risk?.level === 'high'
               ? 'High weather hazard along corridor. Drive alert.'
@@ -500,8 +516,11 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
                       <span>{Math.round(cp.mile).toLocaleString()} mi</span>
                       <span> • </span>
                       <span>{formatMilestoneTime(cp.eta_local)}</span>
-                      {weather === null && (
-                        <span style={{ display: 'none' }}>Forecast unavailable</span>
+                      {!isWeatherAvailable && (
+                        <>
+                          <span> • </span>
+                          <span style={{ color: '#F87171' }}>Forecast unavailable</span>
+                        </>
                       )}
                     </Typography>
                   </Box>
@@ -600,7 +619,7 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
                             Wind:
                           </Typography>
                           <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#FFFFFF', mt: 0.35 }}>
-                            {windMph} mph
+                            {windMph !== null ? `${windMph} mph` : '--'}
                           </Typography>
                         </Box>
                       </Box>
@@ -613,7 +632,7 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
                             Rain:
                           </Typography>
                           <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#FFFFFF', mt: 0.35 }}>
-                            {rainInHr} in/hr
+                            {rainInHr !== null ? `${rainInHr} in/hr` : '--'}
                           </Typography>
                         </Box>
                       </Box>
@@ -626,7 +645,7 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
                             Snow:
                           </Typography>
                           <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#FFFFFF', mt: 0.35 }}>
-                            {snowInHr} in/hr
+                            {snowInHr !== null ? `${snowInHr} in/hr` : '--'}
                           </Typography>
                         </Box>
                       </Box>
