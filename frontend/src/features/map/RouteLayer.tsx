@@ -5,6 +5,17 @@ import { RouteDTO } from '../../api/types';
 import { routeDashArrays, routeLineColors } from '../../theme/tokens';
 import { formatDuration } from '../../utils/format';
 
+/**
+ * Calculates the vertex index for placing a route label pill.
+ * Places label at floor(n * (0.30 + 0.20 * i)) of the display geometry for route order index i
+ * (A: 30%, B: 50%, C: 70%), so shared stretches do not collide.
+ */
+export function getRouteLabelVertexIndex(n: number, i: number): number {
+  if (n <= 0) return 0;
+  const idx = Math.floor(n * (0.30 + 0.20 * i));
+  return Math.max(0, Math.min(idx, n - 1));
+}
+
 export interface RouteLayerProps {
   routes: RouteDTO[];
   selectedRouteId: string | null;
@@ -13,13 +24,14 @@ export interface RouteLayerProps {
 
 interface SingleRouteItemProps {
   route: RouteDTO;
+  orderIndex: number;
   isSelected: boolean;
   styleType: 'recommended' | 'second' | 'third';
   onSelect: (routeId: string) => void;
 }
 
 const SingleRouteItem: React.FC<SingleRouteItemProps> = React.memo(
-  ({ route, isSelected, styleType, onSelect }) => {
+  ({ route, orderIndex, isSelected, styleType, onSelect }) => {
     const positions = useMemo<LatLngExpression[]>(
       () => route.geometry.map(([lat, lon]) => [lat, lon] as [number, number]),
       [route.geometry],
@@ -33,8 +45,8 @@ const SingleRouteItem: React.FC<SingleRouteItemProps> = React.memo(
     const durationText = formatDuration(route.duration_seconds);
     const labelText = `${letter} · ${durationText}`;
 
-    const midIdx = Math.floor(route.geometry.length / 2);
-    const midPoint: LatLngExpression = route.geometry[midIdx] || [0, 0];
+    const labelIdx = getRouteLabelVertexIndex(route.geometry.length, orderIndex);
+    const labelPoint: LatLngExpression = route.geometry[labelIdx] || [0, 0];
 
     const labelIcon = useMemo(() => {
       return L.divIcon({
@@ -87,9 +99,9 @@ const SingleRouteItem: React.FC<SingleRouteItemProps> = React.memo(
           eventHandlers={eventHandlers}
         />
 
-        {/* Middle vertex label pill */}
+        {/* Route label pill */}
         <Marker
-          position={midPoint}
+          position={labelPoint}
           icon={labelIcon}
           eventHandlers={eventHandlers}
         />
@@ -123,6 +135,7 @@ export const RouteLayer: React.FC<RouteLayerProps> = ({
           <SingleRouteItem
             key={route.id}
             route={route}
+            orderIndex={index}
             isSelected={isSelected}
             styleType={styleType}
             onSelect={onSelectRoute}
