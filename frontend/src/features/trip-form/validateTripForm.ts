@@ -43,6 +43,51 @@ export function getTomorrow8amLocal(): string {
   return formatLocalIsoDateTime(tomorrow);
 }
 
+/**
+ * Spells out the chosen departure date and time unambiguously in the format:
+ * "Sun, Oct 11, 8:00 PM · local time at origin"
+ * Formatted from the input value without time zone conversion.
+ */
+export function formatDepartureSpelledOut(isoString: string): string | null {
+  if (!isoString) return null;
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(isoString.trim());
+  if (!match) return null;
+
+  const year = parseInt(match[1], 10);
+  const month = parseInt(match[2], 10) - 1;
+  const day = parseInt(match[3], 10);
+  const hours = parseInt(match[4], 10);
+  const minutes = parseInt(match[5], 10);
+
+  const date = new Date(Date.UTC(year, month, day, hours, minutes));
+  if (isNaN(date.getTime())) return null;
+
+  const formatted = new Intl.DateTimeFormat('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: 'UTC',
+  })
+    .format(date)
+    .replace(/\u202f/g, ' ');
+
+  return `${formatted} · local time at origin`;
+}
+
+/**
+ * Formats a raw number or string representation of load weight into
+ * thousands-separated digits (e.g. 42000 -> "42,000").
+ */
+export function formatLoadWeightDisplay(weight: number | string): string {
+  if (weight === '' || weight === null || weight === undefined) return '';
+  const cleaned = typeof weight === 'number' ? weight : Number(String(weight).replace(/,/g, ''));
+  if (isNaN(cleaned)) return '';
+  return cleaned.toLocaleString('en-US');
+}
+
 export const EXAMPLE_ORIGIN: PlaceDTO = {
   label: 'Dallas, TX',
   lat: 32.7767,
@@ -87,11 +132,12 @@ export function validateTripForm(values: TripFormValues): TripFormErrors {
     }
   }
 
-  const weightStr = String(values.load_weight_lb).trim();
+  const weightStr = String(values.load_weight_lb ?? '').trim();
   if (weightStr === '') {
     errors.load_weight_lb = 'Please enter a load weight.';
   } else {
-    const weightNum = Number(weightStr);
+    const normalized = weightStr.replace(/,/g, '');
+    const weightNum = Number(normalized);
     if (isNaN(weightNum)) {
       errors.load_weight_lb = 'Load weight must be a valid number.';
     } else if (weightNum < 0 || weightNum > 120000) {

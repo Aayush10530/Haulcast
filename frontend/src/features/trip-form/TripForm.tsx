@@ -5,6 +5,7 @@ import {
   Button,
   FormHelperText,
   IconButton,
+  InputAdornment,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
@@ -17,6 +18,8 @@ import { PlaceAutocomplete } from './PlaceAutocomplete';
 import {
   EXAMPLE_DESTINATION,
   EXAMPLE_ORIGIN,
+  formatDepartureSpelledOut,
+  formatLoadWeightDisplay,
   getNextFullHourLocal,
   getTomorrow8amLocal,
   TripFormErrors,
@@ -50,7 +53,7 @@ export const TripForm: React.FC<TripFormProps> = ({ onSuccess, disabled = false 
   const [origin, setOrigin] = useState<PlaceDTO | null>(null);
   const [destination, setDestination] = useState<PlaceDTO | null>(null);
   const [departureLocal, setDepartureLocal] = useState<string>(getNextFullHourLocal());
-  const [loadWeightLb, setLoadWeightLb] = useState<number | string>(40000);
+  const [loadWeightLb, setLoadWeightLb] = useState<number | ''>(40000);
   const [interval, setInterval] = useState<IntervalOption>('auto');
 
   const [clientErrors, setClientErrors] = useState<TripFormErrors>({});
@@ -72,6 +75,21 @@ export const TripForm: React.FC<TripFormProps> = ({ onSuccess, disabled = false 
       const next = { ...prev };
       delete next.origin;
       delete next.destination;
+      return next;
+    });
+  };
+
+  const handleLoadWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawDigits = e.target.value.replace(/\D/g, '');
+    if (rawDigits === '') {
+      setLoadWeightLb('');
+    } else {
+      setLoadWeightLb(parseInt(rawDigits, 10));
+    }
+    setClientErrors((prev) => ({ ...prev, load_weight_lb: undefined }));
+    setServerFieldErrors((prev) => {
+      const next = { ...prev };
+      delete next.load_weight_lb;
       return next;
     });
   };
@@ -251,6 +269,7 @@ export const TripForm: React.FC<TripFormProps> = ({ onSuccess, disabled = false 
         helperText={
           clientErrors.departure_local ||
           serverFieldErrors.departure_local ||
+          formatDepartureSpelledOut(departureLocal) ||
           'Local time at origin'
         }
         disabled={isPending}
@@ -267,18 +286,10 @@ export const TripForm: React.FC<TripFormProps> = ({ onSuccess, disabled = false 
 
       {/* Load Weight */}
       <TextField
-        label="Load weight (lb)"
-        type="number"
-        value={loadWeightLb}
-        onChange={(e) => {
-          setLoadWeightLb(e.target.value);
-          setClientErrors((prev) => ({ ...prev, load_weight_lb: undefined }));
-          setServerFieldErrors((prev) => {
-            const next = { ...prev };
-            delete next.load_weight_lb;
-            return next;
-          });
-        }}
+        label="Load weight"
+        type="text"
+        value={formatLoadWeightDisplay(loadWeightLb)}
+        onChange={handleLoadWeightChange}
         error={Boolean(clientErrors.load_weight_lb || serverFieldErrors.load_weight_lb)}
         helperText={
           clientErrors.load_weight_lb ||
@@ -289,10 +300,15 @@ export const TripForm: React.FC<TripFormProps> = ({ onSuccess, disabled = false 
         fullWidth
         size="small"
         slotProps={{
+          input: {
+            endAdornment: (
+              <InputAdornment position="end" sx={{ color: colorTokens.textMuted }}>
+                lb
+              </InputAdornment>
+            ),
+          },
           htmlInput: {
-            min: 0,
-            max: 120000,
-            step: 500,
+            inputMode: 'numeric',
             'data-testid': 'load-weight-input',
           },
         }}

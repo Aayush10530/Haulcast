@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   EXAMPLE_DESTINATION,
   EXAMPLE_ORIGIN,
+  formatDepartureSpelledOut,
+  formatLoadWeightDisplay,
   formatLocalIsoDateTime,
   getNextFullHourLocal,
   getTomorrow8amLocal,
@@ -160,5 +162,45 @@ describe('validateTripForm', () => {
 
     const testDate = new Date(2026, 9, 12, 8, 30);
     expect(formatLocalIsoDateTime(testDate)).toBe('2026-10-12T08:30');
+  });
+
+  it('formatDepartureSpelledOut formats date and time without timezone conversion', () => {
+    expect(formatDepartureSpelledOut('2026-10-11T20:00')).toBe(
+      'Sun, Oct 11, 8:00 PM · local time at origin',
+    );
+    expect(formatDepartureSpelledOut('2026-10-12T08:00')).toBe(
+      'Mon, Oct 12, 8:00 AM · local time at origin',
+    );
+    expect(formatDepartureSpelledOut('2026-01-01T00:00')).toBe(
+      'Thu, Jan 1, 12:00 AM · local time at origin',
+    );
+    expect(formatDepartureSpelledOut('2026-07-04T12:30')).toBe(
+      'Sat, Jul 4, 12:30 PM · local time at origin',
+    );
+    expect(formatDepartureSpelledOut('')).toBeNull();
+    expect(formatDepartureSpelledOut('invalid')).toBeNull();
+  });
+
+  it('formatLoadWeightDisplay formats thousands separators and handles raw values', () => {
+    expect(formatLoadWeightDisplay(40000)).toBe('40,000');
+    expect(formatLoadWeightDisplay(42000)).toBe('42,000');
+    expect(formatLoadWeightDisplay(120000)).toBe('120,000');
+    expect(formatLoadWeightDisplay(0)).toBe('0');
+    expect(formatLoadWeightDisplay('42000')).toBe('42,000');
+    expect(formatLoadWeightDisplay('42,000')).toBe('42,000');
+    expect(formatLoadWeightDisplay('')).toBe('');
+    expect(formatLoadWeightDisplay('abc')).toBe('');
+  });
+
+  it('allows load weight provided with commas', () => {
+    const errors = validateTripForm({
+      origin: EXAMPLE_ORIGIN,
+      destination: EXAMPLE_DESTINATION,
+      departure_local: '2026-10-12T08:00',
+      load_weight_lb: '42,000',
+      interval: 'auto',
+    });
+
+    expect(Object.keys(errors)).toHaveLength(0);
   });
 });

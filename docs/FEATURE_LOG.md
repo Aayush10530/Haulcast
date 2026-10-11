@@ -170,6 +170,14 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 
 ## 5. Fixes
 
+### X-003 Clarified Departure Date and Formatted Load Weight
+- Date: 2026-10-11
+- Type: fix
+- Phase: P4
+- Summary: In TripForm, added unambiguous spelled-out departure date/time helper ("Sun, Oct 11, 8:00 PM · local time at origin") without timezone shift. Formatted load weight input with thousands separators while typing, storing raw number in state/payload, with "lb" end adornment.
+- Files: frontend/src/features/trip-form/TripForm.tsx, frontend/src/features/trip-form/validateTripForm.ts, frontend/src/features/trip-form/TripForm.test.tsx, frontend/src/features/trip-form/validateTripForm.test.ts
+- Status: done
+
 ### X-002 Responsive Layouts and Mobile Tab Bar Below 1440 px
 - Date: 2026-10-11
 - Type: fix
@@ -230,3 +238,4 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | P3 (complete) | Provider & API orchestration review | 0.25 | 0.15 | 4.45 | Verified P3 end-to-end: ranking explanation compared against fastest, cold/warm timings recorded (cold 10.33s / warm 0.18s), P3 complete |
 | P4 (shell) | Dark theme & responsive app shell | 0.50 | 0.30 | 4.75 | DESIGN.md v2 tokens, risk colors (#07171C text, 100% WCAG AA), theme.ts, StormRoute header, 3-column / 2-column / mobile tab responsive shell, GET /api/health/ status dot |
 | P4a (F-030, F-031) | API types, client & trip form | 0.50 | 0.25 | 5.00 | ARCHITECTURE §8 DTOs, AppError client with 60s timeout, useDebouncedValue, useGeocodeSearch, useAnalyzeTrip, PlaceAutocomplete, TripForm with swap/example, validateTripForm, 40 tests |
+| P4 (fix) | Departure clarity & load weight formatting | 0.15 | 0.10 | 5.10 | Spelled-out departure helper without timezone shift, thousands separator formatting on load weight input, "lb" adornment, raw number storage, 45 tests |

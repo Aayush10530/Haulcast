@@ -104,7 +104,8 @@ describe('TripForm Component', () => {
     expect(screen.getByLabelText('Destination')).toBeInTheDocument();
     expect(screen.getByLabelText('Swap origin and destination')).toBeInTheDocument();
     expect(screen.getByLabelText('Departure')).toBeInTheDocument();
-    expect(screen.getByLabelText('Load weight (lb)')).toBeInTheDocument();
+    expect(screen.getByLabelText('Load weight')).toBeInTheDocument();
+    expect(screen.getByText('lb')).toBeInTheDocument();
     expect(screen.getByText('Checkpoint interval')).toBeInTheDocument();
     expect(screen.getByTestId('generate-routes-button')).toHaveTextContent(
       'Generate routes',
@@ -122,12 +123,12 @@ describe('TripForm Component', () => {
 
     const originInput = screen.getByLabelText('Origin') as HTMLInputElement;
     const destInput = screen.getByLabelText('Destination') as HTMLInputElement;
-    const loadInput = screen.getByLabelText('Load weight (lb)') as HTMLInputElement;
+    const loadInput = screen.getByLabelText('Load weight') as HTMLInputElement;
     const departureInput = screen.getByLabelText('Departure') as HTMLInputElement;
 
     expect(originInput.value).toBe('Dallas, TX');
     expect(destInput.value).toBe('Denver, CO');
-    expect(loadInput.value).toBe('42000');
+    expect(loadInput.value).toBe('42,000');
     expect(departureInput.value).toMatch(/^\d{4}-\d{2}-\d{2}T08:00$/);
   });
 
@@ -331,5 +332,64 @@ describe('TripForm Component', () => {
     });
 
     expect(callCount).toBe(2);
+  });
+
+  it('displays spelled out departure date and time helper text without timezone shift', () => {
+    renderTripForm();
+
+    const departureInput = screen.getByLabelText('Departure') as HTMLInputElement;
+    fireEvent.change(departureInput, { target: { value: '2026-10-11T20:00' } });
+
+    expect(
+      screen.getByText('Sun, Oct 11, 8:00 PM · local time at origin'),
+    ).toBeInTheDocument();
+
+    fireEvent.change(departureInput, { target: { value: '2026-10-12T08:00' } });
+    expect(
+      screen.getByText('Mon, Oct 12, 8:00 AM · local time at origin'),
+    ).toBeInTheDocument();
+  });
+
+  it('formats load weight with thousands separators while typing and stores raw number', async () => {
+    let capturedBody: unknown = null;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockImplementation(async (url: string, init?: RequestInit) => {
+        if (url.includes('/api/trips/analyze/')) {
+          capturedBody = JSON.parse(init?.body as string);
+          return {
+            ok: true,
+            status: 200,
+            json: async () => mockAnalyzeResponse,
+          };
+        }
+        return { ok: true, status: 200, json: async () => ({}) };
+      }),
+    );
+
+    renderTripForm();
+
+    const loadInput = screen.getByLabelText('Load weight') as HTMLInputElement;
+    expect(screen.getByText('lb')).toBeInTheDocument();
+
+    // Type raw digits
+    fireEvent.change(loadInput, { target: { value: '55000' } });
+    expect(loadInput.value).toBe('55,000');
+
+    // Fill the rest with example trip and re-type
+    fireEvent.click(screen.getByTestId('example-trip-button'));
+    expect(loadInput.value).toBe('42,000');
+
+    fireEvent.change(loadInput, { target: { value: '80500' } });
+    expect(loadInput.value).toBe('80,500');
+
+    // Submit and assert raw number was passed in payload
+    fireEvent.click(screen.getByTestId('generate-routes-button'));
+
+    await waitFor(() => {
+      expect(capturedBody).toMatchObject({
+        load_weight_lb: 80500,
+      });
+    });
   });
 });
