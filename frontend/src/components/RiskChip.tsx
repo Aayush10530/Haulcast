@@ -6,7 +6,7 @@ import Scale from '@mui/icons-material/Scale';
 import WaterDrop from '@mui/icons-material/WaterDrop';
 import { CheckpointRiskDTO, RiskLevelKey } from '../api/types';
 import { riskColors } from '../theme/riskColors';
-import { typographyTokens } from '../theme/tokens';
+import { shapeTokens, typographyTokens } from '../theme/tokens';
 
 export interface RiskChipProps {
   risk?: CheckpointRiskDTO | null;
@@ -76,7 +76,7 @@ export const RiskChip: React.FC<RiskChipProps> = ({
         gap: 0.5,
         px: 0.75,
         py: 0.25,
-        borderRadius: '4px',
+        borderRadius: `${shapeTokens.borderRadius}px`,
         backgroundColor: spec.background,
         color: spec.contrastText,
         fontFamily: typographyTokens.fontFamilyUi,

@@ -22,6 +22,13 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 
 ## 2. Decisions
 
+### D-025 Floating Panels and Rounded Cards per Mockup Layout
+- Date: 2026-10-11
+- Type: decision
+- Phase: P4
+- Summary: Restyled layout shell to match mockup: header, panels, and map card float on the canvas with 12 px gap, 10 px radius, 1 px border, and surface fill (#111E24). Map card clips its content. Component radii: 8 px for inputs, buttons, and chips; 10 px for panels. Form fields include start icons (Place, Flag, CalendarToday, Scale). Generate routes button 44 px high flat brand fill. Trip planning subtitle "Plan a safer route with the weather forecast". Selected route card styled with 1.5 px brand border and faint brand tint, flat, no glow.
+- Status: done
+
 ### D-024 dark flat theme per DESIGN.md v2
 - Date: 2026-10-11
 - Type: decision

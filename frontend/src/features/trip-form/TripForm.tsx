@@ -12,8 +12,12 @@ import {
   Typography,
 } from '@mui/material';
 import { AnalyzeResponse, IntervalOption, PlaceDTO, TripRequestPayload } from '../../api/types';
+import CalendarToday from '@mui/icons-material/CalendarToday';
+import Flag from '@mui/icons-material/Flag';
+import Place from '@mui/icons-material/Place';
+import Scale from '@mui/icons-material/Scale';
 import { useAnalyzeTrip } from '../../hooks/useAnalyzeTrip';
-import { colorTokens, typographyTokens } from '../../theme/tokens';
+import { colorTokens, shapeTokens, typographyTokens } from '../../theme/tokens';
 import { PlaceAutocomplete } from './PlaceAutocomplete';
 import {
   EXAMPLE_DESTINATION,
@@ -171,18 +175,31 @@ export const TripForm: React.FC<TripFormProps> = ({ onSuccess, disabled = false 
         gap: 2,
       }}
     >
-      <Typography
-        variant="h1"
-        sx={{
-          fontFamily: typographyTokens.fontFamilyUi,
-          fontSize: typographyTokens.panelTitle.fontSize,
-          lineHeight: typographyTokens.panelTitle.lineHeight,
-          fontWeight: typographyTokens.panelTitle.fontWeight,
-          color: colorTokens.text,
-        }}
-      >
-        Trip planning
-      </Typography>
+      <Box sx={{ mb: 0.5 }}>
+        <Typography
+          variant="h1"
+          sx={{
+            fontFamily: typographyTokens.fontFamilyUi,
+            fontSize: typographyTokens.panelTitle.fontSize,
+            lineHeight: typographyTokens.panelTitle.lineHeight,
+            fontWeight: typographyTokens.panelTitle.fontWeight,
+            color: colorTokens.text,
+          }}
+        >
+          Trip planning
+        </Typography>
+        <Typography
+          sx={{
+            fontFamily: typographyTokens.fontFamilyUi,
+            fontSize: typographyTokens.caption.fontSize,
+            lineHeight: typographyTokens.caption.lineHeight,
+            color: colorTokens.textMuted,
+            mt: 0.5,
+          }}
+        >
+          Plan a safer route with the weather forecast
+        </Typography>
+      </Box>
 
       {/* Origin Autocomplete */}
       <PlaceAutocomplete
@@ -201,6 +218,7 @@ export const TripForm: React.FC<TripFormProps> = ({ onSuccess, disabled = false 
         }}
         error={clientErrors.origin || serverFieldErrors.origin}
         disabled={isPending}
+        startIcon={<Place sx={{ fontSize: 18 }} />}
         data-testid="origin-autocomplete"
       />
 
@@ -248,6 +266,7 @@ export const TripForm: React.FC<TripFormProps> = ({ onSuccess, disabled = false 
         }}
         error={clientErrors.destination || serverFieldErrors.destination}
         disabled={isPending}
+        startIcon={<Flag sx={{ fontSize: 18 }} />}
         data-testid="destination-autocomplete"
       />
 
@@ -276,6 +295,13 @@ export const TripForm: React.FC<TripFormProps> = ({ onSuccess, disabled = false 
         fullWidth
         size="small"
         slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start" sx={{ color: colorTokens.textMuted }}>
+                <CalendarToday sx={{ fontSize: 18 }} />
+              </InputAdornment>
+            ),
+          },
           inputLabel: { shrink: true },
           htmlInput: {
             step: 60,
@@ -301,6 +327,11 @@ export const TripForm: React.FC<TripFormProps> = ({ onSuccess, disabled = false 
         size="small"
         slotProps={{
           input: {
+            startAdornment: (
+              <InputAdornment position="start" sx={{ color: colorTokens.textMuted }}>
+                <Scale sx={{ fontSize: 18 }} />
+              </InputAdornment>
+            ),
             endAdornment: (
               <InputAdornment position="end" sx={{ color: colorTokens.textMuted }}>
                 lb
@@ -397,7 +428,20 @@ export const TripForm: React.FC<TripFormProps> = ({ onSuccess, disabled = false 
         disabled={isPending}
         data-testid="generate-routes-button"
         fullWidth
-        sx={{ mt: 1 }}
+        sx={{
+          height: 44,
+          minHeight: 44,
+          borderRadius: `${shapeTokens.borderRadius}px`,
+          backgroundColor: colorTokens.brand,
+          color: colorTokens.onBrand,
+          fontWeight: 600,
+          boxShadow: 'none',
+          '&:hover': {
+            backgroundColor: colorTokens.brandStrong,
+            boxShadow: 'none',
+          },
+          mt: 1,
+        }}
       >
         {isPending ? 'Finding routes...' : 'Generate routes'}
       </Button>

@@ -100,6 +100,9 @@ describe('TripForm Component', () => {
     renderTripForm();
 
     expect(screen.getByText('Trip planning')).toBeInTheDocument();
+    expect(
+      screen.getByText('Plan a safer route with the weather forecast'),
+    ).toBeInTheDocument();
     expect(screen.getByLabelText('Origin')).toBeInTheDocument();
     expect(screen.getByLabelText('Destination')).toBeInTheDocument();
     expect(screen.getByLabelText('Swap origin and destination')).toBeInTheDocument();

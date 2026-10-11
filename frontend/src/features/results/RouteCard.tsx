@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Chip, CircularProgress, Paper, Typography } from '@mui/material';
 import { RouteDTO } from '../../api/types';
 import { RiskStrip } from '../../components/RiskStrip';
-import { colorTokens, typographyTokens } from '../../theme/tokens';
+import { colorTokens, shapeTokens, typographyTokens } from '../../theme/tokens';
 import { formatDelta, formatDuration, formatLocalTime, formatMiles } from '../../utils/format';
 
 export interface RouteCardProps {
@@ -51,14 +51,21 @@ export const RouteCard: React.FC<RouteCardProps> = ({
       sx={{
         p: 2,
         cursor: 'pointer',
-        borderRadius: '4px',
-        borderWidth: isSelected ? '2px' : '1px',
-        borderColor: isSelected ? colorTokens.brand : colorTokens.border,
-        backgroundColor: isSelected ? colorTokens.surfaceRaised : colorTokens.surface,
+        borderRadius: `${shapeTokens.panelBorderRadius}px`,
+        border: isSelected
+          ? `1.5px solid ${colorTokens.brand}`
+          : `1px solid ${colorTokens.border}`,
+        backgroundColor: isSelected
+          ? 'rgba(45, 184, 197, 0.08)'
+          : colorTokens.surface,
+        boxShadow: 'none',
         transition: 'border-color 150ms ease-out, background-color 150ms ease-out',
         '&:hover': {
           borderColor: isSelected ? colorTokens.brand : colorTokens.textMuted,
-          backgroundColor: colorTokens.surfaceRaised,
+          backgroundColor: isSelected
+            ? 'rgba(45, 184, 197, 0.12)'
+            : colorTokens.surfaceRaised,
+          boxShadow: 'none',
         },
       }}
     >
@@ -72,7 +79,7 @@ export const RouteCard: React.FC<RouteCardProps> = ({
               width: 28,
               height: 28,
               minWidth: 28,
-              borderRadius: '4px',
+              borderRadius: `${shapeTokens.borderRadius}px`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -95,7 +102,7 @@ export const RouteCard: React.FC<RouteCardProps> = ({
               data-testid="tag-recommended"
               sx={{
                 height: 22,
-                borderRadius: '4px',
+                borderRadius: `${shapeTokens.borderRadius}px`,
                 backgroundColor: colorTokens.brand,
                 color: colorTokens.onBrand,
                 fontFamily: typographyTokens.fontFamilyUi,
@@ -113,7 +120,7 @@ export const RouteCard: React.FC<RouteCardProps> = ({
               data-testid="tag-fastest"
               sx={{
                 height: 22,
-                borderRadius: '4px',
+                borderRadius: `${shapeTokens.borderRadius}px`,
                 borderColor: colorTokens.border,
                 color: colorTokens.text,
                 fontFamily: typographyTokens.fontFamilyUi,

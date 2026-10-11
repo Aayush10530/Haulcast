@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { RecommendationDTO } from '../../api/types';
-import { colorTokens, typographyTokens } from '../../theme/tokens';
+import { colorTokens, shapeTokens, typographyTokens } from '../../theme/tokens';
 
 export interface RecommendationBannerProps {
   recommendation: RecommendationDTO;
@@ -30,7 +30,7 @@ export const RecommendationBanner: React.FC<RecommendationBannerProps> = ({
       sx={{
         borderLeft: `4px solid ${colorTokens.brand}`,
         backgroundColor: colorTokens.surfaceRaised,
-        borderRadius: '0 4px 4px 0',
+        borderRadius: `0 ${shapeTokens.panelBorderRadius}px ${shapeTokens.panelBorderRadius}px 0`,
         p: 2,
         mb: 2,
       }}

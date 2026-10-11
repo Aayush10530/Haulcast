@@ -1,7 +1,7 @@
 import React from 'react';
 import { Alert, Box, Button, Paper, Skeleton, Typography } from '@mui/material';
 import { AnalyzeResponse } from '../../api/types';
-import { colorTokens, typographyTokens } from '../../theme/tokens';
+import { colorTokens, shapeTokens, typographyTokens } from '../../theme/tokens';
 import { CheckpointList } from './CheckpointList';
 import { RecommendationBanner } from './RecommendationBanner';
 import { RouteList } from './RouteList';
@@ -35,7 +35,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
         <Skeleton
           variant="rectangular"
           height={68}
-          sx={{ borderRadius: '4px', mb: 2.5, backgroundColor: colorTokens.surfaceRaised }}
+          sx={{ borderRadius: `${shapeTokens.panelBorderRadius}px`, mb: 2.5, backgroundColor: colorTokens.surfaceRaised }}
         />
         {/* Route card skeletons matching final card layout */}
         {[1, 2, 3].map((key) => (
@@ -45,14 +45,15 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
             sx={{
               p: 2,
               mb: 2,
+              borderRadius: `${shapeTokens.panelBorderRadius}px`,
               backgroundColor: colorTokens.surface,
               borderColor: colorTokens.border,
             }}
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
               <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                <Skeleton variant="rectangular" width={28} height={28} sx={{ borderRadius: '4px' }} />
-                <Skeleton variant="rectangular" width={80} height={22} sx={{ borderRadius: '4px' }} />
+                <Skeleton variant="rectangular" width={28} height={28} sx={{ borderRadius: `${shapeTokens.borderRadius}px` }} />
+                <Skeleton variant="rectangular" width={80} height={22} sx={{ borderRadius: `${shapeTokens.borderRadius}px` }} />
               </Box>
               <Skeleton variant="circular" width={56} height={56} />
             </Box>
@@ -104,7 +105,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
           p: 3,
           backgroundColor: colorTokens.surface,
           borderColor: colorTokens.border,
-          borderRadius: '4px',
+          borderRadius: `${shapeTokens.panelBorderRadius}px`,
           textAlign: 'center',
         }}
       >

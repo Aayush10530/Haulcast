@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Autocomplete, TextField } from '@mui/material';
+import { Autocomplete, InputAdornment, TextField } from '@mui/material';
 import { PlaceDTO } from '../../api/types';
 import { useGeocodeSearch } from '../../hooks/useGeocodeSearch';
+import { colorTokens } from '../../theme/tokens';
 
 export interface PlaceAutocompleteProps {
   id: string;
@@ -12,6 +13,7 @@ export interface PlaceAutocompleteProps {
   error?: string;
   helperText?: string;
   disabled?: boolean;
+  startIcon?: React.ReactNode;
   'data-testid'?: string;
 }
 
@@ -24,6 +26,7 @@ export const PlaceAutocomplete: React.FC<PlaceAutocompleteProps> = ({
   error,
   helperText,
   disabled = false,
+  startIcon,
   'data-testid': testId,
 }) => {
   const [prevValue, setPrevValue] = useState<PlaceDTO | null>(value);
@@ -91,8 +94,21 @@ export const PlaceAutocomplete: React.FC<PlaceAutocompleteProps> = ({
           fullWidth
           slotProps={{
             ...params.slotProps,
+            input: {
+              ...params.slotProps?.input,
+              startAdornment: startIcon ? (
+                <>
+                  <InputAdornment position="start" sx={{ color: colorTokens.textMuted }}>
+                    {startIcon}
+                  </InputAdornment>
+                  {params.slotProps?.input?.startAdornment}
+                </>
+              ) : (
+                params.slotProps?.input?.startAdornment
+              ),
+            },
             htmlInput: {
-              ...params.slotProps.htmlInput,
+              ...params.slotProps?.htmlInput,
               'data-testid': testId || `${id}-input`,
             },
           }}

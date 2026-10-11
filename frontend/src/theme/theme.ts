@@ -187,7 +187,7 @@ export const theme = createTheme({
         root: {
           backgroundColor: colorTokens.surface,
           borderColor: colorTokens.border,
-          borderRadius: shapeTokens.borderRadius,
+          borderRadius: shapeTokens.panelBorderRadius,
           backgroundImage: 'none',
           boxShadow: 'none',
         },

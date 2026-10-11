@@ -10,7 +10,7 @@ import {
 import { CheckpointDTO, RiskLevelKey } from '../../api/types';
 import { RiskChip } from '../../components/RiskChip';
 import { riskColors } from '../../theme/riskColors';
-import { colorTokens, typographyTokens } from '../../theme/tokens';
+import { colorTokens, shapeTokens, typographyTokens } from '../../theme/tokens';
 import { formatLocalTime, formatMiles } from '../../utils/format';
 
 export interface CheckpointListProps {
@@ -128,7 +128,7 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
         sx={{
           backgroundColor: colorTokens.surface,
           borderColor: colorTokens.border,
-          borderRadius: '4px',
+          borderRadius: `${shapeTokens.panelBorderRadius}px`,
           overflow: 'hidden',
         }}
       >

@@ -57,32 +57,33 @@ Change: the route "score" ring shows our real average risk on the 0-4 scale (neu
 
 **Route line colors** (never risk colors): recommended = `#2DB8C5` solid; second = `#7C9BFF` dashed (10 6); third = `#C9D4D8` dotted (2 6). Each line has a `#0B1418` casing 2 px wider. Route letters A/B/C are always shown.
 
-**Shape and depth:** radius 4 px (panels 6). Borders 1 px `border`. Spacing base 8 px. Compact density, `size="small"`.
+**Shape and depth (D-025):** floating cards on canvas with 12 px gap. Radii: 8 px inputs, buttons, and chips; 10 px panels, header, and map card. Borders 1 px `border`. Surface fill (`#111E24`). Map card clips its content (`overflow: hidden`). Spacing base 8 px. Compact density.
 
 ## 4. MUI theme (`theme/theme.ts`)
 
 - `palette.mode: 'dark'`; primary = brand with `on-brand` contrast text; background default = canvas, paper = surface; text and divider from tokens.
-- `Button` contained: flat brand fill, `on-brand` text, hover brand-strong, no elevation, no gradient, weight 600. `Button` text variant for secondary actions.
-- `Paper`/`Card`: outlined, no elevation, `surface` background.
-- `TextField`/`Select`/`Autocomplete`: outlined, small, `surface-raised` fill, `border` outline, brand outline on focus.
-- `ToggleButtonGroup` (interval selector): small, selected = brand text and brand border on `surface-raised`.
-- `Chip`: radius 4, used for risk (fill from risk scale) and tags.
-- `Alert`: outlined with 4 px left border in the severity color.
+- `Button` contained: flat brand fill, `on-brand` text, hover brand-strong, no elevation, no gradient, weight 600, radius 8 px. `Button` text variant for secondary actions. Primary action button 44 px high.
+- `Paper`/`Card`: outlined, no elevation, `surface` background, radius 10 px. Selected route card: 1.5 px brand border and a faint brand tint, flat, no glow.
+- `TextField`/`Select`/`Autocomplete`: outlined, small, `surface-raised` fill, `border` outline, brand outline on focus, radius 8 px. Start icons: Place for origin, Flag for destination, CalendarToday for departure, Scale for load weight.
+- `ToggleButtonGroup` (interval selector): small, radius 8 px, selected = brand text and brand border on `surface-raised`.
+- `Chip`: radius 8 px, used for risk (fill from risk scale) and tags.
+- `Alert`: outlined with 4 px left border in the severity color, radius 8 px.
 - `Slider`: thin 3 px track, 14 px thumb in brand.
 - `Tooltip` and Leaflet popups: `surface-raised` background, `border`, text color (global CSS overrides for `.leaflet-popup-content-wrapper`, `.leaflet-control`).
 - Focus ring: 2 px brand, 2 px offset, on every interactive element (applied to the correct element for each input, tested by keyboard).
 - `CssBaseline`: dark scrollbars (thin, `border` thumb), font smoothing. No `fontFeatureSettings`.
 
-## 5. Layout
+## 5. Layout (D-025)
 
-- **>= 1440 px (three columns):** header 56 px. Left column 340 px (form). Center: map fills the rest. Right column 380 px (results). Columns scroll internally; the page does not scroll.
-- **900-1439 px (two columns):** left panel 400 px holds the form on top and results below, scrolling internally. Map fills the rest.
-- **< 900 px (mobile):** header 48 px, bottom tab bar with three tabs: Plan (form), Map (map plus heatmap bar), Routes (results). The map tab keeps the heatmap controls docked at its top. Touch targets at least 40 px. No horizontal scroll.
-- **Header:** wordmark and subtitle on the left; on the right a small status dot with "API online" / "API offline" driven by `GET /api/health/` (real, polled on load and every 60 s). Nothing else.
+- **Floating cards on canvas:** panels, header, and map become floating cards on the canvas: 12 px gap, 10 px radius, 1 px border, surface fill (`#111E24`). The map card clips its content (`overflow: hidden`).
+- **>= 1440 px (three columns):** floating header 56 px. 12 px gap. Left column 340 px (form). Center: map card fills the rest. Right column 380 px (results). 12 px gap between columns. Columns scroll internally; the page does not scroll.
+- **900-1439 px (two columns):** floating header. 12 px gap. Left panel 400 px holds the form on top and results below with 12 px gap, scrolling internally. Map card fills the rest.
+- **< 900 px (mobile):** floating header 48 px. 12 px gap. Active tab region rendered as a floating card. Fixed bottom tab bar with three tabs: Plan (form), Map (map plus heatmap bar), Routes (results). The map tab keeps the heatmap controls docked at its top. Touch targets at least 40 px. No horizontal scroll.
+- **Header:** floating card with wordmark and subtitle on the left; on the right a small status dot with "API online" / "API offline" driven by `GET /api/health/` (real, polled on load and every 60 s). Nothing else.
 
 ## 6. Components
 
-**Trip form (left column):** title "Trip planning". Origin and destination place fields with a swap icon button between them. Departure date and time (native `datetime-local` input styled by the theme; helper "Local time at origin"). Load weight in lb (helper "Wind rules apply above 30,000 and 40,000 lb"). Checkpoint interval toggle: Auto, 10 mi, 25 mi, 50 mi (default Auto). Primary button "Generate routes". Text button "Try an example trip" (fills the form, no fake results).
+**Trip form (left column):** title "Trip planning" (20/28), subtitle "Plan a safer route with the weather forecast". Origin and destination place fields with start icons (Place, Flag) and a swap icon button between them. Departure date and time with CalendarToday start icon (native `datetime-local` input styled by the theme; helper "Local time at origin"). Load weight in lb with Scale start icon (helper "Wind rules apply above 30,000 and 40,000 lb"). Checkpoint interval toggle: Auto, 10 mi, 25 mi, 50 mi (default Auto). Primary button "Generate routes" (44 px high, flat brand fill). Text button "Try an example trip" (fills the form, no fake results).
 
 **Results (right column):** header "Route options (3)". Recommendation banner: 4 px brand left border, headline from the API, caption "Decided by: <factor>". Three route cards:
 - Letter badge A/B/C (28 px square, mono), tag chips ("Recommended" in brand, "Fastest" outlined), avg-risk ring (neutral fill, number inside, label "Avg risk").

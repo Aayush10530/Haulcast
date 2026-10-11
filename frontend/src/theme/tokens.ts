@@ -67,8 +67,9 @@ export const routeDashArrays = {
 } as const;
 
 export const shapeTokens = {
-  borderRadius: 4,
-  panelBorderRadius: 6,
+  borderRadius: 8,
+  panelBorderRadius: 10,
+  gap: 12,
   borderWidth: 1,
   headerHeight: 56,
   headerHeightMobile: 48,

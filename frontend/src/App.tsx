@@ -119,9 +119,15 @@ export const App: React.FC = () => {
         width: '100vw',
         overflow: 'hidden',
         backgroundColor: colorTokens.canvas,
+        p: `${shapeTokens.gap}px`,
+        pb: isMobile
+          ? `calc(56px + env(safe-area-inset-bottom, 0px) + ${shapeTokens.gap}px)`
+          : `${shapeTokens.gap}px`,
+        gap: `${shapeTokens.gap}px`,
+        boxSizing: 'border-box',
       }}
     >
-      {/* Header per DESIGN.md §5: 56px desktop, 48px mobile */}
+      {/* Header per DESIGN.md §5: floating card */}
       <Box
         component="header"
         sx={{
@@ -130,12 +136,14 @@ export const App: React.FC = () => {
             md: `${shapeTokens.headerHeight}px`,
           },
           backgroundColor: colorTokens.surface,
-          borderBottom: `1px solid ${colorTokens.border}`,
+          border: `1px solid ${colorTokens.border}`,
+          borderRadius: `${shapeTokens.panelBorderRadius}px`,
           px: 2,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           flexShrink: 0,
+          boxSizing: 'border-box',
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -205,7 +213,7 @@ export const App: React.FC = () => {
           minHeight: 0,
           display: 'grid',
           overflow: 'hidden',
-          mb: isMobile ? 'calc(56px + env(safe-area-inset-bottom, 0px))' : 0,
+          gap: `${shapeTokens.gap}px`,
           gridTemplateColumns: {
             xs: '1fr',
             md: `${shapeTokens.twoColumnLeftWidth}px 1fr`,
@@ -242,12 +250,8 @@ export const App: React.FC = () => {
             p: 2,
             boxSizing: 'border-box',
             backgroundColor: colorTokens.surface,
-            borderRight: { xs: 'none', md: `1px solid ${colorTokens.border}` },
-            borderBottom: {
-              xs: 'none',
-              md: `1px solid ${colorTokens.border}`,
-              xl: 'none',
-            },
+            border: `1px solid ${colorTokens.border}`,
+            borderRadius: `${shapeTokens.panelBorderRadius}px`,
             overflowY: 'auto',
           }}
         >
@@ -269,7 +273,9 @@ export const App: React.FC = () => {
             minHeight: 0,
             p: 2,
             boxSizing: 'border-box',
-            backgroundColor: colorTokens.canvas,
+            backgroundColor: colorTokens.surface,
+            border: `1px solid ${colorTokens.border}`,
+            borderRadius: `${shapeTokens.panelBorderRadius}px`,
             overflow: 'hidden',
             position: 'relative',
           }}
@@ -300,16 +306,8 @@ export const App: React.FC = () => {
             p: 2,
             boxSizing: 'border-box',
             backgroundColor: colorTokens.surface,
-            borderRight: {
-              xs: 'none',
-              md: `1px solid ${colorTokens.border}`,
-              xl: 'none',
-            },
-            borderLeft: {
-              xs: 'none',
-              md: 'none',
-              xl: `1px solid ${colorTokens.border}`,
-            },
+            border: `1px solid ${colorTokens.border}`,
+            borderRadius: `${shapeTokens.panelBorderRadius}px`,
             overflowY: 'auto',
           }}
         >

@@ -219,36 +219,42 @@ describe('App Component Shell & Responsive Layouts', () => {
       },
     );
 
-    it('renders two-column layout at 1100 px without tab bar and with map region visible', () => {
-      setViewportWidth(1100);
-      renderWithProviders();
+    it.each([1100, 1280])(
+      'renders two-column layout at %i px without tab bar and with map region visible',
+      (width) => {
+        setViewportWidth(width);
+        renderWithProviders();
 
-      // Tab bar does NOT exist at 1100 px (>= 900 px)
-      expect(screen.queryByTestId('tab-plan')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('tab-map')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('tab-routes')).not.toBeInTheDocument();
+        // Tab bar does NOT exist at >= 900 px
+        expect(screen.queryByTestId('tab-plan')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('tab-map')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('tab-routes')).not.toBeInTheDocument();
 
-      // In the two-column layout, the map region exists and is visible
-      const mapRegion = screen.getByTestId('region-map');
-      expect(mapRegion).toBeInTheDocument();
-      expect(mapRegion).toBeVisible();
+        // In the two-column layout, the map region exists and is visible
+        const mapRegion = screen.getByTestId('region-map');
+        expect(mapRegion).toBeInTheDocument();
+        expect(mapRegion).toBeVisible();
 
-      // 400 px left panel regions also exist and are visible
-      expect(screen.getByTestId('region-trip-form')).toBeVisible();
-      expect(screen.getByTestId('region-results')).toBeVisible();
-    });
+        // 400 px left panel regions also exist and are visible
+        expect(screen.getByTestId('region-trip-form')).toBeVisible();
+        expect(screen.getByTestId('region-results')).toBeVisible();
+      },
+    );
 
-    it('renders three-column layout at 1440 px without tab bar and with all regions visible', () => {
-      setViewportWidth(1440);
-      renderWithProviders();
+    it.each([1440, 1920])(
+      'renders three-column layout at %i px without tab bar and with all regions visible',
+      (width) => {
+        setViewportWidth(width);
+        renderWithProviders();
 
-      // Tab bar does NOT exist at 1440 px
-      expect(screen.queryByTestId('tab-plan')).not.toBeInTheDocument();
+        // Tab bar does NOT exist at >= 1440 px
+        expect(screen.queryByTestId('tab-plan')).not.toBeInTheDocument();
 
-      // All 3 regions exist and are visible
-      expect(screen.getByTestId('region-trip-form')).toBeVisible();
-      expect(screen.getByTestId('region-map')).toBeVisible();
-      expect(screen.getByTestId('region-results')).toBeVisible();
-    });
+        // All 3 regions exist and are visible
+        expect(screen.getByTestId('region-trip-form')).toBeVisible();
+        expect(screen.getByTestId('region-map')).toBeVisible();
+        expect(screen.getByTestId('region-results')).toBeVisible();
+      },
+    );
   });
 });
