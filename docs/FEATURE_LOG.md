@@ -209,6 +209,14 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 
 ## 5. Fixes
 
+### X-007 Controlled Weather Fixture Tests & Pipeline Verification
+- Date: 2026-10-12
+- Type: fix
+- Phase: P4
+- Summary: Implemented comprehensive automated test suite (40 tests) in test_controlled_weather_scenarios.py verifying: 1) exact threshold boundaries for wind, rain, and snow with lower-bound inclusive intervals; 2) all 3 truck load-weight overrides (wind >= 55 mph, wind 45-54 mph with load > 30,000 lb, wind 35-44 mph with load > 40,000 lb); 3) conservation of route miles where sum of miles by risk level equals total distance; 4) 4-tier lexicographic route ranking priority (fewest Severe miles, tied Severe -> fewest High miles, tied High -> lowest average risk, tied risk -> shortest travel time, No Travel routes ranked last); 5) missing weather handling ensuring explicit None/Unavailable states without defaulting to zero. Validated dashboard trip (Boston to NYC) returning authentic live calm weather forecasts (all checkpoints Low risk) and active precipitation corridor (Denver to Salt Lake City) returning 25-50 Moderate miles.
+- Files: backend/core/tests/services/test_controlled_weather_scenarios.py
+- Status: done
+
 ### X-006 Weather Forecast Heatmap Integer Scale and Live Radar Layer
 - Date: 2026-10-12
 - Type: fix
@@ -316,5 +324,6 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | P5a (F-040) | Heatmap backend | 0.50 | 0.35 | 6.65 | Pure corridor generator & build_heatmap, shared departure resolution, HeatmapService, POST /api/trips/heatmap/, 100% coverage, live test script |
 | P4 (ui-redesign) | StormRoute UI Redesign per ui deisgn.png | 0.50 | 0.40 | 7.05 | Header unboxed without API status box, 6 distinct cards across 3 columns, compact route cards with color-specific gauge, milestone checkpoints, duplicate 'mi' bug fixed, Doppler radar storm overlay, bar chart Y-axis ticks & metrics table, 85 frontend tests, 514 backend tests |
 | Fix | Weather risk calculation & display verification | 0.50 | 0.35 | 7.40 | Verified backend risk & ranking calculations, corrected frontend masking where missing weather defaulted to 0 instead of unavailable, implemented explicit formatRiskScore (0-100 formula), updated CheckpointList & RouteComparisonCard with clear fallback states, 88 frontend tests, 514 backend tests |
+| Fix (X-007) | Controlled weather fixture test suite & full verification | 0.50 | 0.40 | 7.80 | 40 automated tests for boundary conditions, 3 load-weight overrides, distance sum conservation, lexicographical ranking ties, missing weather states; ran 554 backend tests, 88 frontend tests, typecheck, lint, production build |
 
 
