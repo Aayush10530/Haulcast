@@ -42,37 +42,37 @@ export const CheckpointLayer: React.FC<CheckpointLayerProps> = ({
 
   return (
     <>
-      {/* Origin Marker */}
+      {/* Origin Marker (Green Pin per mockup) */}
       {origin && (
         <CircleMarker
           center={[origin.lat, origin.lon]}
-          radius={6}
+          radius={8}
           pathOptions={{
-            fillColor: colorTokens.brand,
+            fillColor: '#00E676',
             fillOpacity: 1,
-            color: colorTokens.canvas,
-            weight: 2,
+            color: '#FFFFFF',
+            weight: 2.5,
           }}
         >
-          <Tooltip direction="top" offset={[0, -8]} className="place-tooltip">
+          <Tooltip direction="top" permanent offset={[0, -10]} className="place-tooltip">
             {origin.label}
           </Tooltip>
         </CircleMarker>
       )}
 
-      {/* Destination Marker */}
+      {/* Destination Marker (Red Pin per mockup) */}
       {destination && (
         <CircleMarker
           center={[destination.lat, destination.lon]}
-          radius={6}
+          radius={8}
           pathOptions={{
             fillColor: '#E5484D',
             fillOpacity: 1,
-            color: colorTokens.canvas,
-            weight: 2,
+            color: '#FFFFFF',
+            weight: 2.5,
           }}
         >
-          <Tooltip direction="top" offset={[0, -8]} className="place-tooltip">
+          <Tooltip direction="top" permanent offset={[0, -10]} className="place-tooltip">
             {destination.label}
           </Tooltip>
         </CircleMarker>

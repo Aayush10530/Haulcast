@@ -7,6 +7,7 @@ import { CheckpointLayer } from './CheckpointLayer';
 import { MapController } from './MapController';
 import { MapLegend } from './MapLegend';
 import { RouteLayer } from './RouteLayer';
+import { WeatherRadarLayer } from './WeatherRadarLayer';
 import './leafletDark.css';
 
 export interface MapViewProps {
@@ -155,6 +156,14 @@ export const MapView: React.FC<MapViewProps> = ({
           attribution={currentAttribution}
           maxZoom={19}
           className={activeLayer === 'satellite' ? '' : 'osm-dark-tiles'}
+        />
+
+        {/* Doppler Weather Radar & Heat Zones Layer */}
+        <WeatherRadarLayer
+          routes={routes}
+          selectedRouteId={selectedRouteId}
+          forecastHour={forecastHour}
+          isVisible={activeLayer === 'radar'}
         />
 
         <ZoomControl position="bottomright" />

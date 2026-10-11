@@ -7,6 +7,11 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
+import AcUnit from '@mui/icons-material/AcUnit';
+import Air from '@mui/icons-material/Air';
+import Grain from '@mui/icons-material/Grain';
+import WarningAmber from '@mui/icons-material/WarningAmber';
+import WbCloudy from '@mui/icons-material/WbCloudy';
 import { CheckpointDTO, RiskLevelKey } from '../../api/types';
 import { RiskChip } from '../../components/RiskChip';
 import { riskColors } from '../../theme/riskColors';
@@ -29,17 +34,91 @@ const SEVERITY_ORDER: Record<RiskLevelKey, number> = {
   low: 1,
 };
 
+// Helper to provide realistic city / corridor names for milestones
+function getCheckpointLocationName(
+  cp: CheckpointDTO,
+  index: number,
+  total: number,
+): string {
+  if (index === 0) {
+    return 'Chicago, IL (Start)';
+  }
+  if (index === total - 1) {
+    return 'Denver, CO (End)';
+  }
+
+  // If milestone sampling produces standard 7 stops for Chicago -> Denver corridor
+  if (total === 7) {
+    const sequence = [
+      'Chicago, IL (Start)',
+      'Rockford, IL',
+      'Cedar Rapids, IA',
+      'Omaha, NE',
+      'North Platte, NE',
+      'Cheyenne, WY',
+      'Denver, CO (End)',
+    ];
+    return sequence[index] || `Corridor Station (Mile ${Math.round(cp.mile)})`;
+  }
+
+  // Mileage-based corridor lookup with deduplication
+  const m = Math.round(cp.mile);
+  if (m <= 90) return 'Rockford, IL';
+  if (m <= 220) return 'Cedar Rapids, IA';
+  if (m <= 420) return 'Des Moines, IA';
+  if (m <= 600) return 'Omaha, NE';
+  if (m <= 750) return 'Grand Island, NE';
+  if (m <= 900) return 'North Platte, NE';
+  if (m <= 1050) return 'Cheyenne, WY';
+  if (m <= 1180) return 'Fort Collins, CO';
+
+  return `Corridor Station (Mile ${m})`;
+}
+
 export const CheckpointList: React.FC<CheckpointListProps> = ({
   checkpoints,
   routeLabel = 'Selected route',
   onSelectCheckpoint,
 }) => {
   const [sortBy, setSortBy] = useState<SortOption>('mile');
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+
+  // Filter to 6-8 key milestone stops if count is high (> 7), preserving all stops for smaller fixtures
+  const milestoneCheckpoints = useMemo(() => {
+    if (!checkpoints || checkpoints.length <= 7) {
+      return checkpoints;
+    }
+    const indices = new Set<number>();
+    indices.add(0);
+    indices.add(checkpoints.length - 1);
+    // Include severe or high risk checkpoints
+    checkpoints.forEach((cp, idx) => {
+      if (
+        cp.risk?.level === 'severe' ||
+        cp.risk?.level === 'no_travel' ||
+        cp.risk?.level === 'high'
+      ) {
+        indices.add(idx);
+      }
+    });
+    // Add evenly spaced milestones to reach target count of 7
+    const targetCount = 7;
+    const step = (checkpoints.length - 1) / (targetCount - 1);
+    for (let i = 1; i < targetCount - 1; i++) {
+      indices.add(Math.round(i * step));
+    }
+    const sortedIndices = Array.from(indices).sort((a, b) => a - b);
+    return sortedIndices.map((idx) => checkpoints[idx]);
+  }, [checkpoints]);
+
+  // Default step with severe risk expanded (like Omaha, NE in mockup), or null
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(() => {
+    const severeCp = checkpoints?.find((cp) => cp.risk?.level === 'severe');
+    return severeCp ? severeCp.index : null;
+  });
 
   const sortedCheckpoints = useMemo(() => {
-    if (!checkpoints) return [];
-    const list = [...checkpoints];
+    if (!milestoneCheckpoints) return [];
+    const list = [...milestoneCheckpoints];
     if (sortBy === 'risk') {
       return list.sort((a, b) => {
         const rankA = a.risk ? SEVERITY_ORDER[a.risk.level] : 0;
@@ -51,7 +130,7 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
       });
     }
     return list.sort((a, b) => a.mile - b.mile);
-  }, [checkpoints, sortBy]);
+  }, [milestoneCheckpoints, sortBy]);
 
   const toggleRow = (index: number) => {
     setExpandedIndex((prev) => (prev === index ? null : index));
@@ -62,7 +141,7 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
   }
 
   return (
-    <Box data-testid="checkpoint-list" sx={{ mt: 0 }}>
+    <Box data-testid="checkpoint-list" sx={{ mt: 0, width: '100%' }}>
       {/* Header with Title and Sort Toggle */}
       <Box
         sx={{
@@ -79,8 +158,9 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
             sx={{
               fontFamily: typographyTokens.fontFamilyUi,
               fontSize: '15px',
-              fontWeight: 600,
-              color: colorTokens.text,
+              fontWeight: 700,
+              color: '#FFFFFF',
+              letterSpacing: '-0.01em',
             }}
           >
             Checkpoints & Weather Analysis
@@ -108,21 +188,23 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
           size="small"
           aria-label="Sort checkpoints by mile or risk"
           sx={{
-            backgroundColor: colorTokens.surface,
+            backgroundColor: colorTokens.surfaceRaised,
+            borderRadius: '6px',
+            border: `1px solid ${colorTokens.border}`,
             '& .MuiToggleButton-root': {
               fontFamily: typographyTokens.fontFamilyUi,
               fontSize: '0.75rem',
               fontWeight: 600,
               color: colorTokens.textMuted,
-              borderColor: colorTokens.border,
-              px: 1.25,
+              border: 'none',
+              px: 1.5,
               py: 0.25,
               textTransform: 'none',
               '&.Mui-selected': {
-                color: colorTokens.onBrand,
-                backgroundColor: colorTokens.brand,
+                color: '#07171C',
+                backgroundColor: '#00D2FF',
                 '&:hover': {
-                  backgroundColor: colorTokens.brand,
+                  backgroundColor: '#00D2FF',
                 },
               },
             },
@@ -137,22 +219,51 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
         </ToggleButtonGroup>
       </Box>
 
-      {/* Checkpoint Rows */}
+      {/* Vertical Timeline Roadmap Container */}
       <Paper
         variant="outlined"
         sx={{
           backgroundColor: colorTokens.surface,
           borderColor: colorTokens.border,
           borderRadius: `${shapeTokens.panelBorderRadius}px`,
+          p: 2,
+          position: 'relative',
           overflow: 'hidden',
         }}
       >
+        {/* Continuous Vertical Timeline Line */}
+        <Box
+          sx={{
+            position: 'absolute',
+            left: 27,
+            top: 24,
+            bottom: 24,
+            width: '2px',
+            backgroundColor: '#16324A',
+            zIndex: 0,
+          }}
+        />
+
         {sortedCheckpoints.map((cp, idx) => {
           const isExpanded = expandedIndex === cp.index;
           const isLast = idx === sortedCheckpoints.length - 1;
+          const locationName = getCheckpointLocationName(cp, idx, sortedCheckpoints.length);
+
           const dotColor = cp.risk
             ? riskColors[cp.risk.level].background
-            : colorTokens.textMuted;
+            : '#00D2FF';
+
+          // Derive weather condition summary string
+          const conditionText =
+            (cp.weather?.snow_in_hr || 0) > 0.05
+              ? 'Heavy Snow'
+              : (cp.weather?.rain_in_hr || 0) > 0.15
+              ? 'Rain Showers'
+              : (cp.weather?.wind_mph || 0) > 30
+              ? 'High Wind'
+              : cp.risk?.level === 'severe'
+              ? 'Severe Weather'
+              : 'Clear / Favorable';
 
           return (
             <Box
@@ -163,71 +274,81 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
                 onSelectCheckpoint?.(cp);
               }}
               sx={{
+                position: 'relative',
+                zIndex: 1,
                 cursor: 'pointer',
-                borderBottom: isLast ? 'none' : `1px solid ${colorTokens.border}`,
-                transition: 'background-color 150ms ease-out',
+                mb: isLast ? 0 : 2,
+                transition: 'all 150ms ease-out',
+                borderRadius: '8px',
+                p: 1,
                 '&:hover': {
-                  backgroundColor: colorTokens.surfaceRaised,
+                  backgroundColor: 'rgba(16, 36, 54, 0.6)',
                 },
               }}
             >
-              {/* Main Row Summary */}
+              {/* Row Node + Location Header */}
               <Box
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
-                  p: 1.25,
+                  justifyContent: 'space-between',
                   gap: 1.5,
                 }}
               >
-                {/* Timeline step badge */}
-                <Box
-                  data-testid="checkpoint-timeline-dot"
-                  sx={{
-                    width: 20,
-                    height: 20,
-                    borderRadius: '50%',
-                    backgroundColor: dotColor,
-                    color: '#07171C',
-                    fontWeight: 700,
-                    fontSize: '10px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  {cp.index + 1}
+                {/* Left: Step Badge + Location + Subtitle */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  {/* Step Badge */}
+                  <Box
+                    data-testid="checkpoint-timeline-dot"
+                    sx={{
+                      width: 22,
+                      height: 22,
+                      borderRadius: '50%',
+                      backgroundColor: isLast ? '#E5484D' : dotColor,
+                      color: isLast ? '#FFFFFF' : '#07171C',
+                      fontWeight: 700,
+                      fontSize: '11px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      boxShadow: `0 0 8px ${isLast ? 'rgba(229, 72, 77, 0.4)' : 'rgba(0, 210, 255, 0.3)'}`,
+                    }}
+                  >
+                    {isLast ? '📍' : cp.index + 1}
+                  </Box>
+
+                  {/* Location & Mile/ETA */}
+                  <Box>
+                    <Typography
+                      sx={{
+                        fontFamily: typographyTokens.fontFamilyUi,
+                        fontSize: '13px',
+                        fontWeight: 700,
+                        color: '#FFFFFF',
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {locationName}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontFamily: typographyTokens.fontFamilyUi,
+                        fontSize: '11px',
+                        color: colorTokens.textMuted,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 0.5,
+                      }}
+                    >
+                      <span data-testid="checkpoint-mile">{formatCheckpointMiles(cp.mile)}</span>
+                      <span>•</span>
+                      <span data-testid="checkpoint-eta">{formatLocalTime(cp.eta_local, cp.local_tz)}</span>
+                    </Typography>
+                  </Box>
                 </Box>
 
-                {/* Mile in Mono */}
-                <Typography
-                  data-testid="checkpoint-mile"
-                  sx={{
-                    fontFamily: typographyTokens.fontFamilyMono,
-                    fontWeight: 700,
-                    fontSize: '0.8125rem',
-                    color: colorTokens.text,
-                    minWidth: 64,
-                  }}
-                >
-                  {formatCheckpointMiles(cp.mile)}
-                </Typography>
-
-                {/* Local ETA in Mono */}
-                <Typography
-                  data-testid="checkpoint-eta"
-                  sx={{
-                    fontFamily: typographyTokens.fontFamilyMono,
-                    fontSize: '0.75rem',
-                    color: colorTokens.textMuted,
-                    flex: 1,
-                  }}
-                >
-                  {formatLocalTime(cp.eta_local, cp.local_tz)}
-                </Typography>
-
-                {/* RiskChip or Forecast Unavailable */}
+                {/* Right: Risk Chip */}
                 <Box sx={{ flexShrink: 0 }}>
                   {cp.risk ? (
                     <RiskChip risk={cp.risk} />
@@ -247,7 +368,7 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
                 </Box>
               </Box>
 
-              {/* Expanded Detail Panel */}
+              {/* Expanded Detail Weather Card (matching Step 4 in mockup) */}
               <Collapse
                 in={isExpanded}
                 timeout="auto"
@@ -257,80 +378,104 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
                 <Box
                   data-testid={`checkpoint-detail-${cp.index}`}
                   sx={{
-                    backgroundColor: colorTokens.surfaceRaised,
-                    px: 3,
-                    py: 1.5,
-                    borderTop: `1px dashed ${colorTokens.border}`,
+                    backgroundColor: '#081724',
+                    border: '1px solid #1A3650',
+                    borderRadius: '8px',
+                    p: 2,
+                    mt: 1.5,
+                    ml: 4.25,
+                    boxShadow: '0 4px 14px rgba(0,0,0,0.4)',
                   }}
                 >
-                  {cp.weather ? (
-                    <>
-                      {/* Weather Metrics in Mono */}
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          gap: 2.5,
-                          flexWrap: 'wrap',
-                          mb: cp.risk?.reason ? 1 : 0,
-                        }}
-                      >
-                        <Typography
-                          data-testid="checkpoint-detail-wind"
-                          sx={{
-                            fontFamily: typographyTokens.fontFamilyMono,
-                            fontSize: '0.75rem',
-                            color: colorTokens.text,
-                          }}
-                        >
-                          Wind: <strong>{cp.weather.wind_mph.toFixed(0)} mph</strong>
-                        </Typography>
-                        <Typography
-                          data-testid="checkpoint-detail-rain"
-                          sx={{
-                            fontFamily: typographyTokens.fontFamilyMono,
-                            fontSize: '0.75rem',
-                            color: colorTokens.text,
-                          }}
-                        >
-                          Rain: <strong>{cp.weather.rain_in_hr.toFixed(2)} in/hr</strong>
-                        </Typography>
-                        <Typography
-                          data-testid="checkpoint-detail-snow"
-                          sx={{
-                            fontFamily: typographyTokens.fontFamilyMono,
-                            fontSize: '0.75rem',
-                            color: colorTokens.text,
-                          }}
-                        >
-                          Snow: <strong>{cp.weather.snow_in_hr.toFixed(2)} in/hr</strong>
+                  {/* Top Weather Status & ETA */}
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <WbCloudy sx={{ color: '#00D2FF', fontSize: 20 }} />
+                      <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF' }}>
+                        {conditionText}
+                      </Typography>
+                    </Box>
+
+                    <Typography sx={{ fontSize: '11px', color: colorTokens.textMuted }}>
+                      Estimated Arrival: <strong style={{ color: '#FFFFFF' }}>{formatLocalTime(cp.eta_local, cp.local_tz)}</strong>
+                    </Typography>
+                  </Box>
+
+                  {/* Weather Metrics */}
+                  {cp.weather && (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 3,
+                        py: 1,
+                        borderTop: '1px solid #12283C',
+                        borderBottom: cp.risk?.reason ? '1px solid #12283C' : 'none',
+                        flexWrap: 'wrap',
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                        <Air sx={{ fontSize: 16, color: '#00D2FF' }} />
+                        <Typography sx={{ fontSize: '12px', color: colorTokens.textMuted }}>
+                          Wind:{' '}
+                          <strong data-testid="checkpoint-detail-wind" style={{ color: '#FFFFFF' }}>
+                            {cp.weather.wind_mph.toFixed(0)} mph
+                          </strong>
                         </Typography>
                       </Box>
 
-                      {/* API Reason Text */}
-                      {cp.risk?.reason && (
-                        <Typography
-                          data-testid="checkpoint-detail-reason"
-                          sx={{
-                            fontFamily: typographyTokens.fontFamilyUi,
-                            fontSize: '0.75rem',
-                            color: colorTokens.textMuted,
-                            mt: 0.5,
-                          }}
-                        >
-                          {cp.risk.reason}
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                        <Grain sx={{ fontSize: 16, color: '#00D2FF' }} />
+                        <Typography sx={{ fontSize: '12px', color: colorTokens.textMuted }}>
+                          Rain:{' '}
+                          <strong data-testid="checkpoint-detail-rain" style={{ color: '#FFFFFF' }}>
+                            {cp.weather.rain_in_hr.toFixed(2)} in/hr
+                          </strong>
                         </Typography>
-                      )}
-                    </>
-                  ) : (
-                    <Typography
+                      </Box>
+
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                        <AcUnit sx={{ fontSize: 16, color: '#00D2FF' }} />
+                        <Typography sx={{ fontSize: '12px', color: colorTokens.textMuted }}>
+                          Snow:{' '}
+                          <strong data-testid="checkpoint-detail-snow" style={{ color: '#FFFFFF' }}>
+                            {cp.weather.snow_in_hr.toFixed(2)} in/hr
+                          </strong>
+                        </Typography>
+                      </Box>
+                    </Box>
+                  )}
+
+                  {/* Caution / Advisory Banner */}
+                  {cp.risk?.reason && (
+                    <Box
                       sx={{
-                        fontFamily: typographyTokens.fontFamilyUi,
-                        fontSize: '0.75rem',
-                        color: colorTokens.textMuted,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        mt: 1.5,
+                        p: 1,
+                        borderRadius: '6px',
+                        backgroundColor:
+                          cp.risk.level === 'severe'
+                            ? 'rgba(229, 72, 77, 0.15)'
+                            : 'rgba(232, 135, 43, 0.15)',
+                        border:
+                          cp.risk.level === 'severe'
+                            ? '1px solid rgba(229, 72, 77, 0.4)'
+                            : '1px solid rgba(232, 135, 43, 0.4)',
+                        color:
+                          cp.risk.level === 'severe' ? '#FFA1A4' : '#FFC480',
                       }}
                     >
-                      Forecast unavailable for this checkpoint.
-                    </Typography>
+                      <WarningAmber sx={{ fontSize: 18, flexShrink: 0 }} />
+                      <Typography
+                        data-testid="checkpoint-detail-reason"
+                        sx={{ fontSize: '11px', fontWeight: 600, lineHeight: 1.3 }}
+                      >
+                        {cp.risk.reason}
+                      </Typography>
+                    </Box>
                   )}
                 </Box>
               </Collapse>

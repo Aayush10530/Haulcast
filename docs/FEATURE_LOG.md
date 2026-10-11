@@ -282,4 +282,5 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | P4c (F-033) | Map with routes & checkpoints | 0.75 | 0.40 | 6.05 | MapView, OpenStreetMap tiles with dark CSS filter, RouteLayer casing & pills, CheckpointLayer & popups, MapLegend, sync & invalidateSize, 81 frontend tests |
 | Fix round | Basemap, label pills, minute rounding | 0.35 | 0.25 | 6.30 | OSM dark-filtered basemap, route label placement 30%/50%/70%, consistent minute rounding floor(x+0.5) backend & frontend, 85 frontend tests, 494 backend tests |
 | P5a (F-040) | Heatmap backend | 0.50 | 0.35 | 6.65 | Pure corridor generator & build_heatmap, shared departure resolution, HeatmapService, POST /api/trips/heatmap/, 100% coverage, live test script |
+| P4 (ui-redesign) | StormRoute UI Redesign per ui deisgn.png | 0.50 | 0.40 | 7.05 | Header unboxed without API status box, 6 distinct cards across 3 columns, compact route cards with color-specific gauge, milestone checkpoints, duplicate 'mi' bug fixed, Doppler radar storm overlay, bar chart Y-axis ticks & metrics table, 85 frontend tests, 514 backend tests |
 

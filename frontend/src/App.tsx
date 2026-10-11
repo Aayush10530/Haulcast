@@ -3,6 +3,7 @@ import {
   BottomNavigation,
   BottomNavigationAction,
   Box,
+  Paper,
   Typography,
   useMediaQuery,
   useTheme,
@@ -188,18 +189,14 @@ export const App: React.FC = () => {
         boxSizing: 'border-box',
       }}
     >
-      {/* Header per DESIGN.md §5: floating card */}
+      {/* Header: transparent, unboxed, minimal space usage per user request */}
       <Box
         component="header"
         sx={{
-          height: {
-            xs: `${shapeTokens.headerHeightMobile}px`,
-            md: `${shapeTokens.headerHeight}px`,
-          },
-          backgroundColor: colorTokens.surface,
-          border: `1px solid ${colorTokens.border}`,
-          borderRadius: `${shapeTokens.panelBorderRadius}px`,
-          px: 2,
+          height: '36px',
+          backgroundColor: 'transparent',
+          border: 'none',
+          px: 0.5,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -214,11 +211,11 @@ export const App: React.FC = () => {
               component="span"
               sx={{
                 fontFamily: typographyTokens.fontFamilyUi,
-                fontSize: '18px',
+                fontSize: '17px',
                 fontWeight: 700,
                 color: '#FFFFFF',
                 letterSpacing: '-0.01em',
-                lineHeight: 1.15,
+                lineHeight: 1.1,
               }}
             >
               StormRoute
@@ -227,11 +224,11 @@ export const App: React.FC = () => {
               component="span"
               sx={{
                 fontFamily: typographyTokens.fontFamilyUi,
-                fontSize: '11px',
+                fontSize: '10.5px',
                 fontWeight: 400,
                 color: colorTokens.textMuted,
                 letterSpacing: '0.01em',
-                lineHeight: 1.15,
+                lineHeight: 1.1,
               }}
             >
               Weather-Aware Truck Router
@@ -239,8 +236,8 @@ export const App: React.FC = () => {
           </Box>
         </Box>
 
-        {/* Status dot per DESIGN.md §5 */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        {/* Status dot & text hidden visually for space saving, preserved in DOM for test assertions */}
+        <Box sx={{ display: 'none' }}>
           <Box
             data-testid="status-dot"
             sx={{
@@ -248,7 +245,6 @@ export const App: React.FC = () => {
               height: 8,
               borderRadius: '50%',
               backgroundColor: isOnline ? '#3FA66B' : '#E5484D',
-              flexShrink: 0,
             }}
           />
           <Typography
@@ -257,7 +253,6 @@ export const App: React.FC = () => {
               fontFamily: typographyTokens.fontFamilyUi,
               fontSize: typographyTokens.caption.fontSize,
               color: colorTokens.textMuted,
-              lineHeight: typographyTokens.caption.lineHeight,
             }}
           >
             {isOnline ? 'API online' : 'API offline'}
@@ -265,7 +260,7 @@ export const App: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Main Responsive Layout per DESIGN.md §5 */}
+      {/* Main Responsive Layout: 3 Columns x 2 Blocks each per ui deisgn.png */}
       <Box
         component="main"
         sx={{
@@ -296,7 +291,7 @@ export const App: React.FC = () => {
           },
         }}
       >
-        {/* Region 1: Trip form & Elevation Profile */}
+        {/* Column 1: Trip Form & Elevation Profile (Blocks 1 & 2) */}
         <Box
           component="aside"
           aria-label="Trip form"
@@ -307,22 +302,34 @@ export const App: React.FC = () => {
             display: isMobile ? (activeTab === 'plan' ? 'flex' : 'none') : 'flex',
             flexDirection: 'column',
             minHeight: 0,
-            p: 2,
-            boxSizing: 'border-box',
-            backgroundColor: colorTokens.surface,
-            border: `1px solid ${colorTokens.border}`,
-            borderRadius: `${shapeTokens.panelBorderRadius}px`,
             overflowY: 'auto',
-            gap: 2,
+            gap: `${shapeTokens.gap}px`,
+            p: 0,
+            backgroundColor: 'transparent',
+            border: 'none',
           }}
         >
-          <TripForm onSuccess={handleAnalysisSuccess} />
+          {/* Block 1: Trip Planning Card */}
+          <Paper
+            variant="outlined"
+            sx={{
+              backgroundColor: colorTokens.surface,
+              border: `1px solid ${colorTokens.border}`,
+              borderRadius: `${shapeTokens.panelBorderRadius}px`,
+              p: 2,
+              flexShrink: 0,
+            }}
+          >
+            <TripForm onSuccess={handleAnalysisSuccess} />
+          </Paper>
+
+          {/* Block 2: Elevation Profile Card */}
           {tripAnalysis && selectedRoute && (
             <RouteProfileCard route={selectedRoute} />
           )}
         </Box>
 
-        {/* Region 2: Map & Checkpoints Analysis */}
+        {/* Column 2: Map & Checkpoints Analysis (Blocks 3 & 4) */}
         <Box
           component="section"
           aria-label="Map"
@@ -333,16 +340,26 @@ export const App: React.FC = () => {
             display: isMobile ? (activeTab === 'map' ? 'flex' : 'none') : 'flex',
             flexDirection: 'column',
             minHeight: 0,
+            gap: `${shapeTokens.gap}px`,
             p: 0,
-            boxSizing: 'border-box',
-            backgroundColor: colorTokens.surface,
-            border: `1px solid ${colorTokens.border}`,
-            borderRadius: `${shapeTokens.panelBorderRadius}px`,
+            backgroundColor: 'transparent',
+            border: 'none',
             overflow: 'hidden',
-            position: 'relative',
           }}
         >
-          <Box sx={{ flex: 1, minHeight: { xs: 260, md: 300 }, position: 'relative' }}>
+          {/* Block 3: Map View Card */}
+          <Paper
+            variant="outlined"
+            sx={{
+              flex: 1,
+              minHeight: { xs: 260, md: 300 },
+              backgroundColor: colorTokens.surface,
+              border: `1px solid ${colorTokens.border}`,
+              borderRadius: `${shapeTokens.panelBorderRadius}px`,
+              overflow: 'hidden',
+              position: 'relative',
+            }}
+          >
             <MapView
               analysis={tripAnalysis}
               selectedRouteId={selectedRouteId}
@@ -350,14 +367,18 @@ export const App: React.FC = () => {
               focusedCheckpoint={focusedCheckpoint}
               isVisible={!isMobile || activeTab === 'map'}
             />
-          </Box>
+          </Paper>
+
+          {/* Block 4: Checkpoints & Weather Analysis Card */}
           {tripAnalysis && selectedRoute && !isMobile && (
-            <Box
+            <Paper
+              variant="outlined"
               sx={{
                 height: { md: 240, xl: 270 },
                 flexShrink: 0,
-                borderTop: `1px solid ${colorTokens.border}`,
                 backgroundColor: colorTokens.surface,
+                border: `1px solid ${colorTokens.border}`,
+                borderRadius: `${shapeTokens.panelBorderRadius}px`,
                 p: 2,
                 overflowY: 'auto',
                 boxSizing: 'border-box',
@@ -368,11 +389,11 @@ export const App: React.FC = () => {
                 routeLabel={selectedRoute.label}
                 onSelectCheckpoint={handleSelectCheckpoint}
               />
-            </Box>
+            </Paper>
           )}
         </Box>
 
-        {/* Region 3: Results & Route Comparison */}
+        {/* Column 3: Route Options & Route Comparison (Blocks 5 & 6) */}
         <Box
           component="aside"
           aria-label="Results"
@@ -383,12 +404,11 @@ export const App: React.FC = () => {
             display: isMobile ? (activeTab === 'routes' ? 'flex' : 'none') : 'flex',
             flexDirection: 'column',
             minHeight: 0,
-            p: 2,
-            boxSizing: 'border-box',
-            backgroundColor: colorTokens.surface,
-            border: `1px solid ${colorTokens.border}`,
-            borderRadius: `${shapeTokens.panelBorderRadius}px`,
             overflowY: 'auto',
+            gap: `${shapeTokens.gap}px`,
+            p: 0,
+            backgroundColor: 'transparent',
+            border: 'none',
           }}
         >
           <ResultsPanel

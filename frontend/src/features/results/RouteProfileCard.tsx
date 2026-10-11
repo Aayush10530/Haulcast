@@ -116,7 +116,7 @@ export const RouteProfileCard: React.FC<RouteProfileCardProps> = ({ route }) => 
           <Straighten sx={{ fontSize: 18, color: colorTokens.brand }} />
           <Box>
             <Typography sx={{ fontSize: '12px', fontWeight: 700, color: colorTokens.text, lineHeight: 1.1 }}>
-              {formatMiles(totalMiles)} mi
+              {formatMiles(totalMiles)}
             </Typography>
             <Typography sx={{ fontSize: '10px', color: colorTokens.textMuted, lineHeight: 1.1 }}>
               Distance
@@ -240,7 +240,7 @@ export const RouteProfileCard: React.FC<RouteProfileCardProps> = ({ route }) => 
             <span>{Math.round(totalMiles * 0.4)} mi</span>
             <span>{Math.round(totalMiles * 0.6)} mi</span>
             <span>{Math.round(totalMiles * 0.8)} mi</span>
-            <span>{formatMiles(totalMiles)} mi</span>
+            <span>{formatMiles(totalMiles)}</span>
           </Box>
         </Box>
       </Box>

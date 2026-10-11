@@ -443,7 +443,7 @@ export const TripForm: React.FC<TripFormProps> = ({ onSuccess, disabled = false 
           mt: 1,
         }}
       >
-        {isPending ? 'Finding routes...' : 'Generate routes'}
+        {isPending ? 'Finding routes...' : 'Generate routes →'}
       </Button>
 
       <Button

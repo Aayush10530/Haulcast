@@ -89,6 +89,9 @@ vi.mock('react-leaflet', () => {
         children,
       ),
     CircleMarker: MockCircleMarker,
+    Circle: MockCircleMarker,
+    SVGOverlay: ({ children, attributes, bounds, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'svg-overlay', ...props }, children),
     Marker: ({ children, eventHandlers, position, icon, ...props }: any) =>
       React.createElement(
         'div',

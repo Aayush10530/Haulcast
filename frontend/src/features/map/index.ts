@@ -4,3 +4,4 @@ export * from './CheckpointLayer';
 export * from './CheckpointPopup';
 export * from './MapLegend';
 export * from './MapController';
+export * from './WeatherRadarLayer';

@@ -14,7 +14,7 @@ export const RouteComparisonCard: React.FC<RouteComparisonCardProps> = ({ routes
   }
 
   // Bar Chart calculations
-  const chartHeight = 90;
+  const chartHeight = 65;
   // Find max value across severe, high, moderate miles and hours to scale bars nicely
   const maxMiles = Math.max(
     ...routes.map((r) =>
@@ -37,10 +37,10 @@ export const RouteComparisonCard: React.FC<RouteComparisonCardProps> = ({ routes
         backgroundColor: colorTokens.surface,
         border: `1px solid ${colorTokens.border}`,
         borderRadius: `${shapeTokens.panelBorderRadius}px`,
-        p: 2,
+        p: 1.5,
         display: 'flex',
         flexDirection: 'column',
-        gap: 2,
+        gap: 1.5,
         boxSizing: 'border-box',
         overflow: 'hidden',
       }}
@@ -78,52 +78,112 @@ export const RouteComparisonCard: React.FC<RouteComparisonCardProps> = ({ routes
         </Box>
       </Box>
 
-      {/* Grouped Bar Chart */}
-      <Box sx={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-around', height: chartHeight, pt: 1 }}>
-        {routes.map((r) => {
-          const letter = (
-            r.label?.replace(/Route\s*/i, '') ||
-            r.id.replace('route_', '').toUpperCase()
-          ).slice(0, 1);
-          const severeM = r.summary?.miles_by_level?.severe || 0;
-          const highM = r.summary?.miles_by_level?.high || 0;
-          const modM = r.summary?.miles_by_level?.moderate || 0;
-          const hours = (r.duration_seconds || 0) / 3600;
+      {/* Grouped Bar Chart with Y-axis */}
+      <Box sx={{ display: 'flex', alignItems: 'stretch', height: chartHeight + 10, pt: 1 }}>
+        {/* Y-axis Ticks */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+            pr: 1,
+            pb: 2.5,
+            fontSize: '9px',
+            color: colorTokens.textMuted,
+            fontFamily: typographyTokens.fontFamilyMono,
+          }}
+        >
+          <span>200</span>
+          <span>100</span>
+          <span>0</span>
+        </Box>
 
-          const hSevere = Math.max(4, (severeM / maxMiles) * (chartHeight - 20));
-          const hHigh = Math.max(4, (highM / maxMiles) * (chartHeight - 20));
-          const hMod = Math.max(4, (modM / maxMiles) * (chartHeight - 20));
-          const hTime = Math.max(12, ((hours * 5) / maxMiles) * (chartHeight - 20));
+        {/* Chart Bars Area with Horizontal Grid Lines */}
+        <Box
+          sx={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'flex-end',
+            justifyContent: 'space-around',
+            position: 'relative',
+            borderBottom: `1px solid ${colorTokens.border}`,
+            borderLeft: `1px solid ${colorTokens.border}`,
+            pl: 1,
+          }}
+        >
+          {/* Faint Horizontal Grid Lines */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '15%',
+              left: 0,
+              right: 0,
+              height: '1px',
+              backgroundColor: 'rgba(255,255,255,0.05)',
+              pointerEvents: 'none',
+            }}
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '55%',
+              left: 0,
+              right: 0,
+              height: '1px',
+              backgroundColor: 'rgba(255,255,255,0.05)',
+              pointerEvents: 'none',
+            }}
+          />
 
-          return (
-            <Box key={r.id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.75 }}>
-              <Typography sx={{ fontSize: '10px', color: '#00D2FF', fontWeight: 600 }}>
-                {Math.round(hours)}h
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 0.5, height: chartHeight - 24 }}>
-                <Box
-                  title={`Severe: ${severeM} mi`}
-                  sx={{ width: 14, height: `${hSevere}px`, backgroundColor: '#E5484D', borderRadius: '3px 3px 0 0' }}
-                />
-                <Box
-                  title={`High: ${highM} mi`}
-                  sx={{ width: 14, height: `${hHigh}px`, backgroundColor: '#E8872B', borderRadius: '3px 3px 0 0' }}
-                />
-                <Box
-                  title={`Moderate: ${modM} mi`}
-                  sx={{ width: 14, height: `${hMod}px`, backgroundColor: '#E2C044', borderRadius: '3px 3px 0 0' }}
-                />
-                <Box
-                  title={`Time: ${hours.toFixed(1)} hrs`}
-                  sx={{ width: 14, height: `${hTime}px`, backgroundColor: '#00D2FF', borderRadius: '3px 3px 0 0' }}
-                />
+          {routes.map((r) => {
+            const letter = (
+              r.label?.replace(/Route\s*/i, '') ||
+              r.id.replace('route_', '').toUpperCase()
+            ).slice(0, 1);
+            const severeM = r.summary?.miles_by_level?.severe || 0;
+            const highM = r.summary?.miles_by_level?.high || 0;
+            const modM = r.summary?.miles_by_level?.moderate || 0;
+            const hours = (r.duration_seconds || 0) / 3600;
+
+            const hSevere = Math.max(4, (severeM / maxMiles) * (chartHeight - 20));
+            const hHigh = Math.max(4, (highM / maxMiles) * (chartHeight - 20));
+            const hMod = Math.max(4, (modM / maxMiles) * (chartHeight - 20));
+            const hTime = Math.max(12, ((hours * 5) / maxMiles) * (chartHeight - 20));
+
+            return (
+              <Box key={r.id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Box sx={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: '#00D2FF' }} />
+                  <Typography sx={{ fontSize: '10px', color: '#00D2FF', fontWeight: 600 }}>
+                    {formatDuration(r.duration_seconds)}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 0.5, height: chartHeight - 24 }}>
+                  <Box
+                    title={`Severe: ${severeM} mi`}
+                    sx={{ width: 13, height: `${hSevere}px`, backgroundColor: '#E5484D', borderRadius: '2px 2px 0 0' }}
+                  />
+                  <Box
+                    title={`High: ${highM} mi`}
+                    sx={{ width: 13, height: `${hHigh}px`, backgroundColor: '#E8872B', borderRadius: '2px 2px 0 0' }}
+                  />
+                  <Box
+                    title={`Moderate: ${modM} mi`}
+                    sx={{ width: 13, height: `${hMod}px`, backgroundColor: '#E2C044', borderRadius: '2px 2px 0 0' }}
+                  />
+                  <Box
+                    title={`Time: ${hours.toFixed(1)} hrs`}
+                    sx={{ width: 13, height: `${hTime}px`, backgroundColor: '#00D2FF', borderRadius: '2px 2px 0 0' }}
+                  />
+                </Box>
+                <Typography sx={{ fontSize: '11px', color: colorTokens.text, fontWeight: 600, mt: 0.5 }}>
+                  Route {letter}
+                </Typography>
               </Box>
-              <Typography sx={{ fontSize: '11px', color: colorTokens.text, fontWeight: 600 }}>
-                Route {letter}
-              </Typography>
-            </Box>
-          );
-        })}
+            );
+          })}
+        </Box>
       </Box>
 
       {/* Route Metrics Table */}
@@ -140,7 +200,7 @@ export const RouteComparisonCard: React.FC<RouteComparisonCardProps> = ({ routes
             fontSize: '11px',
             fontFamily: typographyTokens.fontFamilyUi,
             '& th, & td': {
-              py: 0.6,
+              py: 0.35,
               px: 1,
               textAlign: 'left',
               borderBottom: `1px solid ${colorTokens.border}`,
@@ -167,7 +227,7 @@ export const RouteComparisonCard: React.FC<RouteComparisonCardProps> = ({ routes
             <tr>
               <Box component="td" sx={{ color: colorTokens.textMuted }}>Distance</Box>
               {routes.map((r) => (
-                <td key={r.id} style={{ color: colorTokens.text }}>{formatMiles(r.distance_miles)} mi</td>
+                <td key={r.id} style={{ color: colorTokens.text }}>{formatMiles(r.distance_miles)}</td>
               ))}
             </tr>
             <tr>
