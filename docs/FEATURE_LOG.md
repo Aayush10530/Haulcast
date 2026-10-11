@@ -173,6 +173,14 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 
 ## 4. Changes
 
+### C-006 Redesign of Checkpoints & Weather Analysis Card to Match Mockup
+- Date: 2026-10-12
+- Type: change
+- Phase: P4
+- Summary: Re-created Checkpoints & Weather Analysis card to strictly match reference mockup. Implemented continuous vertical cyan line passing through circular numbered step pills, milestone sequence support (Chicago-Denver, Portland-Sacramento, Dallas-Denver, and dynamic corridor fallbacks), formatted distance and 12-hour AM/PM ETAs, colored risk badges (Low, Moderate, High, glowing Severe and No Travel). Redesigned expanded checkpoint details with condition icons, estimated arrival timestamp, 3-column metrics for Wind, Rain, and Snow with vertical divider rules, and dynamic advisory/warning banner styled to risk severity.
+- Files: frontend/src/features/results/CheckpointList.tsx, frontend/src/features/results/CheckpointList.test.tsx
+- Status: done
+
 ### C-005 Removal of Built-in Example Trip Button
 - Date: 2026-10-12
 - Type: change
