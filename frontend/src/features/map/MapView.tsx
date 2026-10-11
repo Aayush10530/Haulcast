@@ -28,6 +28,16 @@ const ESRI_SATELLITE_URL =
 const ESRI_ATTRIBUTION =
   'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community';
 
+const ESRI_TOPO_URL =
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}';
+const ESRI_TOPO_ATTRIBUTION =
+  'Tiles &copy; Esri &mdash; Sources: Esri, USGS, NOAA';
+
+const NEXRAD_RADAR_URL =
+  'https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/nexrad-n0q-900913/{z}/{x}/{y}.png';
+const NEXRAD_ATTRIBUTION =
+  'Weather data &copy; IEM / NOAA NWS NEXRAD';
+
 export const MapView: React.FC<MapViewProps> = ({
   analysis,
   selectedRouteId,
@@ -57,8 +67,18 @@ export const MapView: React.FC<MapViewProps> = ({
   const routes = analysis?.routes || [];
   const hasRoutes = routes.length > 0;
 
-  const currentTileUrl = activeLayer === 'satellite' ? ESRI_SATELLITE_URL : OSM_TILE_URL;
-  const currentAttribution = activeLayer === 'satellite' ? ESRI_ATTRIBUTION : OSM_ATTRIBUTION;
+  const currentTileUrl =
+    activeLayer === 'satellite'
+      ? ESRI_SATELLITE_URL
+      : activeLayer === 'terrain'
+      ? ESRI_TOPO_URL
+      : OSM_TILE_URL;
+  const currentAttribution =
+    activeLayer === 'satellite'
+      ? ESRI_ATTRIBUTION
+      : activeLayer === 'terrain'
+      ? ESRI_TOPO_ATTRIBUTION
+      : OSM_ATTRIBUTION;
 
   return (
     <Box
@@ -168,20 +188,31 @@ export const MapView: React.FC<MapViewProps> = ({
         style={{ width: '100%', height: '100%' }}
       >
         <TileLayer
-          key={activeLayer}
+          key={`base-${activeLayer}`}
           url={currentTileUrl}
           attribution={currentAttribution}
           maxZoom={19}
-          className={activeLayer === 'satellite' ? '' : 'osm-dark-tiles'}
+          className={activeLayer === 'satellite' || activeLayer === 'terrain' ? '' : 'osm-dark-tiles'}
         />
 
-        {/* Doppler Weather Radar & Heat Zones Layer */}
+        {/* Live US Doppler Weather Radar (NEXRAD precipitation composite) */}
+        {activeLayer === 'radar' && (
+          <TileLayer
+            key="radar-tiles"
+            url={NEXRAD_RADAR_URL}
+            attribution={NEXRAD_ATTRIBUTION}
+            opacity={0.65}
+            maxZoom={12}
+          />
+        )}
+
+        {/* Corridor Risk Heatmap (0-48h forecast) & Checkpoint Risk Indicators */}
         <WeatherRadarLayer
           routes={routes}
           selectedRouteId={selectedRouteId}
           forecastHour={forecastHour}
           heatmapData={heatmapData}
-          isVisible={activeLayer === 'radar'}
+          isVisible={true}
         />
 
         <ZoomControl position="bottomright" />

@@ -209,6 +209,14 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 
 ## 5. Fixes
 
+### X-006 Weather Forecast Heatmap Integer Scale and Live Radar Layer
+- Date: 2026-10-12
+- Type: fix
+- Phase: P4
+- Summary: Corrected risk score evaluation in WeatherRadarLayer from float threshold assumptions (score <= 0.05 dropped, >= 0.75 severe) to discrete integer levels 0..4 (0=Low, 1=Moderate, 2=High, 3=Severe, 4=No Travel). Ensured fair weather corridor cells remain softly illuminated across the route and scrub dynamically over 0-48h. Integrated live US National Weather Service composite Doppler radar tile overlay (IEM NEXRAD) and Esri Topographic terrain mode in MapView.
+- Files: frontend/src/features/map/WeatherRadarLayer.tsx, frontend/src/features/map/MapView.tsx
+- Status: done
+
 ### X-005 Journey Corridor Weather Radar and Dynamic Checkpoints
 - Date: 2026-10-12
 - Type: fix

@@ -41,26 +41,30 @@ export const WeatherRadarLayer: React.FC<WeatherRadarLayerProps> = ({
       {currentFrame &&
         heatmapCells.map((cell, idx) => {
           const score = currentFrame.overall[idx];
-          if (score === null || score === undefined || score <= 0.05) {
+          if (score === null || score === undefined) {
             return null;
           }
 
-          let fillColor = '#3FA66B'; // green / low risk
-          let opacity = 0.22;
-          let radius = 14000;
+          let fillColor = '#10B981'; // green / low risk
+          let opacity = 0.15;
+          let radius = 22000;
 
-          if (score >= 0.75) {
-            fillColor = '#E5484D'; // severe red
-            opacity = 0.55;
+          if (score >= 4) {
+            fillColor = '#8B5CF6'; // no travel purple
+            opacity = 0.70;
+            radius = 34000;
+          } else if (score === 3) {
+            fillColor = '#EF4444'; // severe red
+            opacity = 0.60;
+            radius = 30000;
+          } else if (score === 2) {
+            fillColor = '#F97316'; // high orange
+            opacity = 0.48;
             radius = 26000;
-          } else if (score >= 0.50) {
-            fillColor = '#E8872B'; // high orange
-            opacity = 0.45;
-            radius = 22000;
-          } else if (score >= 0.25) {
-            fillColor = '#E2C044'; // moderate yellow
-            opacity = 0.35;
-            radius = 18000;
+          } else if (score === 1) {
+            fillColor = '#F59E0B'; // moderate yellow
+            opacity = 0.38;
+            radius = 24000;
           }
 
           return (
@@ -83,20 +87,24 @@ export const WeatherRadarLayer: React.FC<WeatherRadarLayerProps> = ({
         const precip = (cp.weather?.rain_in_hr || 0) + (cp.weather?.snow_in_hr || 0);
         const windSpeed = cp.weather?.wind_mph || 0;
 
-        let fillColor = '#3FA66B';
-        let fillOpacity = 0.18;
-        let radiusMeters = 15000;
+        let fillColor = '#10B981';
+        let fillOpacity = 0.16;
+        let radiusMeters = 16000;
 
-        if (riskLevel === 'severe' || riskLevel === 'no_travel') {
-          fillColor = '#E5484D';
-          fillOpacity = 0.45;
+        if (riskLevel === 'no_travel') {
+          fillColor = '#8B5CF6';
+          fillOpacity = 0.50;
           radiusMeters = 32000;
+        } else if (riskLevel === 'severe') {
+          fillColor = '#EF4444';
+          fillOpacity = 0.45;
+          radiusMeters = 30000;
         } else if (riskLevel === 'high') {
-          fillColor = '#E8872B';
+          fillColor = '#F97316';
           fillOpacity = 0.38;
           radiusMeters = 25000;
         } else if (riskLevel === 'moderate') {
-          fillColor = '#E2C044';
+          fillColor = '#F59E0B';
           fillOpacity = 0.30;
           radiusMeters = 20000;
         } else if (precip > 0.05) {
@@ -118,7 +126,7 @@ export const WeatherRadarLayer: React.FC<WeatherRadarLayerProps> = ({
               color: fillColor,
               fillColor,
               fillOpacity,
-              weight: 1,
+              weight: riskLevel !== 'low' ? 1.5 : 0.75,
               dashArray: riskLevel !== 'low' ? '4 4' : undefined,
             }}
           />
