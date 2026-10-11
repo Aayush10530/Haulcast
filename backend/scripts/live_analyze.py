@@ -49,14 +49,31 @@ def run_analyze_request(client: httpx.Client, url: str) -> dict:
 def print_run_results(run_label: str, result: dict) -> None:
     print(f"\n=== {run_label} RUN ===")
     print(f"HTTP Status: {result['status']}")
-    print(f"Wall Time Elapsed: {result['elapsed_wall']:.2f}s")
+    print(f"Total Wall Time: {result['elapsed_wall']:.2f}s")
 
     if result["status"] != 200:
         print(f"Error Response: {result['data']}")
         return
 
     data = result["data"]
+    meta = data.get("meta", {})
     routes = data.get("routes", [])
+
+    routing_sec = meta.get("routing_ms", 0.0) / 1000.0
+    weather_sec = meta.get("weather_ms", 0.0) / 1000.0
+    in_process_sec = meta.get("in_process_ms", 0.0) / 1000.0
+    unique_cells = meta.get("weather_cells", 0)
+
+    print(
+        f"Time Breakdown: Routing Call = {routing_sec:.2f}s, "
+        f"Weather Call = {weather_sec:.2f}s, "
+        f"In-Process Work = {in_process_sec:.2f}s"
+    )
+    print(f"Unique Weather Cells: {unique_cells}")
+    cp_counts = [
+        f"{r.get('label')} ({r.get('id')}): {len(r.get('checkpoints', []))}" for r in routes
+    ]
+    print(f"Checkpoints Per Route: {', '.join(cp_counts)}")
     print(f"Number of Routes: {len(routes)}")
 
     for r in routes:
@@ -76,7 +93,27 @@ def print_run_results(run_label: str, result: dict) -> None:
     print(f"Recommended Route: {rec.get('route_id')}")
     print(f"Headline: {rec.get('headline')}")
     print(f"Warnings: {data.get('warnings', [])}")
-    print(f"Meta: {data.get('meta', {})}")
+    print(f"Meta: {meta}")
+
+    if run_label == "COLD" and result["elapsed_wall"] > 6.0:
+        timings = [
+            ("Routing Call", routing_sec),
+            ("Weather Call", weather_sec),
+            ("In-Process Work", in_process_sec),
+        ]
+        slowest_name, slowest_time = max(timings, key=lambda t: t[1])
+        print("\n[SLOW RUN DETECTED > 6s]")
+        print(f"Slowest step: {slowest_name} ({slowest_time:.2f}s)")
+        if slowest_name == "Routing Call":
+            print(
+                "Proposed fix: Query route alternatives concurrently or parallelize via-point queries."
+            )
+        elif slowest_name == "Weather Call":
+            print(
+                "Proposed fix: Fetch Open-Meteo chunks in parallel using httpx.AsyncClient or asyncio.gather."
+            )
+        else:
+            print("Proposed fix: Optimize polyline sampling or checkpoint timeline interpolation.")
 
 
 def main() -> None:

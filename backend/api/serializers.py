@@ -251,5 +251,8 @@ def format_trip_analysis(
             "weather_cells": analysis.meta.weather_cells,
             "route_count": analysis.meta.route_count,
             "elapsed_ms": round(analysis.meta.elapsed_ms, 1),
+            "routing_ms": round(analysis.meta.routing_ms, 1),
+            "weather_ms": round(analysis.meta.weather_ms, 1),
+            "in_process_ms": round(analysis.meta.in_process_ms, 1),
         },
     }

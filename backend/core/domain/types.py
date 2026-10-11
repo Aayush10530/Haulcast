@@ -588,6 +588,9 @@ class TripAnalysisMeta:
     weather_cells: int
     route_count: int
     elapsed_ms: float
+    routing_ms: float = 0.0
+    weather_ms: float = 0.0
+    in_process_ms: float = 0.0
 
     def __post_init__(self) -> None:
         if self.weather_cells < 0:
@@ -596,6 +599,12 @@ class TripAnalysisMeta:
             raise ValueError(f"route_count must be non-negative, got {self.route_count}")
         if not math.isfinite(self.elapsed_ms) or self.elapsed_ms < 0.0:
             raise ValueError(f"elapsed_ms must be non-negative finite, got {self.elapsed_ms}")
+        if not math.isfinite(self.routing_ms) or self.routing_ms < 0.0:
+            raise ValueError(f"routing_ms must be non-negative finite, got {self.routing_ms}")
+        if not math.isfinite(self.weather_ms) or self.weather_ms < 0.0:
+            raise ValueError(f"weather_ms must be non-negative finite, got {self.weather_ms}")
+        if not math.isfinite(self.in_process_ms) or self.in_process_ms < 0.0:
+            raise ValueError(f"in_process_ms must be non-negative finite, got {self.in_process_ms}")
 
 
 @dataclass(frozen=True, slots=True)

@@ -57,10 +57,12 @@ class TripAnalysisService:
             ) from e
 
         # 2. Fetch diverse candidate routes via route selection service (cached)
+        t_route_0 = time.perf_counter()
         selection_result = self.route_selection.get_routes(
             origin=request.origin.coordinate,
             destination=request.destination.coordinate,
         )
+        routing_ms = (time.perf_counter() - t_route_0) * 1000.0
         selected_routes = selection_result.routes
 
         # 3. Resolve interval from longest route's distance
@@ -90,7 +92,9 @@ class TripAnalysisService:
         unique_cells: list[GridCell] = list(
             dict.fromkeys(snap_to_cell(cp.coordinate) for _, cps, _ in routes_prep for cp in cps)
         )
+        t_weather_0 = time.perf_counter()
         weather_map = self.weather.get_series(unique_cells)
+        weather_ms = (time.perf_counter() - t_weather_0) * 1000.0
 
         all_etas = [eta for _, _, etas in routes_prep for eta in etas]
 
@@ -195,6 +199,7 @@ class TripAnalysisService:
             )
 
         elapsed_ms = (time.perf_counter() - t0) * 1000.0
+        in_process_ms = max(0.0, elapsed_ms - routing_ms - weather_ms)
         echo = TripRequestEcho(
             origin=request.origin,
             destination=request.destination,
@@ -209,6 +214,9 @@ class TripAnalysisService:
             weather_cells=len(unique_cells),
             route_count=len(analyzed_routes),
             elapsed_ms=elapsed_ms,
+            routing_ms=routing_ms,
+            weather_ms=weather_ms,
+            in_process_ms=in_process_ms,
         )
 
         return TripAnalysis(

@@ -14,6 +14,7 @@ Haulcast evaluates long-haul truck routes across the contiguous United States ag
   - Classifies risk levels (*Low, Moderate, High, Severe, No Travel*) across sustained wind, rain, and snow rates.
   - Automatically elevates risk for heavy payloads (>30,000 lb and >40,000 lb) under high wind conditions.
 - **Deterministic Recommendation Engine**: Lexicographically evaluates routes based on No Travel miles, Severe miles, High miles, average weighted risk score, and duration.
+  > *Note*: Ranking follows the spec's priority order strictly; a small average-risk difference can choose a slower route, and the UI shows the time cost.
 - **Corridor Weather Heatmap**: Interactive 0–48 hour forecast slider scrub across a 0.1° resolution corridor grid.
 - **Interactive Map Console**: Clean, high-performance canvas map rendering with route polylines, risk-coded checkpoint markers, and inspector popups.
 

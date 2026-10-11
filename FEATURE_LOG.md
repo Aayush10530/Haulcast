@@ -157,7 +157,13 @@ _None yet._
 
 ## 5. Fixes
 
-_None yet._
+### X-001 Comparison with Fastest Route in Recommendation
+- Date: 2026-10-11
+- Type: fix
+- Phase: P3
+- Summary: Compare winner against the fastest route overall (if winner is not fastest) instead of runner-up in ranking.py, ensuring accurate headline and deciding factor explanations when a safer route is slower.
+- Files: backend/core/domain/ranking.py, backend/core/tests/domain/test_ranking.py
+- Status: done
 
 ---
 
@@ -199,4 +205,5 @@ _None yet._
 | P3b (F-022) | Route diversity & selection service | 0.50 | 0.25 | 3.35 | Pure domain route diversity & selection (grid hash, 100% coverage), RouteSelectionService with parallel via fallback & caching (100% coverage) |
 | P3c (F-023) | Open-Meteo weather adapter & cache | 0.50 | 0.35 | 3.70 | Grid snapping/centering, DjangoCache & InMemoryTTLCache, OpenMeteoWeatherProvider (chunking, threading, index mapping, rain sum, retry), live script |
 | P3d (F-025) | Trip analysis orchestrator | 0.50 | 0.25 | 3.95 | TripRequest/Echo/TripAnalysis types, BeyondForecastHorizonError, TripAnalysisService (timeline check, dedupe cells, horizon check, load rules, warnings), 100% coverage |
-| P3e (F-024, F-026) | API layer & geocoding | 0.50 | 0.35 | 4.30 | TomTomGeocodingProvider (100%), CachedGeocoding (100%), TripRequestSerializer, API views & URLs, custom error envelope, scoped throttles, GZip/CORS, live smoke (10.75s cold / 0.16s warm) |
+| P3e (F-024, F-026) | API layer & geocoding | 0.50 | 0.35 | 4.30 | TomTomGeocodingProvider (100%), CachedGeocoding (100%), TripRequestSerializer, API views & URLs, custom error envelope, scoped throttles, GZip/CORS |
+| P3 (complete) | Provider & API orchestration review | 0.25 | 0.15 | 4.45 | Verified P3 end-to-end: ranking explanation compared against fastest, cold/warm timings recorded (cold 10.33s / warm 0.18s), P3 complete |
