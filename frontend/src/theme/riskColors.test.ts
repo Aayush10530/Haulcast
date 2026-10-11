@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { RiskLevelKey, riskColors } from './riskColors';
+import { colorTokens } from './tokens';
 
 /**
  * Calculates WCAG 2.1 relative luminance of an sRGB hex color.
@@ -27,18 +28,54 @@ function getContrastRatio(hex1: string, hex2: string): number {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
-describe('riskColors WCAG AA contrast ratio compliance', () => {
-  const levels = Object.keys(riskColors) as RiskLevelKey[];
+describe('WCAG AA contrast ratio compliance (>= 4.5:1)', () => {
+  describe('Risk scale text-on-fill contrast', () => {
+    const levels = Object.keys(riskColors) as RiskLevelKey[];
 
-  levels.forEach((level) => {
-    it(`evaluates WCAG AA contrast for ${level} level (>= 4.5:1)`, () => {
-      const { background, contrastText } = riskColors[level];
-      const ratio = getContrastRatio(background, contrastText);
-      // Log ratio to stdout so test output displays exact numerical values
-      console.log(
-        `[Contrast Ratio] ${level.padEnd(10)}: bg ${background} / text ${contrastText} = ${ratio.toFixed(2)}:1`,
-      );
-      expect(ratio).toBeGreaterThanOrEqual(4.5);
+    levels.forEach((level) => {
+      it(`evaluates WCAG AA contrast for ${level} level (>= 4.5:1)`, () => {
+        const { background, contrastText } = riskColors[level];
+        const ratio = getContrastRatio(background, contrastText);
+        console.log(
+          `[Risk Contrast] ${level.padEnd(10)}: bg ${background} / text ${contrastText} = ${ratio.toFixed(2)}:1`,
+        );
+        expect(ratio).toBeGreaterThanOrEqual(4.5);
+      });
+    });
+  });
+
+  describe('Theme UI color token pairings contrast', () => {
+    const uiPairs = [
+      {
+        name: 'text on surface',
+        foreground: colorTokens.text,
+        background: colorTokens.surface,
+      },
+      {
+        name: 'text-muted on surface',
+        foreground: colorTokens.textMuted,
+        background: colorTokens.surface,
+      },
+      {
+        name: 'brand on surface',
+        foreground: colorTokens.brand,
+        background: colorTokens.surface,
+      },
+      {
+        name: 'on-brand on brand',
+        foreground: colorTokens.onBrand,
+        background: colorTokens.brand,
+      },
+    ];
+
+    uiPairs.forEach(({ name, foreground, background }) => {
+      it(`evaluates WCAG AA contrast for ${name} (>= 4.5:1)`, () => {
+        const ratio = getContrastRatio(foreground, background);
+        console.log(
+          `[UI Contrast]   ${name.padEnd(22)}: fg ${foreground} / bg ${background} = ${ratio.toFixed(2)}:1`,
+        );
+        expect(ratio).toBeGreaterThanOrEqual(4.5);
+      });
     });
   });
 });

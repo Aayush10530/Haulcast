@@ -1,6 +1,6 @@
 /**
- * Design tokens per DESIGN.md §2.
- * Strictly defines fonts, color tokens, and spatial constants.
+ * Design tokens per DESIGN.md §3.
+ * Strictly defines typography, color tokens, route line styles, and spatial constants.
  */
 
 export const typographyTokens = {
@@ -9,13 +9,13 @@ export const typographyTokens = {
   fontFamilyMono:
     "'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace",
   panelTitle: {
-    fontSize: '22px',
+    fontSize: '20px',
     lineHeight: '28px',
     fontWeight: 600,
   },
   sectionHeading: {
-    fontSize: '16px',
-    lineHeight: '24px',
+    fontSize: '15px',
+    lineHeight: '22px',
     fontWeight: 600,
   },
   body: {
@@ -42,19 +42,37 @@ export const typographyTokens = {
 } as const;
 
 export const colorTokens = {
-  ink: '#0F2A33',
-  inkMuted: '#52666E',
-  brand700: '#0B4F5F',
-  brand500: '#0E7C86',
-  brand50: '#E8F3F5',
-  canvas: '#F3F5F4',
-  surface: '#FFFFFF',
-  border: '#D5DDDC',
+  canvas: '#0B1418',
+  surface: '#111E24',
+  surfaceRaised: '#16262E',
+  border: '#25383F',
+  text: '#E6EEF0',
+  textMuted: '#8FA4AB',
+  brand: '#2DB8C5',
+  brandStrong: '#5CCBD5',
+  onBrand: '#07171C',
+} as const;
+
+export const routeLineColors = {
+  recommended: '#2DB8C5',
+  second: '#7C9BFF',
+  third: '#C9D4D8',
+  casing: '#0B1418',
+} as const;
+
+export const routeDashArrays = {
+  recommended: '',
+  second: '10 6',
+  third: '2 6',
 } as const;
 
 export const shapeTokens = {
   borderRadius: 4,
   panelBorderRadius: 6,
-  controlPanelWidth: 420,
+  borderWidth: 1,
   headerHeight: 56,
+  headerHeightMobile: 48,
+  threeColumnLeftWidth: 340,
+  threeColumnRightWidth: 380,
+  twoColumnLeftWidth: 400,
 } as const;

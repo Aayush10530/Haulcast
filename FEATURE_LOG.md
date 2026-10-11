@@ -214,3 +214,4 @@ _None yet._
 | P3d (F-025) | Trip analysis orchestrator | 0.50 | 0.25 | 3.95 | TripRequest/Echo/TripAnalysis types, BeyondForecastHorizonError, TripAnalysisService (timeline check, dedupe cells, horizon check, load rules, warnings), 100% coverage |
 | P3e (F-024, F-026) | API layer & geocoding | 0.50 | 0.35 | 4.30 | TomTomGeocodingProvider (100%), CachedGeocoding (100%), TripRequestSerializer, API views & URLs, custom error envelope, scoped throttles, GZip/CORS |
 | P3 (complete) | Provider & API orchestration review | 0.25 | 0.15 | 4.45 | Verified P3 end-to-end: ranking explanation compared against fastest, cold/warm timings recorded (cold 10.33s / warm 0.18s), P3 complete |
+| P4 (shell) | Dark theme & responsive app shell | 0.50 | 0.30 | 4.75 | DESIGN.md v2 tokens, risk colors (#07171C text, 100% WCAG AA), theme.ts, StormRoute header, 3-column / 2-column / mobile tab responsive shell, GET /api/health/ status dot |
