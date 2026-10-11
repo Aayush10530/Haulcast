@@ -137,3 +137,26 @@ export interface ApiErrorEnvelope {
     fields?: Record<string, string[] | string>;
   };
 }
+
+export interface HeatmapCellDTO {
+  lat: number;
+  lon: number;
+}
+
+export interface HeatmapFrameDTO {
+  offset_hours: number;
+  time_utc: string;
+  time_local: string;
+  overall: (number | null)[];
+  wind: (number | null)[];
+  rain: (number | null)[];
+  snow: (number | null)[];
+}
+
+export interface TripHeatmapResponse {
+  start_utc: string;
+  start_local: string;
+  origin_timezone: string;
+  cells: HeatmapCellDTO[];
+  frames: HeatmapFrameDTO[];
+}

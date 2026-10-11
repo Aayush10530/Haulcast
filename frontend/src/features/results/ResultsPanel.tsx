@@ -224,6 +224,8 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
         <CheckpointList
           checkpoints={selectedRoute.checkpoints || []}
           routeLabel={selectedRoute.label}
+          originLabel={analysis.request.origin.label}
+          destinationLabel={analysis.request.destination.label}
           onSelectCheckpoint={onSelectCheckpoint}
         />
       )}

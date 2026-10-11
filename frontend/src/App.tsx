@@ -387,6 +387,8 @@ export const App: React.FC = () => {
               <CheckpointList
                 checkpoints={selectedRoute.checkpoints || []}
                 routeLabel={selectedRoute.label}
+                originLabel={tripAnalysis?.request?.origin?.label}
+                destinationLabel={tripAnalysis?.request?.destination?.label}
                 onSelectCheckpoint={handleSelectCheckpoint}
               />
             </Paper>

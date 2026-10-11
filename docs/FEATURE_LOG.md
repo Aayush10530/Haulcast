@@ -201,6 +201,14 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 
 ## 5. Fixes
 
+### X-005 Journey Corridor Weather Radar and Dynamic Checkpoints
+- Date: 2026-10-12
+- Type: fix
+- Phase: P4
+- Summary: Replaced hardcoded Midwest Doppler storm overlay with dynamic journey corridor weather and 0-48h forecast heatmap. Connected MapView to backend /api/trips/heatmap/ endpoint so dragging the Weather Forecast slider renders real risk cells for the specific route corridor at that hour. Rendered live weather indicators for all checkpoints along the active route (precipitation bands, wind alerts, risk heat zones). Replaced static Chicago-Denver checkpoint labels with dynamic origin/destination start/end tags and corridor mile markers.
+- Files: frontend/src/api/types.ts, frontend/src/api/tripsApi.ts, frontend/src/hooks/useTripHeatmap.ts, frontend/src/features/map/WeatherRadarLayer.tsx, frontend/src/features/map/MapView.tsx, frontend/src/features/map/MapView.test.tsx, frontend/src/features/results/CheckpointList.tsx, frontend/src/features/results/ResultsPanel.tsx, frontend/src/App.tsx
+- Status: done
+
 ### X-004 Local Time Formatting and Time Zone Labels
 - Date: 2026-10-11
 - Type: fix

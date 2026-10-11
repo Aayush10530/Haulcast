@@ -1,13 +1,12 @@
 import React from 'react';
-import { Circle, SVGOverlay } from 'react-leaflet';
-import L from 'leaflet';
-import { RouteDTO } from '../../api/types';
-import { riskColors } from '../../theme/riskColors';
+import { Circle } from 'react-leaflet';
+import { RouteDTO, TripHeatmapResponse } from '../../api/types';
 
 export interface WeatherRadarLayerProps {
   routes?: RouteDTO[];
   selectedRouteId?: string | null;
   forecastHour?: number;
+  heatmapData?: TripHeatmapResponse | null;
   isVisible?: boolean;
 }
 
@@ -15,41 +14,10 @@ export const WeatherRadarLayer: React.FC<WeatherRadarLayerProps> = ({
   routes = [],
   selectedRouteId,
   forecastHour = 0,
+  heatmapData,
   isVisible = true,
 }) => {
-  // Calculate corridor bounds from routes, or fallback to US Midwest/Plains corridor
-  const bounds = React.useMemo<L.LatLngBoundsExpression>(() => {
-    if (!routes || routes.length === 0) {
-      return [
-        [32.5, -106.0],
-        [44.5, -85.0],
-      ];
-    }
-
-    let minLat = 90;
-    let maxLat = -90;
-    let minLon = 180;
-    let maxLon = -180;
-
-    for (const r of routes) {
-      const poly = r.geometry || [];
-      for (const pt of poly) {
-        const [lat, lon] = pt;
-        if (lat < minLat) minLat = lat;
-        if (lat > maxLat) maxLat = lat;
-        if (lon < minLon) minLon = lon;
-        if (lon > maxLon) maxLon = lon;
-      }
-    }
-
-    // Add padding around routes for radar storm clouds
-    return [
-      [Math.max(24, minLat - 2.5), Math.max(-125, minLon - 2.5)],
-      [Math.min(50, maxLat + 2.5), Math.min(-65, maxLon + 2.5)],
-    ];
-  }, [routes]);
-
-  if (!isVisible) {
+  if (!isVisible || !routes || routes.length === 0) {
     return null;
   }
 
@@ -58,123 +26,100 @@ export const WeatherRadarLayer: React.FC<WeatherRadarLayerProps> = ({
     routes.find((r) => r.id === selectedRouteId) || routes[0] || null;
   const checkpoints = activeRoute?.checkpoints || [];
 
-  // Hourly displacement simulation for radar storm animation (drifts east-northeast)
-  const driftX = (forecastHour * 1.5) % 100;
-  const driftY = (forecastHour * 0.8) % 60;
+  // Frame selection from heatmap dataset (0 to 48 hours)
+  const heatmapFrames = heatmapData?.frames || [];
+  const activeFrameIndex = Math.min(
+    Math.max(0, forecastHour),
+    Math.max(0, heatmapFrames.length - 1),
+  );
+  const currentFrame = heatmapFrames[activeFrameIndex];
+  const heatmapCells = heatmapData?.cells || [];
 
   return (
     <>
-      {/* 1. Doppler Weather Radar Storm Clusters Overlay */}
-      <SVGOverlay
-        bounds={bounds}
-        attributes={{
-          style: 'pointer-events: none; mix-blend-mode: screen; opacity: 0.85;',
-        }}
-      >
-        <svg viewBox="0 0 600 400" width="100%" height="100%">
-          <defs>
-            <filter id="radarBlur" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="6" />
-            </filter>
+      {/* 1. Live Corridor Heatmap Grid Cells (from /api/trips/heatmap/ 0-48h forecast) */}
+      {currentFrame &&
+        heatmapCells.map((cell, idx) => {
+          const score = currentFrame.overall[idx];
+          if (score === null || score === undefined || score <= 0.05) {
+            return null;
+          }
 
-            {/* Intense Supercell Radar Gradient (Magenta core -> Red -> Orange -> Yellow -> Green) */}
-            <radialGradient id="stormGradPrimary" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#D80032" stopOpacity="0.95" />
-              <stop offset="25%" stopColor="#FF1E00" stopOpacity="0.9" />
-              <stop offset="45%" stopColor="#FF8C00" stopOpacity="0.8" />
-              <stop offset="65%" stopColor="#FFD700" stopOpacity="0.7" />
-              <stop offset="85%" stopColor="#00E676" stopOpacity="0.5" />
-              <stop offset="100%" stopColor="#00E676" stopOpacity="0" />
-            </radialGradient>
+          let fillColor = '#3FA66B'; // green / low risk
+          let opacity = 0.22;
+          let radius = 14000;
 
-            {/* Secondary Squall Line Gradient */}
-            <radialGradient id="stormGradSecondary" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#FF1E00" stopOpacity="0.9" />
-              <stop offset="35%" stopColor="#FF8C00" stopOpacity="0.75" />
-              <stop offset="65%" stopColor="#FFD700" stopOpacity="0.6" />
-              <stop offset="85%" stopColor="#00E676" stopOpacity="0.45" />
-              <stop offset="100%" stopColor="#00E676" stopOpacity="0" />
-            </radialGradient>
+          if (score >= 0.75) {
+            fillColor = '#E5484D'; // severe red
+            opacity = 0.55;
+            radius = 26000;
+          } else if (score >= 0.50) {
+            fillColor = '#E8872B'; // high orange
+            opacity = 0.45;
+            radius = 22000;
+          } else if (score >= 0.25) {
+            fillColor = '#E2C044'; // moderate yellow
+            opacity = 0.35;
+            radius = 18000;
+          }
 
-            {/* Moderate Precipitation Rain Band */}
-            <radialGradient id="rainBandGrad" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#FFD700" stopOpacity="0.75" />
-              <stop offset="50%" stopColor="#00E676" stopOpacity="0.5" />
-              <stop offset="100%" stopColor="#00D2FF" stopOpacity="0" />
-            </radialGradient>
-          </defs>
-
-          <g filter="url(#radarBlur)">
-            {/* Main Convective Storm System (Central Plains / Corridor) */}
-            <ellipse
-              cx={280 + driftX}
-              cy={190 - driftY}
-              rx={95}
-              ry={65}
-              fill="url(#stormGradPrimary)"
-              transform={`rotate(-25 ${280 + driftX} ${190 - driftY})`}
+          return (
+            <Circle
+              key={`heatmap-cell-${idx}-${forecastHour}`}
+              center={[cell.lat, cell.lon]}
+              radius={radius}
+              pathOptions={{
+                stroke: false,
+                fillColor,
+                fillOpacity: opacity,
+              }}
             />
+          );
+        })}
 
-            {/* Intense Core Cell */}
-            <circle
-              cx={295 + driftX}
-              cy={180 - driftY}
-              r={48}
-              fill="url(#stormGradPrimary)"
-            />
-
-            {/* Trailing Squall / Frontal Line */}
-            <ellipse
-              cx={210 + driftX}
-              cy={240 - driftY}
-              rx={110}
-              ry={45}
-              fill="url(#stormGradSecondary)"
-              transform={`rotate(35 ${210 + driftX} ${240 - driftY})`}
-            />
-
-            {/* Forward Precipitation Arc */}
-            <ellipse
-              cx={360 + driftX}
-              cy={150 - driftY}
-              rx={80}
-              ry={55}
-              fill="url(#rainBandGrad)"
-              transform={`rotate(-15 ${360 + driftX} ${150 - driftY})`}
-            />
-
-            {/* Scattered Convective Showers */}
-            <circle cx={160 + driftX} cy={280 - driftY} r={35} fill="url(#rainBandGrad)" />
-            <circle cx={420 + driftX} cy={120 - driftY} r={40} fill="url(#rainBandGrad)" />
-          </g>
-        </svg>
-      </SVGOverlay>
-
-      {/* 2. Corridor Risk Heat Zones along Route Checkpoints */}
+      {/* 2. Corridor Weather Radar Circles Along Active Route Checkpoints */}
       {checkpoints.map((cp) => {
-        if (!cp.risk || cp.risk.level === 'low') {
-          return null;
-        }
+        const riskLevel = cp.risk?.level || 'low';
+        const precip = (cp.weather?.rain_in_hr || 0) + (cp.weather?.snow_in_hr || 0);
+        const windSpeed = cp.weather?.wind_mph || 0;
 
-        const riskSpec = riskColors[cp.risk.level];
-        const radiusMeters =
-          cp.risk.level === 'severe' || cp.risk.level === 'no_travel'
-            ? 38000
-            : cp.risk.level === 'high'
-            ? 28000
-            : 20000;
+        let fillColor = '#3FA66B';
+        let fillOpacity = 0.18;
+        let radiusMeters = 15000;
+
+        if (riskLevel === 'severe' || riskLevel === 'no_travel') {
+          fillColor = '#E5484D';
+          fillOpacity = 0.45;
+          radiusMeters = 32000;
+        } else if (riskLevel === 'high') {
+          fillColor = '#E8872B';
+          fillOpacity = 0.38;
+          radiusMeters = 25000;
+        } else if (riskLevel === 'moderate') {
+          fillColor = '#E2C044';
+          fillOpacity = 0.30;
+          radiusMeters = 20000;
+        } else if (precip > 0.05) {
+          fillColor = '#00D2FF'; // active precipitation radar band
+          fillOpacity = 0.28;
+          radiusMeters = 18000;
+        } else if (windSpeed > 25) {
+          fillColor = '#FFD700'; // wind corridor alert
+          fillOpacity = 0.25;
+          radiusMeters = 18000;
+        }
 
         return (
           <Circle
-            key={`heat-zone-${activeRoute?.id}-${cp.index}`}
+            key={`route-radar-point-${activeRoute?.id}-${cp.index}`}
             center={[cp.lat, cp.lon]}
             radius={radiusMeters}
             pathOptions={{
-              color: riskSpec.background,
-              fillColor: riskSpec.background,
-              fillOpacity: cp.risk.level === 'severe' ? 0.38 : 0.28,
-              weight: 1.5,
-              dashArray: '4 4',
+              color: fillColor,
+              fillColor,
+              fillOpacity,
+              weight: 1,
+              dashArray: riskLevel !== 'low' ? '4 4' : undefined,
             }}
           />
         );

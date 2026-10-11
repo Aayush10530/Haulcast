@@ -21,6 +21,8 @@ import { formatCheckpointMiles, formatLocalTime } from '../../utils/format';
 export interface CheckpointListProps {
   checkpoints: CheckpointDTO[];
   routeLabel?: string;
+  originLabel?: string;
+  destinationLabel?: string;
   onSelectCheckpoint?: (checkpoint: CheckpointDTO) => void;
 }
 
@@ -34,50 +36,30 @@ const SEVERITY_ORDER: Record<RiskLevelKey, number> = {
   low: 1,
 };
 
-// Helper to provide realistic city / corridor names for milestones
+// Helper to provide realistic corridor names for milestones based on the active journey
 function getCheckpointLocationName(
   cp: CheckpointDTO,
   index: number,
   total: number,
+  originLabel?: string,
+  destinationLabel?: string,
 ): string {
   if (index === 0) {
-    return 'Chicago, IL (Start)';
+    return originLabel ? `${originLabel} (Start)` : 'Origin (Start)';
   }
   if (index === total - 1) {
-    return 'Denver, CO (End)';
+    return destinationLabel ? `${destinationLabel} (End)` : 'Destination (End)';
   }
 
-  // If milestone sampling produces standard 7 stops for Chicago -> Denver corridor
-  if (total === 7) {
-    const sequence = [
-      'Chicago, IL (Start)',
-      'Rockford, IL',
-      'Cedar Rapids, IA',
-      'Omaha, NE',
-      'North Platte, NE',
-      'Cheyenne, WY',
-      'Denver, CO (End)',
-    ];
-    return sequence[index] || `Corridor Station (Mile ${Math.round(cp.mile)})`;
-  }
-
-  // Mileage-based corridor lookup with deduplication
   const m = Math.round(cp.mile);
-  if (m <= 90) return 'Rockford, IL';
-  if (m <= 220) return 'Cedar Rapids, IA';
-  if (m <= 420) return 'Des Moines, IA';
-  if (m <= 600) return 'Omaha, NE';
-  if (m <= 750) return 'Grand Island, NE';
-  if (m <= 900) return 'North Platte, NE';
-  if (m <= 1050) return 'Cheyenne, WY';
-  if (m <= 1180) return 'Fort Collins, CO';
-
-  return `Corridor Station (Mile ${m})`;
+  return `Corridor Mile ${m}`;
 }
 
 export const CheckpointList: React.FC<CheckpointListProps> = ({
   checkpoints,
   routeLabel = 'Selected route',
+  originLabel,
+  destinationLabel,
   onSelectCheckpoint,
 }) => {
   const [sortBy, setSortBy] = useState<SortOption>('mile');
@@ -247,7 +229,13 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
         {sortedCheckpoints.map((cp, idx) => {
           const isExpanded = expandedIndex === cp.index;
           const isLast = idx === sortedCheckpoints.length - 1;
-          const locationName = getCheckpointLocationName(cp, idx, sortedCheckpoints.length);
+          const locationName = getCheckpointLocationName(
+            cp,
+            idx,
+            sortedCheckpoints.length,
+            originLabel,
+            destinationLabel,
+          );
 
           const dotColor = cp.risk
             ? riskColors[cp.risk.level].background

@@ -1,12 +1,27 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import { ThemeProvider } from '@mui/material/styles';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { goldenAnalysis } from '../../test/fixtures/goldenAnalysis';
+import { theme } from '../../theme/theme';
 import { MapView } from './MapView';
+
+function renderMapView(ui: React.ReactElement) {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+    </QueryClientProvider>
+  );
+  return render(ui, { wrapper: Wrapper });
+}
 
 describe('MapView', () => {
   it('renders empty state with US view and hint when analysis is null', () => {
     const handleSelectRoute = vi.fn();
-    render(
+    renderMapView(
       <MapView
         analysis={null}
         selectedRouteId={null}
@@ -24,7 +39,7 @@ describe('MapView', () => {
 
   it('renders routes with label text, origin/destination tooltips, and checkpoints', () => {
     const handleSelectRoute = vi.fn();
-    render(
+    renderMapView(
       <MapView
         analysis={goldenAnalysis}
         selectedRouteId="route_b"
@@ -52,7 +67,7 @@ describe('MapView', () => {
 
   it('selecting a route line or label calls onSelectRoute with routeId', () => {
     const handleSelectRoute = vi.fn();
-    render(
+    renderMapView(
       <MapView
         analysis={goldenAnalysis}
         selectedRouteId="route_b"
@@ -67,7 +82,7 @@ describe('MapView', () => {
   });
 
   it('reflects selectedRouteId changes by styling selected route', () => {
-    const { rerender } = render(
+    const { rerender } = renderMapView(
       <MapView
         analysis={goldenAnalysis}
         selectedRouteId="route_b"

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { MapContainer, TileLayer, ZoomControl } from 'react-leaflet';
-import { AnalyzeResponse, CheckpointDTO } from '../../api/types';
+import { AnalyzeResponse, CheckpointDTO, IntervalOption } from '../../api/types';
+import { useTripHeatmap } from '../../hooks/useTripHeatmap';
 import { colorTokens, shapeTokens, typographyTokens } from '../../theme/tokens';
 import { CheckpointLayer } from './CheckpointLayer';
 import { MapController } from './MapController';
@@ -36,6 +37,22 @@ export const MapView: React.FC<MapViewProps> = ({
 }) => {
   const [activeLayer, setActiveLayer] = React.useState<'radar' | 'satellite' | 'terrain'>('radar');
   const [forecastHour, setForecastHour] = React.useState<number>(0);
+
+  const req = analysis?.request;
+  const requestPayload = React.useMemo(() => {
+    if (!req) return null;
+    return {
+      origin: req.origin,
+      destination: req.destination,
+      departure_local: req.departure_local,
+      load_weight_lb: req.load_weight_lb,
+      interval: (req.interval_mode === 'manual'
+        ? req.interval_miles
+        : 'auto') as IntervalOption,
+    };
+  }, [req]);
+
+  const { data: heatmapData } = useTripHeatmap(requestPayload);
 
   const routes = analysis?.routes || [];
   const hasRoutes = routes.length > 0;
@@ -163,6 +180,7 @@ export const MapView: React.FC<MapViewProps> = ({
           routes={routes}
           selectedRouteId={selectedRouteId}
           forecastHour={forecastHour}
+          heatmapData={heatmapData}
           isVisible={activeLayer === 'radar'}
         />
 
