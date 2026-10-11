@@ -19,3 +19,15 @@ class DepartureOutOfWindowError(ValueError):
         super().__init__(message)
         self.allowed_from = allowed_from
         self.allowed_to = allowed_to
+
+
+class BeyondForecastHorizonError(ValueError):
+    """Raised when trip times extend beyond the available forecast horizon."""
+
+    def __init__(
+        self,
+        message: str,
+        last_forecast_time: datetime.datetime,
+    ) -> None:
+        super().__init__(message)
+        self.last_forecast_time = last_forecast_time

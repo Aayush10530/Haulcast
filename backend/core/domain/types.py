@@ -479,3 +479,139 @@ class RouteSelection:
             object.__setattr__(self, "routes", tuple(self.routes))
         if not isinstance(self.warnings, tuple):
             object.__setattr__(self, "warnings", tuple(self.warnings))
+
+
+@dataclass(frozen=True, slots=True)
+class TripRequest:
+    """Trip analysis input request."""
+
+    origin: Place
+    destination: Place
+    departure_local: datetime.datetime
+    load_weight_lb: int
+    interval_mode: IntervalMode
+    manual_interval: int | None = None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.origin, Place):
+            raise TypeError(f"origin must be a Place instance, got {type(self.origin)}")
+        if not isinstance(self.destination, Place):
+            raise TypeError(f"destination must be a Place instance, got {type(self.destination)}")
+        if self.departure_local.tzinfo is not None:
+            raise ValueError(f"departure_local must be naive datetime, got {self.departure_local}")
+        if not isinstance(self.load_weight_lb, int) or isinstance(self.load_weight_lb, bool):
+            raise TypeError(f"load_weight_lb must be an int, got {type(self.load_weight_lb)}")
+        if self.load_weight_lb <= 0:
+            raise ValueError(f"load_weight_lb must be positive, got {self.load_weight_lb}")
+        if not isinstance(self.interval_mode, IntervalMode):
+            raise TypeError(
+                f"interval_mode must be an IntervalMode, got {type(self.interval_mode)}"
+            )
+        if self.interval_mode == IntervalMode.MANUAL:
+            if self.manual_interval is None:
+                raise ValueError("manual_interval is required when interval_mode is MANUAL")
+
+
+@dataclass(frozen=True, slots=True)
+class TripRequestEcho:
+    """Echo of validated trip request parameters in the analysis result."""
+
+    origin: Place
+    destination: Place
+    departure_utc: datetime.datetime
+    departure_local: datetime.datetime
+    origin_tz: str
+    load_weight_lb: int
+    interval_miles: int
+    interval_mode: IntervalMode
+
+    def __post_init__(self) -> None:
+        if (
+            self.departure_utc.tzinfo is None
+            or self.departure_utc.tzinfo.utcoffset(self.departure_utc) is None
+        ):
+            raise ValueError(f"departure_utc must be timezone-aware, got {self.departure_utc}")
+        if self.departure_local.tzinfo is not None:
+            raise ValueError(f"departure_local must be naive datetime, got {self.departure_local}")
+        if not self.origin_tz or not self.origin_tz.strip():
+            raise ValueError("origin_tz cannot be empty")
+        if self.load_weight_lb <= 0:
+            raise ValueError(f"load_weight_lb must be positive, got {self.load_weight_lb}")
+        if self.interval_miles <= 0:
+            raise ValueError(f"interval_miles must be positive, got {self.interval_miles}")
+
+
+@dataclass(frozen=True, slots=True)
+class AnalyzedRoute:
+    """Fully analyzed route option with checkpoints, weather, risk summary, and rank."""
+
+    route_id: str
+    label: str
+    raw: RawRoute
+    checkpoints: tuple[AssessedCheckpoint, ...]
+    summary: RouteSummary
+    rank: int
+    delta_vs_fastest_seconds: float
+    is_recommended: bool
+    display_polyline: tuple[Coordinate, ...]
+    via_summary: str | None = None
+
+    def __post_init__(self) -> None:
+        if not self.route_id or not self.route_id.strip():
+            raise ValueError("route_id cannot be empty")
+        if not self.label or not self.label.strip():
+            raise ValueError("label cannot be empty")
+        if not isinstance(self.raw, RawRoute):
+            raise TypeError(f"raw must be a RawRoute instance, got {type(self.raw)}")
+        if not isinstance(self.checkpoints, tuple):
+            object.__setattr__(self, "checkpoints", tuple(self.checkpoints))
+        if not isinstance(self.summary, RouteSummary):
+            raise TypeError(f"summary must be a RouteSummary instance, got {type(self.summary)}")
+        if self.rank < 1:
+            raise ValueError(f"rank must be at least 1, got {self.rank}")
+        if not math.isfinite(self.delta_vs_fastest_seconds) or self.delta_vs_fastest_seconds < 0.0:
+            raise ValueError(
+                "delta_vs_fastest_seconds must be non-negative, "
+                f"got {self.delta_vs_fastest_seconds}"
+            )
+        if not isinstance(self.display_polyline, tuple):
+            object.__setattr__(self, "display_polyline", tuple(self.display_polyline))
+        if len(self.display_polyline) < 2:
+            raise ValueError("display_polyline must have at least 2 points")
+
+
+@dataclass(frozen=True, slots=True)
+class TripAnalysisMeta:
+    """Execution metadata and performance counters for a trip analysis."""
+
+    weather_cells: int
+    route_count: int
+    elapsed_ms: float
+
+    def __post_init__(self) -> None:
+        if self.weather_cells < 0:
+            raise ValueError(f"weather_cells must be non-negative, got {self.weather_cells}")
+        if self.route_count < 0:
+            raise ValueError(f"route_count must be non-negative, got {self.route_count}")
+        if not math.isfinite(self.elapsed_ms) or self.elapsed_ms < 0.0:
+            raise ValueError(f"elapsed_ms must be non-negative finite, got {self.elapsed_ms}")
+
+
+@dataclass(frozen=True, slots=True)
+class TripAnalysis:
+    """Complete trip analysis result containing routes, recommendation, and metadata."""
+
+    request: TripRequestEcho
+    routes: tuple[AnalyzedRoute, ...]
+    recommendation: Recommendation
+    warnings: tuple[Warning, ...]
+    meta: TripAnalysisMeta
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.routes, tuple):
+            object.__setattr__(self, "routes", tuple(self.routes))
+        if not isinstance(self.warnings, tuple):
+            object.__setattr__(self, "warnings", tuple(self.warnings))
+
+
+RouteRecommendation = Recommendation

@@ -126,7 +126,7 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-022 | Route selection service (dedupe, detour filtering, via-fallback) | P3 | done |
 | F-023 | Open-Meteo provider adapter & per-cell cache | P3 | done |
 | F-024 | Geocoding adapter & `/api/geocode/` endpoint | P3 | planned |
-| F-025 | Trip analysis service orchestrator (verify timeline.total_miles is within 0.01 mi of route distance, else raise ProviderBadResponse; assessed checkpoints built via assess_checkpoint) | P3 | planned |
+| F-025 | Trip analysis service orchestrator (verify timeline.total_miles is within 0.01 mi of route distance, else raise ProviderBadResponse; assessed checkpoints built via assess_checkpoint) | P3 | done |
 | F-026 | API layer: serializers, validation, container, `/api/trips/analyze/` (per-scope throttles: analyze, heatmap, geocode) | P3 | planned |
 | F-030 | Frontend API client, typed DTOs, error parsing | P4 | planned |
 | F-031 | TripForm & PlaceAutocomplete with validation | P4 | planned |
@@ -198,3 +198,4 @@ _None yet._
 | P3a (F-020, F-021) | Provider base interfaces & TomTom adapter | 0.50 | 0.35 | 3.10 | Protocols, typed errors, in-memory fakes, TomTom truck adapter with retries/timeline, live tests |
 | P3b (F-022) | Route diversity & selection service | 0.50 | 0.25 | 3.35 | Pure domain route diversity & selection (grid hash, 100% coverage), RouteSelectionService with parallel via fallback & caching (100% coverage) |
 | P3c (F-023) | Open-Meteo weather adapter & cache | 0.50 | 0.35 | 3.70 | Grid snapping/centering, DjangoCache & InMemoryTTLCache, OpenMeteoWeatherProvider (chunking, threading, index mapping, rain sum, retry), live script |
+| P3d (F-025) | Trip analysis orchestrator | 0.50 | 0.25 | 3.95 | TripRequest/Echo/TripAnalysis types, BeyondForecastHorizonError, TripAnalysisService (timeline check, dedupe cells, horizon check, load rules, warnings), 100% coverage |
