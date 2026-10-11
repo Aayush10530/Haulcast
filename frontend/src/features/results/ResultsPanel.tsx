@@ -4,6 +4,7 @@ import { AnalyzeResponse, CheckpointDTO } from '../../api/types';
 import { colorTokens, shapeTokens, typographyTokens } from '../../theme/tokens';
 import { CheckpointList } from './CheckpointList';
 import { RecommendationBanner } from './RecommendationBanner';
+import { RouteComparisonCard } from './RouteComparisonCard';
 import { RouteList } from './RouteList';
 import { WarningsList } from './WarningsList';
 
@@ -16,6 +17,7 @@ export interface ResultsPanelProps {
   selectedRouteId: string | null;
   onSelectRoute: (routeId: string) => void;
   onSelectCheckpoint?: (checkpoint: CheckpointDTO) => void;
+  hideCheckpoints?: boolean;
 }
 
 export const ResultsPanel: React.FC<ResultsPanelProps> = ({
@@ -27,6 +29,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
   selectedRouteId,
   onSelectRoute,
   onSelectCheckpoint,
+  hideCheckpoints = false,
 }) => {
   // 1. Loading Skeleton State
   if (isLoading) {
@@ -201,8 +204,13 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
         onSelectRoute={onSelectRoute}
       />
 
+      {/* Route Comparison Chart & Metrics Table */}
+      <Box sx={{ mt: 2 }}>
+        <RouteComparisonCard routes={analysis.routes} />
+      </Box>
+
       {/* Checkpoint List for the selected route */}
-      {selectedRoute && (
+      {!hideCheckpoints && selectedRoute && (
         <CheckpointList
           checkpoints={selectedRoute.checkpoints || []}
           routeLabel={selectedRoute.label}

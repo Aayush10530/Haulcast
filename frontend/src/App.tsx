@@ -11,27 +11,72 @@ import { useIsMutating } from '@tanstack/react-query';
 import { useHealthCheck } from './api/client';
 import { AnalyzeResponse, CheckpointDTO } from './api/types';
 import { MapView } from './features/map';
-import { ResultsPanel } from './features/results';
+import {
+  CheckpointList,
+  ResultsPanel,
+  RouteProfileCard,
+} from './features/results';
 import { TripForm } from './features/trip-form';
 import { colorTokens, shapeTokens, typographyTokens } from './theme/tokens';
 
 type MobileTab = 'plan' | 'map' | 'routes';
 
-const HeaderLogo: React.FC = () => (
+const StormRouteLogo: React.FC = () => (
   <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
+    width="32"
+    height="32"
+    viewBox="0 0 36 36"
     fill="none"
-    stroke={colorTokens.brand}
-    strokeWidth="2.2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
+    xmlns="http://www.w3.org/2000/svg"
     aria-hidden="true"
   >
-    <path d="M4 19L12 12M12 12L20 5" />
-    <path d="M12 12L20 12" />
-    <path d="M12 12L20 19" />
+    {/* Motion arrow pointing back/left */}
+    <path
+      d="M7 16H2M2 16L4.5 13.5M2 16L4.5 18.5"
+      stroke={colorTokens.brand}
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    {/* Cargo box */}
+    <rect
+      x="8"
+      y="7"
+      width="15"
+      height="16"
+      rx="2"
+      stroke={colorTokens.brand}
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    {/* Truck cab */}
+    <path
+      d="M23 13H28.5C29.6 13 30.5 13.9 30.5 15V23H23V13Z"
+      stroke={colorTokens.brand}
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    {/* Windshield */}
+    <path
+      d="M25.5 15.5H28.5V18.5H25.5V15.5Z"
+      stroke={colorTokens.brand}
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    {/* Front bumper */}
+    <path
+      d="M30.5 21H32"
+      stroke={colorTokens.brand}
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+    {/* Wheels */}
+    <circle cx="12" cy="25" r="2.8" stroke={colorTokens.brand} strokeWidth="2.2" />
+    <circle cx="27" cy="25" r="2.8" stroke={colorTokens.brand} strokeWidth="2.2" />
+    <path d="M15 23H24" stroke={colorTokens.brand} strokeWidth="2" strokeLinecap="round" />
   </svg>
 );
 
@@ -120,6 +165,12 @@ export const App: React.FC = () => {
     }
   };
 
+  const selectedRoute = tripAnalysis
+    ? tripAnalysis.routes.find((r) => r.id === selectedRouteId) ||
+      tripAnalysis.routes.find((r) => r.id === tripAnalysis.recommended_route_id) ||
+      tripAnalysis.routes[0]
+    : null;
+
   return (
     <Box
       sx={{
@@ -157,36 +208,35 @@ export const App: React.FC = () => {
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <HeaderLogo />
-          <Typography
-            component="span"
-            sx={{
-              fontFamily: typographyTokens.fontFamilyUi,
-              fontSize: '18px',
-              fontWeight: 700,
-              color: colorTokens.text,
-              letterSpacing: '-0.01em',
-              lineHeight: 1,
-            }}
-          >
-            StormRoute
-          </Typography>
-          <Typography
-            component="span"
-            sx={{
-              fontFamily: typographyTokens.fontFamilyUi,
-              fontSize: '13px',
-              fontWeight: 400,
-              color: colorTokens.textMuted,
-              display: { xs: 'none', sm: 'inline' },
-              borderLeft: `1px solid ${colorTokens.border}`,
-              pl: 1.5,
-              ml: 0.5,
-              lineHeight: 1,
-            }}
-          >
-            Weather-Aware Truck Router
-          </Typography>
+          <StormRouteLogo />
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Typography
+              component="span"
+              sx={{
+                fontFamily: typographyTokens.fontFamilyUi,
+                fontSize: '18px',
+                fontWeight: 700,
+                color: '#FFFFFF',
+                letterSpacing: '-0.01em',
+                lineHeight: 1.15,
+              }}
+            >
+              StormRoute
+            </Typography>
+            <Typography
+              component="span"
+              sx={{
+                fontFamily: typographyTokens.fontFamilyUi,
+                fontSize: '11px',
+                fontWeight: 400,
+                color: colorTokens.textMuted,
+                letterSpacing: '0.01em',
+                lineHeight: 1.15,
+              }}
+            >
+              Weather-Aware Truck Router
+            </Typography>
+          </Box>
         </Box>
 
         {/* Status dot per DESIGN.md §5 */}
@@ -246,7 +296,7 @@ export const App: React.FC = () => {
           },
         }}
       >
-        {/* Region 1: Trip form */}
+        {/* Region 1: Trip form & Elevation Profile */}
         <Box
           component="aside"
           aria-label="Trip form"
@@ -263,12 +313,16 @@ export const App: React.FC = () => {
             border: `1px solid ${colorTokens.border}`,
             borderRadius: `${shapeTokens.panelBorderRadius}px`,
             overflowY: 'auto',
+            gap: 2,
           }}
         >
           <TripForm onSuccess={handleAnalysisSuccess} />
+          {tripAnalysis && selectedRoute && (
+            <RouteProfileCard route={selectedRoute} />
+          )}
         </Box>
 
-        {/* Region 2: Map */}
+        {/* Region 2: Map & Checkpoints Analysis */}
         <Box
           component="section"
           aria-label="Map"
@@ -288,16 +342,37 @@ export const App: React.FC = () => {
             position: 'relative',
           }}
         >
-          <MapView
-            analysis={tripAnalysis}
-            selectedRouteId={selectedRouteId}
-            onSelectRoute={setSelectedRouteId}
-            focusedCheckpoint={focusedCheckpoint}
-            isVisible={!isMobile || activeTab === 'map'}
-          />
+          <Box sx={{ flex: 1, minHeight: { xs: 260, md: 300 }, position: 'relative' }}>
+            <MapView
+              analysis={tripAnalysis}
+              selectedRouteId={selectedRouteId}
+              onSelectRoute={setSelectedRouteId}
+              focusedCheckpoint={focusedCheckpoint}
+              isVisible={!isMobile || activeTab === 'map'}
+            />
+          </Box>
+          {tripAnalysis && selectedRoute && !isMobile && (
+            <Box
+              sx={{
+                height: { md: 240, xl: 270 },
+                flexShrink: 0,
+                borderTop: `1px solid ${colorTokens.border}`,
+                backgroundColor: colorTokens.surface,
+                p: 2,
+                overflowY: 'auto',
+                boxSizing: 'border-box',
+              }}
+            >
+              <CheckpointList
+                checkpoints={selectedRoute.checkpoints || []}
+                routeLabel={selectedRoute.label}
+                onSelectCheckpoint={handleSelectCheckpoint}
+              />
+            </Box>
+          )}
         </Box>
 
-        {/* Region 3: Results */}
+        {/* Region 3: Results & Route Comparison */}
         <Box
           component="aside"
           aria-label="Results"
@@ -322,6 +397,7 @@ export const App: React.FC = () => {
             selectedRouteId={selectedRouteId}
             onSelectRoute={setSelectedRouteId}
             onSelectCheckpoint={handleSelectCheckpoint}
+            hideCheckpoints={!isMobile}
           />
         </Box>
       </Box>

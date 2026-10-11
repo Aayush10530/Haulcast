@@ -42,28 +42,28 @@ export const typographyTokens = {
 } as const;
 
 export const colorTokens = {
-  canvas: '#0B1418',
-  surface: '#111E24',
-  surfaceRaised: '#16262E',
-  border: '#25383F',
-  text: '#E6EEF0',
-  textMuted: '#8FA4AB',
-  brand: '#2DB8C5',
-  brandStrong: '#5CCBD5',
+  canvas: '#06121E',
+  surface: '#0B1B2B',
+  surfaceRaised: '#102436',
+  border: '#16324A',
+  text: '#FFFFFF',
+  textMuted: '#7E9BA6',
+  brand: '#00E5FF',
+  brandStrong: '#33EBFF',
   onBrand: '#07171C',
 } as const;
 
 export const routeLineColors = {
-  recommended: '#2DB8C5',
-  second: '#7C9BFF',
-  third: '#C9D4D8',
-  casing: '#0B1418',
+  recommended: '#00D2FF',
+  second: '#FF8C42',
+  third: '#00E676',
+  casing: '#06121E',
 } as const;
 
 export const routeDashArrays = {
   recommended: '',
-  second: '10 6',
-  third: '2 6',
+  second: '',
+  third: '',
 } as const;
 
 export const shapeTokens = {

@@ -22,6 +22,13 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 
 ## 2. Decisions
 
+### D-026 StormRoute Operations Console Redesign & Rebranding
+- Date: 2026-10-11
+- Type: decision
+- Phase: P4
+- Summary: Rebranded project header to "StormRoute — Weather-Aware Truck Router" with cyan motion truck icon. Implemented 3-column operations console layout: Left (Trip Planning + Elevation Profile), Center (Interactive Map with Forecast Slider and Layer Toggles + Checkpoints & Weather Analysis table), Right (Route Options + Route Comparison Chart & Metrics Table). Maintained full dynamic integration with backend routing and weather analysis for any origin/destination pair.
+- Status: done
+
 ### D-025 Floating Panels and Rounded Cards per Mockup Layout
 - Date: 2026-10-11
 - Type: decision
@@ -147,6 +154,7 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-032 | Results UI: RecommendationBanner, RouteCards, CheckpointTable | P4 | done |
 | F-033 | MapView: canvas render, route polylines, checkpoint markers, legend; remove map placeholder text | P4 | done |
 | F-034 | UX states: idle, loading skeletons, error retry, no-safe-route alert | P4 | done |
+| F-035 | Operations console dashboard: Elevation Profile, Checkpoints & Weather Analysis timeline, Route Comparison bar chart & metrics table, Map forecast slider and layer controls | P4 | done |
 | F-040 | Heatmap backend: corridor grid generation & `/api/trips/heatmap/` | P5 | done |
 | F-041 | Heatmap frontend: useHeatmap, HeatmapLayer, 0-48h slider controls | P5 | planned |
 | F-050 | Polish: responsive layout & mobile testing | P6 | planned |
@@ -164,6 +172,14 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 ---
 
 ## 4. Changes
+
+### C-004 StormRoute Operations Console Redesign
+- Date: 2026-10-11
+- Type: change
+- Phase: P4
+- Summary: Replaced standard UI panels with high-density operations console matching docs/design/ui deisgn.png. Integrated Elevation Profile card (distance, travel time, max elevation, SVG terrain gradient curve), Checkpoints & Weather Analysis table (numbered pills, miles, ETAs, risk chips, expandable weather metrics), MapView top forecast slider and layer toggles (Radar, Satellite, Terrain), and Route Comparison card (grouped bar chart for severe/high/moderate miles and time, plus Route Metrics comparison table).
+- Files: frontend/src/App.tsx, frontend/src/theme/tokens.ts, frontend/src/features/results/RouteProfileCard.tsx, frontend/src/features/results/RouteComparisonCard.tsx, frontend/src/features/results/CheckpointList.tsx, frontend/src/features/results/ResultsPanel.tsx, frontend/src/features/map/MapView.tsx, frontend/index.html
+- Status: done
 
 ### C-003 Documentation Reorganization into docs/
 - Date: 2026-10-11

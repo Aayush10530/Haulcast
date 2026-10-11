@@ -62,7 +62,7 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
   }
 
   return (
-    <Box data-testid="checkpoint-list" sx={{ mt: 3 }}>
+    <Box data-testid="checkpoint-list" sx={{ mt: 0 }}>
       {/* Header with Title and Sort Toggle */}
       <Box
         sx={{
@@ -74,17 +74,30 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
           gap: 1,
         }}
       >
-        <Typography
-          variant="subtitle2"
-          sx={{
-            fontFamily: typographyTokens.fontFamilyUi,
-            fontWeight: 700,
-            color: colorTokens.text,
-            letterSpacing: '0.01em',
-          }}
-        >
-          Checkpoints ({checkpoints.length}) · {routeLabel}
-        </Typography>
+        <Box>
+          <Typography
+            sx={{
+              fontFamily: typographyTokens.fontFamilyUi,
+              fontSize: '15px',
+              fontWeight: 600,
+              color: colorTokens.text,
+            }}
+          >
+            Checkpoints & Weather Analysis
+          </Typography>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              fontFamily: typographyTokens.fontFamilyUi,
+              fontWeight: 500,
+              fontSize: '12px',
+              color: colorTokens.textMuted,
+              letterSpacing: '0.01em',
+            }}
+          >
+            Checkpoints ({checkpoints.length}) · {routeLabel}
+          </Typography>
+        </Box>
 
         <ToggleButtonGroup
           value={sortBy}
@@ -167,17 +180,25 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
                   gap: 1.5,
                 }}
               >
-                {/* Timeline dot */}
+                {/* Timeline step badge */}
                 <Box
                   data-testid="checkpoint-timeline-dot"
                   sx={{
-                    width: 10,
-                    height: 10,
+                    width: 20,
+                    height: 20,
                     borderRadius: '50%',
                     backgroundColor: dotColor,
+                    color: '#07171C',
+                    fontWeight: 700,
+                    fontSize: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     flexShrink: 0,
                   }}
-                />
+                >
+                  {cp.index + 1}
+                </Box>
 
                 {/* Mile in Mono */}
                 <Typography
