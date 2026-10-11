@@ -131,7 +131,7 @@ describe('App Component Shell & Responsive Layouts', () => {
 
     // All 3 regions exist with their proper labels
     expect(tripForm).toHaveTextContent('Trip planning');
-    expect(map).toHaveTextContent('Map');
+    expect(map).toHaveTextContent('Weather Risk');
     expect(results).toHaveTextContent('Route options');
 
     // Initial state: Plan tab is active

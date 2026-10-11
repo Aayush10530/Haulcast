@@ -9,7 +9,8 @@ import {
 } from '@mui/material';
 import { useIsMutating } from '@tanstack/react-query';
 import { useHealthCheck } from './api/client';
-import { AnalyzeResponse } from './api/types';
+import { AnalyzeResponse, CheckpointDTO } from './api/types';
+import { MapView } from './features/map';
 import { ResultsPanel } from './features/results';
 import { TripForm } from './features/trip-form';
 import { colorTokens, shapeTokens, typographyTokens } from './theme/tokens';
@@ -97,6 +98,7 @@ export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<MobileTab>('plan');
   const [tripAnalysis, setTripAnalysis] = useState<AnalyzeResponse | null>(null);
   const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
+  const [focusedCheckpoint, setFocusedCheckpoint] = useState<CheckpointDTO | null>(null);
   const isAnalyzing = useIsMutating({ mutationKey: ['analyzeTrip'] }) > 0;
   const { data, isError } = useHealthCheck();
 
@@ -105,8 +107,16 @@ export const App: React.FC = () => {
   const handleAnalysisSuccess = (analysis: AnalyzeResponse) => {
     setTripAnalysis(analysis);
     setSelectedRouteId(analysis.recommended_route_id);
+    setFocusedCheckpoint(null);
     if (isMobile) {
       setActiveTab('routes');
+    }
+  };
+
+  const handleSelectCheckpoint = (cp: CheckpointDTO) => {
+    setFocusedCheckpoint(cp);
+    if (isMobile) {
+      setActiveTab('map');
     }
   };
 
@@ -268,10 +278,8 @@ export const App: React.FC = () => {
             gridArea: 'map',
             display: isMobile ? (activeTab === 'map' ? 'flex' : 'none') : 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
             minHeight: 0,
-            p: 2,
+            p: 0,
             boxSizing: 'border-box',
             backgroundColor: colorTokens.surface,
             border: `1px solid ${colorTokens.border}`,
@@ -280,16 +288,13 @@ export const App: React.FC = () => {
             position: 'relative',
           }}
         >
-          <Typography
-            sx={{
-              fontFamily: typographyTokens.fontFamilyMono,
-              fontSize: typographyTokens.mono.fontSize,
-              lineHeight: typographyTokens.mono.lineHeight,
-              color: colorTokens.textMuted,
-            }}
-          >
-            Map
-          </Typography>
+          <MapView
+            analysis={tripAnalysis}
+            selectedRouteId={selectedRouteId}
+            onSelectRoute={setSelectedRouteId}
+            focusedCheckpoint={focusedCheckpoint}
+            isVisible={!isMobile || activeTab === 'map'}
+          />
         </Box>
 
         {/* Region 3: Results */}
@@ -316,6 +321,7 @@ export const App: React.FC = () => {
             isLoading={isAnalyzing}
             selectedRouteId={selectedRouteId}
             onSelectRoute={setSelectedRouteId}
+            onSelectCheckpoint={handleSelectCheckpoint}
           />
         </Box>
       </Box>

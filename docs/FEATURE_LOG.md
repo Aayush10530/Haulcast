@@ -145,7 +145,7 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-030 | Frontend API client, typed DTOs, error parsing | P4 | done |
 | F-031 | TripForm & PlaceAutocomplete with validation | P4 | done |
 | F-032 | Results UI: RecommendationBanner, RouteCards, CheckpointTable | P4 | done |
-| F-033 | MapView: canvas render, route polylines, checkpoint markers, legend; remove map placeholder text | P4 | planned |
+| F-033 | MapView: canvas render, route polylines, checkpoint markers, legend; remove map placeholder text | P4 | done |
 | F-034 | UX states: idle, loading skeletons, error retry, no-safe-route alert | P4 | done |
 | F-040 | Heatmap backend: corridor grid generation & `/api/trips/heatmap/` | P5 | planned |
 | F-041 | Heatmap frontend: useHeatmap, HeatmapLayer, 0-48h slider controls | P5 | planned |
@@ -263,3 +263,4 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | P4 (fix) | Departure clarity & load weight formatting | 0.15 | 0.10 | 5.10 | Spelled-out departure helper without timezone shift, thousands separator formatting on load weight input, "lb" adornment, raw number storage, 45 tests |
 | P4b (F-032, F-034) | Results panel & checkpoint list | 0.75 | 0.35 | 5.45 | ResultsPanel, RecommendationBanner, WarningsList, RouteList, RouteCard, CheckpointList, RiskStrip, RiskChip, formatters, fixtures, 67 tests |
 | P4 (fix) | Local time formatting & time zone labels | 0.25 | 0.20 | 5.65 | departure_tz/arrival_tz backend & ARCHITECTURE, formatLocalTime fractional/microseconds & Intl.DateTimeFormat tz, checkpoint miles whole/decimal, 73 frontend tests, 492 backend tests |
+| P4c (F-033) | Map with routes & checkpoints | 0.75 | 0.40 | 6.05 | MapView, CARTO dark_all, RouteLayer casing & pills, CheckpointLayer & popups, MapLegend, sync & invalidateSize, 81 frontend tests |

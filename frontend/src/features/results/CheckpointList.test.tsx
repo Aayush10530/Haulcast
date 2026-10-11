@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { goldenAnalysis } from '../../test/fixtures/goldenAnalysis';
 import { CheckpointList } from './CheckpointList';
 
@@ -59,5 +59,19 @@ describe('CheckpointList', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('checkpoint-detail-1')).not.toBeInTheDocument();
     });
+  });
+
+  it('calls the focus handler when a checkpoint row is clicked', () => {
+    const handleFocus = vi.fn();
+    render(
+      <CheckpointList
+        checkpoints={checkpoints}
+        routeLabel="Route B"
+        onSelectCheckpoint={handleFocus}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId('checkpoint-row-0'));
+    expect(handleFocus).toHaveBeenCalledWith(checkpoints[0]);
   });
 });

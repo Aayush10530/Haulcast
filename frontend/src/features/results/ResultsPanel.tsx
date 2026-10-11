@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, Box, Button, Paper, Skeleton, Typography } from '@mui/material';
-import { AnalyzeResponse } from '../../api/types';
+import { AnalyzeResponse, CheckpointDTO } from '../../api/types';
 import { colorTokens, shapeTokens, typographyTokens } from '../../theme/tokens';
 import { CheckpointList } from './CheckpointList';
 import { RecommendationBanner } from './RecommendationBanner';
@@ -15,6 +15,7 @@ export interface ResultsPanelProps {
   onTryExample?: () => void;
   selectedRouteId: string | null;
   onSelectRoute: (routeId: string) => void;
+  onSelectCheckpoint?: (checkpoint: CheckpointDTO) => void;
 }
 
 export const ResultsPanel: React.FC<ResultsPanelProps> = ({
@@ -25,6 +26,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
   onTryExample,
   selectedRouteId,
   onSelectRoute,
+  onSelectCheckpoint,
 }) => {
   // 1. Loading Skeleton State
   if (isLoading) {
@@ -204,6 +206,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
         <CheckpointList
           checkpoints={selectedRoute.checkpoints || []}
           routeLabel={selectedRoute.label}
+          onSelectCheckpoint={onSelectCheckpoint}
         />
       )}
     </Box>

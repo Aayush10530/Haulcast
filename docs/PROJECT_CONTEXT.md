@@ -186,6 +186,9 @@ Add a row for every dependency (CODING_RULES §9). Empty until P1.
 | `jsdom` | `26.0.0` | Frontend (dev) | Headless DOM environment for Vitest | P1 |
 | `@types/react` | `19.3.0` | Frontend (dev) | TypeScript definitions for React 19 | P1 |
 | `@types/react-dom` | `19.3.0` | Frontend (dev) | TypeScript definitions for React 19 DOM | P1 |
+| `leaflet` | `1.9.4` | Frontend | Leaflet mapping engine per DESIGN.md §6 | P4c |
+| `react-leaflet` | `5.0.0` | Frontend | React 19 bindings for Leaflet per DESIGN.md §6 | P4c |
+| `@types/leaflet` | `1.9.22` | Frontend (dev) | TypeScript definitions for Leaflet | P4c |
 
 ## 10. Definition of done (every feature)
 

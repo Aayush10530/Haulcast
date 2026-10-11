@@ -16,6 +16,7 @@ import { formatCheckpointMiles, formatLocalTime } from '../../utils/format';
 export interface CheckpointListProps {
   checkpoints: CheckpointDTO[];
   routeLabel?: string;
+  onSelectCheckpoint?: (checkpoint: CheckpointDTO) => void;
 }
 
 type SortOption = 'mile' | 'risk';
@@ -31,6 +32,7 @@ const SEVERITY_ORDER: Record<RiskLevelKey, number> = {
 export const CheckpointList: React.FC<CheckpointListProps> = ({
   checkpoints,
   routeLabel = 'Selected route',
+  onSelectCheckpoint,
 }) => {
   const [sortBy, setSortBy] = useState<SortOption>('mile');
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -143,7 +145,10 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
             <Box
               key={cp.index}
               data-testid={`checkpoint-row-${cp.index}`}
-              onClick={() => toggleRow(cp.index)}
+              onClick={() => {
+                toggleRow(cp.index);
+                onSelectCheckpoint?.(cp);
+              }}
               sx={{
                 cursor: 'pointer',
                 borderBottom: isLast ? 'none' : `1px solid ${colorTokens.border}`,
