@@ -9,7 +9,7 @@
  */
 export function formatDuration(seconds: number): string {
   if (!seconds || seconds <= 0) return '0m';
-  const totalMinutes = Math.round(seconds / 60);
+  const totalMinutes = Math.floor(seconds / 60 + 0.5);
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
   if (hours > 0) {
@@ -142,7 +142,7 @@ export function formatLocalTime(isoWithOffset: string, tzName?: string): string 
  */
 export function formatDelta(deltaSeconds: number): string {
   if (!deltaSeconds || deltaSeconds <= 0) return '';
-  const totalMinutes = Math.round(deltaSeconds / 60);
+  const totalMinutes = Math.floor(deltaSeconds / 60 + 0.5);
   if (totalMinutes < 60) {
     return `+${totalMinutes} min`;
   }

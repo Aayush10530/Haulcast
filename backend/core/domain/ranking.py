@@ -38,7 +38,7 @@ def _format_time_clause(delta_seconds: float) -> str:
         return " It is also the fastest route."
     if delta_seconds < 60.0:
         return ""
-    total_minutes = round(delta_seconds / 60.0)
+    total_minutes = int(math.floor(delta_seconds / 60.0 + 0.5))
     if total_minutes < 60:
         duration = f"{total_minutes} min"
     else:
@@ -135,11 +135,15 @@ def rank_routes(inputs: Sequence[RankingInput]) -> Recommendation:
     min_dur = min(inp.summary.duration_seconds for inp in inputs)
     sorted_inputs = sorted(inputs, key=_route_sort_key)
 
+    fastest_minutes = math.floor(min_dur / 60.0 + 0.5)
+
     ranked = tuple(
         RankedRoute(
             route_id=inp.route_id,
             rank=idx + 1,
-            delta_vs_fastest_seconds=max(0.0, inp.summary.duration_seconds - min_dur),
+            delta_vs_fastest_seconds=float(
+                (math.floor(inp.summary.duration_seconds / 60.0 + 0.5) - fastest_minutes) * 60
+            ),
         )
         for idx, inp in enumerate(sorted_inputs)
     )

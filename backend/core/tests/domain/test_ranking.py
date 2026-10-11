@@ -375,8 +375,34 @@ def test_ranking_deltas_computed_against_fastest_of_all_inputs() -> None:
     assert rec.route_id == "r1"
     by_id = {r.route_id: r for r in rec.ranked}
     assert by_id["r3"].delta_vs_fastest_seconds == 0.0
-    assert by_id["r2"].delta_vs_fastest_seconds == 1000.0
-    assert by_id["r1"].delta_vs_fastest_seconds == 2000.0
+    assert by_id["r2"].delta_vs_fastest_seconds == 1020.0
+    assert by_id["r1"].delta_vs_fastest_seconds == 1980.0
+
+
+def test_ranking_delta_vs_fastest_computed_from_minute_rounded_durations() -> None:
+    # fastest: 46,500s -> floor(46500/60 + 0.5) = 775 min (12h 55m)
+    # candidate: 49,260s -> floor(49260/60 + 0.5) = 821 min (13h 41m)
+    # delta: (821 - 775) * 60 = 46 * 60 = 2760.0s (46 min)
+    fastest = RankingInput("r1", "Route A", _make_summary(severe=10.0, duration_seconds=46500.0))
+    slower = RankingInput("r2", "Route B", _make_summary(severe=0.0, duration_seconds=49260.0))
+    rec = rank_routes([fastest, slower])
+    by_id = {r.route_id: r for r in rec.ranked}
+    assert by_id["r1"].delta_vs_fastest_seconds == 0.0
+    assert by_id["r2"].delta_vs_fastest_seconds == 2760.0
+
+
+def test_ranking_sort_preserves_exact_durations_when_minute_rounded_values_are_equal() -> None:
+    # Both round to 60 minutes:
+    # 3610s -> floor(3610/60 + 0.5) = 60 min
+    # 3620s -> floor(3620/60 + 0.5) = 60 min
+    # Exact duration ensures r1 sorts before r2:
+    r1 = RankingInput("r1", "Route A", _make_summary(duration_seconds=3610.0))
+    r2 = RankingInput("r2", "Route B", _make_summary(duration_seconds=3620.0))
+    rec = rank_routes([r1, r2])
+    assert rec.route_id == "r1"
+    assert rec.ranked[0].route_id == "r1"
+    assert rec.ranked[1].route_id == "r2"
+    assert rec.ranked[1].delta_vs_fastest_seconds == 0.0
 
 
 def test_ranking_winner_slower_than_fastest_compares_with_fastest_route() -> None:

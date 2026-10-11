@@ -160,7 +160,7 @@ Given an hourly series keyed by epoch seconds and a time `t` (UTC):
 - `miles_by_level`: sum `(covers_to - covers_from)` per level.
 - `avg_risk_score = sum(level_score * covered_miles) / sum(covered_miles)` over assessed checkpoints.
 - `max_level`, `has_no_travel`, `no_travel_miles`.
-- `delta_vs_fastest_seconds = duration - min(durations)`.
+- `delta_vs_fastest_seconds = (floor(duration / 60 + 0.5) - floor(min(durations) / 60 + 0.5)) * 60` (minute-rounded).
 
 ### 4.7 Ranking (`ranking.py`)
 Sort key (ascending):

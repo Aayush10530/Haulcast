@@ -16,6 +16,21 @@ describe('format utilities', () => {
       expect(formatDuration(0)).toBe('0m');
       expect(formatDuration(-10)).toBe('0m');
     });
+
+    it('rounds to the nearest minute with Math.floor(x + 0.5) and displays durations 46,500 s and 49,260 s as 12h 55m and 13h 41m with delta text 46 min', () => {
+      const dFastest = 46500;
+      const dSlower = 49260;
+      expect(formatDuration(dFastest)).toBe('12h 55m');
+      expect(formatDuration(dSlower)).toBe('13h 41m');
+
+      // delta_vs_fastest_seconds computed from minute-rounded durations:
+      // (floor(49260/60 + 0.5) - floor(46500/60 + 0.5)) * 60 = (821 - 775) * 60 = 2760s
+      const deltaSeconds =
+        (Math.floor(dSlower / 60 + 0.5) - Math.floor(dFastest / 60 + 0.5)) * 60;
+      expect(deltaSeconds).toBe(2760);
+      expect(formatDelta(deltaSeconds)).toBe('+46 min');
+      expect(formatDelta(deltaSeconds)).toContain('46 min');
+    });
   });
 
   describe('formatMiles', () => {

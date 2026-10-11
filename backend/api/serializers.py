@@ -199,7 +199,7 @@ def format_trip_analysis(
                     ),
                     "has_no_travel": r.summary.has_no_travel,
                     "unavailable_miles": round(r.summary.unavailable_miles, 1),
-                    "delta_vs_fastest_seconds": r.delta_vs_fastest_seconds,
+                    "delta_vs_fastest_seconds": int(round(r.delta_vs_fastest_seconds)),
                 },
                 "checkpoints": checkpoints_data,
             }
