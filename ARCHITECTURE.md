@@ -373,7 +373,10 @@ App
 
 **UX states (all required):** idle with an example hint, validation errors under fields, analyze loading (skeletons), heatmap loading (disabled slider with spinner), API error with retry, empty/partial (fewer than 3 routes, missing weather), no-safe-route warning, slow-server banner if the first request takes more than 5 s.
 
-**Responsive:** two-column layout at md and above. Below md: map on top with fixed height, results below. No horizontal page scroll. Touch-friendly slider.
+**Responsive (DESIGN.md §5):**
+- **>= 1440 px (three columns):** header 56 px. Left column 340 px (Trip form). Center: map fills remaining space. Right column 380 px (Results). Columns scroll internally; the page does not scroll.
+- **900–1439 px (two columns):** left panel 400 px holds Trip form on top and Results below, scrolling internally. Map fills remaining space.
+- **< 900 px (mobile):** header 48 px. Bottom tab bar with three tabs: Plan (Trip form), Map (map plus heatmap bar), Routes (Results). Touch targets at least 40 px. No horizontal scroll.
 
 **Accessibility:** risk is always text plus color (chips with labels). Inputs have labels. Focus order follows visual order. Slider has an accessible value label with the local time.
 

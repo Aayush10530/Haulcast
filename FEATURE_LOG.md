@@ -22,12 +22,19 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 
 ## 2. Decisions
 
+### D-024 dark flat theme per DESIGN.md v2
+- Date: 2026-10-11
+- Type: decision
+- Phase: P4
+- Summary: Visual direction version 2 (dark flat console, StormRoute header, Barlow & JetBrains Mono, canvas #0B1418, surface #111E24, brand #2DB8C5, risk fills with text #07171C, 3-column >= 1440 px, 2-column 900-1439 px, mobile tabs < 900 px). Supersedes D-023.
+- Status: done
+
 ### D-023 Operations Console Design Direction per DESIGN.md
 - Date: 2026-10-10
 - Type: decision
 - Phase: P0
 - Summary: Follow DESIGN.md: map-first full-bleed console, docked left control panel, Barlow and JetBrains Mono fonts, brand teal palette, RiskStrip component, driver icons on risk chips, compact bottom-left heatmap toolbar, strict ban on generic templates/gradients/blue defaults.
-- Status: done
+- Status: superseded by D-024
 
 ### D-022 Open-Meteo Chunk Size 100 and Request-Index Mapping
 - Date: 2026-10-10
