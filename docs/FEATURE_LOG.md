@@ -177,6 +177,14 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 
 ## 5. Fixes
 
+### X-004 Local Time Formatting and Time Zone Labels
+- Date: 2026-10-11
+- Type: fix
+- Phase: P4
+- Summary: Replaced hardcoded timezone offset mapping with IANA timezone abbreviations resolved via Intl.DateTimeFormat at each instant; added departure_tz and arrival_tz to backend routes and updated docs/ARCHITECTURE.md; enhanced formatLocalTime to parse ISO 8601 strings with arbitrary fractional seconds (microseconds) and UTC offsets, returning "Time unavailable" on parse failure; formatted checkpoint miles as integers when whole ("50 mi", "0 mi") and one decimal otherwise ("37.5 mi"); confirmed interval toggle defaults to Auto on fresh load.
+- Files: backend/api/serializers.py, backend/api/tests/test_api.py, docs/ARCHITECTURE.md, frontend/src/api/types.ts, frontend/src/utils/format.ts, frontend/src/utils/format.test.ts, frontend/src/features/results/CheckpointList.tsx, frontend/src/features/results/CheckpointList.test.tsx, frontend/src/features/results/RouteCard.tsx, frontend/src/features/results/RouteCard.test.tsx, frontend/src/features/trip-form/TripForm.test.tsx, frontend/src/test/fixtures/goldenAnalysis.json, frontend/src/test/fixtures/goldenAnalysis.ts
+- Status: done
+
 ### X-003 Clarified Departure Date and Formatted Load Weight
 - Date: 2026-10-11
 - Type: fix
@@ -254,3 +262,4 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | P4a (F-030, F-031) | API types, client & trip form | 0.50 | 0.25 | 5.00 | ARCHITECTURE §8 DTOs, AppError client with 60s timeout, useDebouncedValue, useGeocodeSearch, useAnalyzeTrip, PlaceAutocomplete, TripForm with swap/example, validateTripForm, 40 tests |
 | P4 (fix) | Departure clarity & load weight formatting | 0.15 | 0.10 | 5.10 | Spelled-out departure helper without timezone shift, thousands separator formatting on load weight input, "lb" adornment, raw number storage, 45 tests |
 | P4b (F-032, F-034) | Results panel & checkpoint list | 0.75 | 0.35 | 5.45 | ResultsPanel, RecommendationBanner, WarningsList, RouteList, RouteCard, CheckpointList, RiskStrip, RiskChip, formatters, fixtures, 67 tests |
+| P4 (fix) | Local time formatting & time zone labels | 0.25 | 0.20 | 5.65 | departure_tz/arrival_tz backend & ARCHITECTURE, formatLocalTime fractional/microseconds & Intl.DateTimeFormat tz, checkpoint miles whole/decimal, 73 frontend tests, 492 backend tests |

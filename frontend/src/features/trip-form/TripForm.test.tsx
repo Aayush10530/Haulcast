@@ -35,8 +35,10 @@ const mockAnalyzeResponse: AnalyzeResponse = {
       distance_miles: 801.2,
       duration_seconds: 44100,
       departure_utc: '2026-10-12T13:00:00Z',
+      departure_tz: 'America/Chicago',
       arrival_utc: '2026-10-13T01:15:00Z',
       arrival_local: '2026-10-12T19:15:00-06:00',
+      arrival_tz: 'America/Denver',
       geometry: [
         [32.7767, -96.797],
         [39.7392, -104.9903],
@@ -394,5 +396,11 @@ describe('TripForm Component', () => {
         load_weight_lb: 80500,
       });
     });
+  });
+
+  it('confirms the interval toggle defaults to Auto on a fresh load', () => {
+    renderTripForm();
+    const autoToggle = screen.getByTestId('interval-auto');
+    expect(autoToggle).toHaveAttribute('aria-pressed', 'true');
   });
 });

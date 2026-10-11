@@ -39,8 +39,8 @@ describe('RouteCard', () => {
     expect(screen.getByText('via I-35 N, I-70 W')).toBeInTheDocument();
 
     // 5. Departure and arrival local times
-    expect(screen.getByText(/Depart: Mon Oct 12, 08:00/)).toBeInTheDocument();
-    expect(screen.getByText(/Arrive: Mon Oct 12, 19:15/)).toBeInTheDocument();
+    expect(screen.getByText(/Depart: Mon Oct 12, 08:00 CDT/)).toBeInTheDocument();
+    expect(screen.getByText(/Arrive: Mon Oct 12, 19:15 MDT/)).toBeInTheDocument();
 
     // 6. Delta line
     expect(screen.getByTestId('route-delta')).toHaveTextContent('+47 min vs fastest');

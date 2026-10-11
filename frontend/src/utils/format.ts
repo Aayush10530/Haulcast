@@ -30,41 +30,59 @@ export function formatMiles(miles: number): string {
   return `${Math.round(miles).toLocaleString('en-US')} mi`;
 }
 
-const KNOWN_US_OFFSETS: Record<string, string> = {
-  '-04:00': 'EDT',
-  '-05:00': 'EST/CDT',
-  '-06:00': 'CST/CDT',
-  '-07:00': 'MST/PDT',
-  '-08:00': 'PST',
-  'Z': 'UTC',
-  '+00:00': 'UTC',
-};
+/**
+ * Formats checkpoint miles: integer when whole ("50 mi", "0 mi"), otherwise one decimal ("37.5 mi").
+ */
+export function formatCheckpointMiles(miles: number): string {
+  if (miles === null || miles === undefined || isNaN(miles)) return '0 mi';
+  if (Number.isInteger(miles) || Math.abs(miles - Math.round(miles)) < 1e-6) {
+    return `${Math.round(miles)} mi`;
+  }
+  return `${miles.toFixed(1)} mi`;
+}
+
+const ISO_REGEX = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(?:(Z|[+-]\d{2}(?::?\d{2})?))?$/i;
 
 /**
- * Formats an ISO datetime string with offset (e.g. "2026-10-13T08:15:00-06:00")
+ * Formats an ISO 8601 datetime string with fractional seconds of any length and UTC offsets
  * into a wall-clock string:
- * "Tue Oct 13, 08:15 CST/CDT" (or resolved timezone abbreviation like "CDT" if tzName is provided).
+ * e.g. "2026-10-12T18:28:00-06:00" with "America/Denver" -> "Mon Oct 12, 18:28 MDT"
  *
- * CRITICAL: This extracts the wall-clock components directly from the string and
- * formats without converting to the browser's local timezone.
+ * CRITICAL: The clock text comes directly from the ISO string and is never converted
+ * to the browser's local timezone. On parse failure, returns "Time unavailable".
  */
 export function formatLocalTime(isoWithOffset: string, tzName?: string): string {
-  if (!isoWithOffset) return '';
+  if (!isoWithOffset || typeof isoWithOffset !== 'string') return 'Time unavailable';
   const trimmed = isoWithOffset.trim();
-  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::\d{2})?(?:([+-]\d{2}:\d{2})|Z)?$/.exec(
-    trimmed,
-  );
-  if (!match) return trimmed;
+  const match = ISO_REGEX.exec(trimmed);
+  if (!match) return 'Time unavailable';
 
   const year = parseInt(match[1], 10);
   const month = parseInt(match[2], 10) - 1;
   const day = parseInt(match[3], 10);
   const hours = match[4];
   const minutes = match[5];
-  const offset = match[6] || (trimmed.endsWith('Z') ? 'Z' : '');
+  const seconds = match[6] ? parseInt(match[6], 10) : 0;
+  const offset = match[7];
+
+  if (
+    month < 0 ||
+    month > 11 ||
+    day < 1 ||
+    day > 31 ||
+    parseInt(hours, 10) > 23 ||
+    parseInt(minutes, 10) > 59 ||
+    seconds > 59
+  ) {
+    return 'Time unavailable';
+  }
 
   // Determine weekday and month name purely in UTC to avoid browser DST or timezone shift
   const utcDate = new Date(Date.UTC(year, month, day, 12, 0, 0));
+  if (isNaN(utcDate.getTime()) || utcDate.getUTCMonth() !== month || utcDate.getUTCDate() !== day) {
+    return 'Time unavailable';
+  }
+
   const dateFormatted = new Intl.DateTimeFormat('en-US', {
     weekday: 'short',
     month: 'short',
@@ -74,27 +92,42 @@ export function formatLocalTime(isoWithOffset: string, tzName?: string): string 
     .format(utcDate)
     .replace(',', ''); // "Tue, Oct 13" -> "Tue Oct 13"
 
+  // Determine the instant for timezone abbreviation
+  let instant: Date | null = null;
+  if (offset) {
+    const normalized = trimmed.replace(/(\.\d+)/, (m) => m.slice(0, 4));
+    const parsed = Date.parse(normalized);
+    if (!isNaN(parsed)) {
+      instant = new Date(parsed);
+    }
+  }
+  if (!instant) {
+    instant = new Date(Date.UTC(year, month, day, parseInt(hours, 10), parseInt(minutes, 10), seconds));
+  }
+
   let tzLabel = '';
   if (tzName) {
     try {
       const parts = new Intl.DateTimeFormat('en-US', {
         timeZone: tzName,
         timeZoneName: 'short',
-      }).formatToParts(utcDate);
+      }).formatToParts(instant);
       const tzPart = parts.find((p) => p.type === 'timeZoneName');
       if (tzPart) tzLabel = tzPart.value;
     } catch {
-      // Fallback to offset mapping below
+      // Fall back to offset if tzName is invalid
     }
   }
 
   if (!tzLabel && offset) {
-    if (KNOWN_US_OFFSETS[offset]) {
-      tzLabel = KNOWN_US_OFFSETS[offset];
+    if (offset.toUpperCase() === 'Z' || offset === '+00:00' || offset === '-00:00') {
+      tzLabel = 'UTC';
     } else {
       const sign = offset.startsWith('+') ? '+' : '-';
-      const offH = parseInt(offset.slice(1, 3), 10);
-      const offM = offset.slice(4, 6);
+      const clean = offset.replace('+', '').replace('-', '');
+      const parts = clean.split(':');
+      const offH = parseInt(parts[0], 10);
+      const offM = parts[1] || '00';
       tzLabel = offM === '00' ? `UTC${sign}${offH}` : `UTC${sign}${offH}:${offM}`;
     }
   }

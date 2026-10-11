@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
+  formatCheckpointMiles,
   formatDelta,
   formatDuration,
   formatLocalTime,
@@ -29,6 +30,16 @@ describe('format utilities', () => {
     });
   });
 
+  describe('formatCheckpointMiles', () => {
+    it('formats integer when whole and one decimal otherwise', () => {
+      expect(formatCheckpointMiles(50)).toBe('50 mi');
+      expect(formatCheckpointMiles(37.5)).toBe('37.5 mi');
+      expect(formatCheckpointMiles(0)).toBe('0 mi');
+      expect(formatCheckpointMiles(120.5)).toBe('120.5 mi');
+      expect(formatCheckpointMiles(350.0)).toBe('350 mi');
+    });
+  });
+
   describe('formatDelta', () => {
     it('formats delta minutes and hours', () => {
       expect(formatDelta(2820)).toBe('+47 min');
@@ -42,7 +53,7 @@ describe('format utilities', () => {
   describe('formatLocalTime', () => {
     it('extracts wall-clock time and offset without timezone conversion', () => {
       expect(formatLocalTime('2026-10-13T08:15:00-06:00')).toBe(
-        'Tue Oct 13, 08:15 CST/CDT',
+        'Tue Oct 13, 08:15 UTC-6',
       );
       expect(formatLocalTime('2026-10-12T13:00:00Z')).toBe(
         'Mon Oct 12, 13:00 UTC',
@@ -52,22 +63,59 @@ describe('format utilities', () => {
       );
     });
 
-    it('resolves specific timezone abbreviation when tzName is provided', () => {
+    it('resolves specific timezone abbreviation when tzName is provided (arrival at Denver reads MDT)', () => {
+      expect(
+        formatLocalTime('2026-10-12T18:28:00-06:00', 'America/Denver'),
+      ).toBe('Mon Oct 12, 18:28 MDT');
       expect(
         formatLocalTime('2026-10-13T08:15:00-05:00', 'America/Chicago'),
       ).toBe('Tue Oct 13, 08:15 CDT');
     });
 
+    it('parses ISO 8601 strings with fractional seconds (microseconds) and UTC offsets', () => {
+      expect(
+        formatLocalTime(
+          '2026-10-12T08:15:00.123456-05:00',
+          'America/Chicago',
+        ),
+      ).toBe('Mon Oct 12, 08:15 CDT');
+      expect(formatLocalTime('2026-10-12T13:00:00.999999Z')).toBe(
+        'Mon Oct 12, 13:00 UTC',
+      );
+      expect(formatLocalTime('2026-10-12T18:28:00.500000-06:00', 'America/Denver')).toBe(
+        'Mon Oct 12, 18:28 MDT',
+      );
+    });
+
+    it('never renders a raw ISO string and shows "Time unavailable" on parse failure', () => {
+      expect(formatLocalTime('')).toBe('Time unavailable');
+      expect(formatLocalTime('invalid-date')).toBe('Time unavailable');
+      expect(formatLocalTime('2026-13-45T99:99')).toBe('Time unavailable');
+      expect(formatLocalTime('2026-02-30T08:00:00Z')).toBe('Time unavailable');
+    });
+
     it('retains exact wall-clock string across process timezone changes (Asia/Kolkata)', () => {
       try {
         vi.stubEnv('TZ', 'Asia/Kolkata');
-        const formatted = formatLocalTime('2026-10-13T08:15:00-06:00');
-        expect(formatted).toBe('Tue Oct 13, 08:15 CST/CDT');
+        const formattedDenver = formatLocalTime(
+          '2026-10-12T18:28:00-06:00',
+          'America/Denver',
+        );
+        expect(formattedDenver).toBe('Mon Oct 12, 18:28 MDT');
+
+        const formattedChicago = formatLocalTime(
+          '2026-10-12T08:15:00.123456-05:00',
+          'America/Chicago',
+        );
+        expect(formattedChicago).toBe('Mon Oct 12, 08:15 CDT');
 
         // Verify with another zone
         vi.stubEnv('TZ', 'Europe/London');
-        const formattedLondon = formatLocalTime('2026-10-13T08:15:00-06:00');
-        expect(formattedLondon).toBe('Tue Oct 13, 08:15 CST/CDT');
+        const formattedLondon = formatLocalTime(
+          '2026-10-12T18:28:00-06:00',
+          'America/Denver',
+        );
+        expect(formattedLondon).toBe('Mon Oct 12, 18:28 MDT');
       } finally {
         vi.unstubAllEnvs();
       }

@@ -14,7 +14,7 @@ describe('CheckpointList', () => {
     // Verify first row is mile 0.0
     const row0 = screen.getByTestId('checkpoint-row-0');
     expect(row0).toBeInTheDocument();
-    expect(screen.getByText('0.0 mi')).toBeInTheDocument();
+    expect(screen.getByText('0 mi')).toBeInTheDocument();
 
     // Verify row with weather null shows "Forecast unavailable"
     expect(screen.getByText('Forecast unavailable')).toBeInTheDocument();

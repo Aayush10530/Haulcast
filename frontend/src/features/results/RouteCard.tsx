@@ -40,8 +40,12 @@ export const RouteCard: React.FC<RouteCardProps> = ({
   const deltaText = deltaSec > 0 ? `${formatDelta(deltaSec)} vs fastest` : '';
 
   // Local departure and arrival strings
-  const departDisplay = departureLocal ? formatLocalTime(departureLocal, originTimezone) : '';
-  const arriveDisplay = route.arrival_local ? formatLocalTime(route.arrival_local) : '';
+  const departDisplay = departureLocal
+    ? formatLocalTime(departureLocal, route.departure_tz || originTimezone)
+    : '';
+  const arriveDisplay = route.arrival_local
+    ? formatLocalTime(route.arrival_local, route.arrival_tz)
+    : '';
 
   return (
     <Paper

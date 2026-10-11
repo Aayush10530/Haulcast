@@ -377,8 +377,9 @@ def test_successful_analysis_matches_golden_structure(
     assert "recommended" in r["tags"]
     assert "fastest" in r["tags"]
     assert r["distance_miles"] == 100.0
-    assert r["duration_seconds"] == 7200
+    assert r["departure_tz"] == "America/Chicago"
     assert "arrival_local" in r
+    assert r["arrival_tz"] == "America/Denver"
     assert len(r["geometry"]) >= 2
     assert isinstance(r["geometry"][0], list)
 
@@ -406,6 +407,21 @@ def test_successful_analysis_matches_golden_structure(
     assert meta["weather_provider"] == "open-meteo"
     assert "weather_cells" in meta
     assert "elapsed_ms" in meta
+
+
+def test_route_includes_departure_and_arrival_timezones(
+    api_test_context: dict[str, Any], client: APIClient
+) -> None:
+    res = client.post("/api/trips/analyze/", valid_payload(), format="json")
+    assert res.status_code == 200
+    data = res.json()
+    for route in data["routes"]:
+        assert "departure_tz" in route
+        assert "arrival_tz" in route
+        assert route["departure_tz"] == "America/Chicago"
+        assert route["arrival_tz"] == "America/Denver"
+        # arrival_local contains the offset for the arrival timezone
+        assert "T" in route["arrival_local"]
 
 
 def test_load_above_80000_adds_legal_limit_warning(

@@ -75,8 +75,10 @@ export interface RouteDTO {
   distance_miles: number;
   duration_seconds: number;
   departure_utc: string;
+  departure_tz?: string;
   arrival_utc: string;
   arrival_local: string;
+  arrival_tz?: string;
   geometry: [number, number][];
   summary: RouteSummaryDTO;
   checkpoints: CheckpointDTO[];

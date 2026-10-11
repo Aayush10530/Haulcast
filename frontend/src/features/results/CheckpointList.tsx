@@ -11,7 +11,7 @@ import { CheckpointDTO, RiskLevelKey } from '../../api/types';
 import { RiskChip } from '../../components/RiskChip';
 import { riskColors } from '../../theme/riskColors';
 import { colorTokens, shapeTokens, typographyTokens } from '../../theme/tokens';
-import { formatLocalTime, formatMiles } from '../../utils/format';
+import { formatCheckpointMiles, formatLocalTime } from '../../utils/format';
 
 export interface CheckpointListProps {
   checkpoints: CheckpointDTO[];
@@ -185,7 +185,7 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
                     minWidth: 64,
                   }}
                 >
-                  {formatMiles(cp.mile)}
+                  {formatCheckpointMiles(cp.mile)}
                 </Typography>
 
                 {/* Local ETA in Mono */}

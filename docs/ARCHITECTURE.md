@@ -282,7 +282,8 @@ Base path `/api/`. JSON, snake_case. GZip enabled. CORS allow-list from env. Thr
   "routes": [{
     "id": "route_b", "label": "Route B", "tags": ["recommended"], "rank": 1, "via": "I-35 N, I-70 W",
     "distance_miles": 801.2, "duration_seconds": 44100,
-    "departure_utc": "...", "arrival_utc": "...", "arrival_local": "2026-10-13T08:15:00-06:00",
+    "departure_utc": "...", "departure_tz": "America/Chicago",
+    "arrival_utc": "...", "arrival_local": "2026-10-13T08:15:00-06:00", "arrival_tz": "America/Denver",
     "geometry": [[32.7767, -96.797], ...],
     "summary": {"miles_by_level": {"low": 600.0, "moderate": 150.0, "high": 40.0, "severe": 0.0, "no_travel": 0.0},
                 "avg_risk_score": 0.62, "max_level": "high", "has_no_travel": false,

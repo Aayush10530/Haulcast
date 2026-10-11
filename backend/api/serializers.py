@@ -176,8 +176,10 @@ def format_trip_analysis(
                 "distance_miles": round(r.raw.distance_miles, 1),
                 "duration_seconds": round(r.raw.duration_seconds),
                 "departure_utc": analysis.request.departure_utc.isoformat(),
+                "departure_tz": origin_tz,
                 "arrival_utc": arrival_utc.isoformat(),
                 "arrival_local": arrival_local.isoformat(),
+                "arrival_tz": dest_tz,
                 "geometry": [[round(c.lat, 5), round(c.lon, 5)] for c in r.display_polyline],
                 "summary": {
                     "miles_by_level": {
