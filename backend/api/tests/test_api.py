@@ -8,6 +8,7 @@ import pytest
 from rest_framework.test import APIClient
 
 from api.container import Container, set_container
+from api.views import TripHeatmapView
 from core.domain.errors import (
     BeyondForecastHorizonError,
     DepartureOutOfWindowError,
@@ -31,6 +32,7 @@ from core.providers.base import (
     ProviderTimeout,
     ProviderUnavailable,
 )
+from core.services.heatmap_service import HeatmapService
 from core.services.route_selection import RouteSelectionService
 from core.services.trip_analysis import TripAnalysisService
 from core.tests.fakes import (
@@ -53,9 +55,9 @@ def _make_sample(wind: float = 10.0, rain: float = 0.0, snow: float = 0.0) -> We
 
 def _make_series(tz_name: str = "America/Chicago") -> WeatherSeries:
     start = int(FIXED_NOW.timestamp()) - 3600
-    w = HourlySeries(start_epoch=start, values=tuple(15.0 for _ in range(48)))
-    r = HourlySeries(start_epoch=start, values=tuple(0.0 for _ in range(48)))
-    s = HourlySeries(start_epoch=start, values=tuple(0.0 for _ in range(48)))
+    w = HourlySeries(start_epoch=start, values=tuple(15.0 for _ in range(80)))
+    r = HourlySeries(start_epoch=start, values=tuple(0.0 for _ in range(80)))
+    s = HourlySeries(start_epoch=start, values=tuple(0.0 for _ in range(80)))
     return WeatherSeries(tz_name=tz_name, wind_mph=w, rain_in_hr=r, snow_in_hr=s)
 
 
@@ -82,7 +84,16 @@ def api_test_context() -> Generator[dict[str, Any]]:
         cell1: _make_series("America/Chicago"),
         cell2: _make_series("America/Denver"),
     }
-    weather = FakeWeatherProvider(series_by_cell=series_map, timezone="America/Chicago")
+
+    class UniversalFakeWeather(FakeWeatherProvider):
+        def get_series(self, cells):
+            res = super().get_series(cells)
+            for c in cells:
+                if c not in res:
+                    res[c] = _make_series("America/Chicago")
+            return res
+
+    weather = UniversalFakeWeather(series_by_cell=series_map, timezone="America/Chicago")
 
     geocoding = FakeGeocodingProvider(
         places_by_query={
@@ -99,6 +110,11 @@ def api_test_context() -> Generator[dict[str, Any]]:
         weather=weather,
         clock=lambda: FIXED_NOW,
     )
+    heatmap_service = HeatmapService(
+        route_selection=route_selection,
+        weather=weather,
+        clock=lambda: FIXED_NOW,
+    )
 
     container = Container(
         cache=cache,
@@ -106,6 +122,7 @@ def api_test_context() -> Generator[dict[str, Any]]:
         weather=weather,
         route_selection=route_selection,
         trip_analysis=trip_analysis,
+        heatmap_service=heatmap_service,
         geocoding=geocoding,
     )
     set_container(container)
@@ -116,6 +133,7 @@ def api_test_context() -> Generator[dict[str, Any]]:
         "weather": weather,
         "geocoding": geocoding,
         "trip_analysis": trip_analysis,
+        "heatmap_service": heatmap_service,
     }
 
     set_container(None)
@@ -583,3 +601,124 @@ def test_serializer_edge_cases(client: APIClient, api_test_context: dict[str, An
     assert res2.status_code == 200
     assert res2.json()["request"]["interval_mode"] == "manual"
     assert res2.json()["request"]["interval_miles"] == 25
+
+
+# ============================================================================
+# Heatmap Endpoint Tests
+# ============================================================================
+
+
+def test_heatmap_endpoint_success_and_golden_shape(
+    client: APIClient, api_test_context: dict[str, Any]
+) -> None:
+    res = client.post("/api/trips/heatmap/", valid_payload(), format="json")
+    assert res.status_code == 200
+    data = res.json()
+
+    # Golden shape top-level keys
+    assert set(data.keys()) == {
+        "start_utc",
+        "start_local",
+        "origin_timezone",
+        "cells",
+        "frames",
+    }
+    assert data["origin_timezone"] == "America/Chicago"
+    assert data["start_utc"].endswith("Z")
+    assert "-05:00" in data["start_local"]
+
+    # Cells shape
+    cells = data["cells"]
+    assert len(cells) > 0
+    for c in cells:
+        assert set(c.keys()) == {"lat", "lon"}
+        assert isinstance(c["lat"], float)
+        assert isinstance(c["lon"], float)
+        # 3 decimals precision check
+        assert c["lat"] == round(c["lat"], 3)
+        assert c["lon"] == round(c["lon"], 3)
+
+    # Frames shape: 49 frames, offsets 0 to 48
+    frames = data["frames"]
+    assert len(frames) == 49
+    for i, frame in enumerate(frames):
+        assert set(frame.keys()) == {
+            "offset_hours",
+            "time_utc",
+            "time_local",
+            "overall",
+            "wind",
+            "rain",
+            "snow",
+        }
+        assert frame["offset_hours"] == i
+        assert frame["time_utc"].endswith("Z")
+        assert len(frame["overall"]) == len(cells)
+        assert len(frame["wind"]) == len(cells)
+        assert len(frame["rain"]) == len(cells)
+        assert len(frame["snow"]) == len(cells)
+
+        for val in frame["overall"]:
+            assert val is None or isinstance(val, int)
+            if isinstance(val, int):
+                assert 0 <= val <= 4
+        for layer in ("wind", "rain", "snow"):
+            for val in frame[layer]:
+                assert val is None or isinstance(val, int)
+                if isinstance(val, int):
+                    assert 0 <= val <= 4
+
+
+def test_heatmap_endpoint_validation_error(
+    client: APIClient, api_test_context: dict[str, Any]
+) -> None:
+    # Missing destination
+    res = client.post(
+        "/api/trips/heatmap/",
+        {"origin": {"lat": 32.7767, "lon": -96.7970}},
+        format="json",
+    )
+    assert res.status_code == 400
+    data = res.json()
+    assert data["error"]["code"] == "validation_error"
+    assert "destination" in data["error"]["fields"]
+
+
+def test_heatmap_endpoint_departure_out_of_window(
+    client: APIClient, api_test_context: dict[str, Any]
+) -> None:
+    payload = valid_payload()
+    payload["departure_local"] = "2026-10-30T08:00"
+    res = client.post("/api/trips/heatmap/", payload, format="json")
+    assert res.status_code == 400
+    data = res.json()
+    assert data["error"]["code"] == "validation_error"
+    assert "departure_local" in data["error"]["fields"]
+
+
+def test_heatmap_endpoint_beyond_horizon_error(
+    client: APIClient, api_test_context: dict[str, Any]
+) -> None:
+    # Weather provider returns empty dict so frame 0 has only None values
+    class EmptyWeatherProvider(FakeWeatherProvider):
+        def get_series(self, cells):  # type: ignore[override]
+            return {}
+
+    heatmap_svc = api_test_context["heatmap_service"]
+    original_weather = heatmap_svc.weather
+    heatmap_svc.weather = EmptyWeatherProvider()
+    try:
+        res = client.post("/api/trips/heatmap/", valid_payload(), format="json")
+        assert res.status_code == 422
+        data = res.json()
+        assert data["error"]["code"] == "beyond_forecast_horizon"
+    finally:
+        heatmap_svc.weather = original_weather
+
+
+def test_heatmap_endpoint_throttle_scope() -> None:
+    from api.throttles import HeatmapThrottle
+
+    assert TripHeatmapView.throttle_scope == "heatmap"
+    assert HeatmapThrottle.scope == "heatmap"
+    assert TripHeatmapView.throttle_classes == [HeatmapThrottle]

@@ -9,6 +9,7 @@ from core.providers.base import Cache, GeocodingProvider, RoutingProvider, Weath
 from core.providers.geocoding_tomtom import CachedGeocoding, TomTomGeocodingProvider
 from core.providers.routing_tomtom import TomTomRoutingProvider
 from core.providers.weather_openmeteo import OpenMeteoWeatherProvider
+from core.services.heatmap_service import HeatmapService
 from core.services.route_selection import RouteSelectionService
 from core.services.trip_analysis import TripAnalysisService
 
@@ -22,6 +23,7 @@ class Container:
     weather: WeatherProvider
     route_selection: RouteSelectionService
     trip_analysis: TripAnalysisService
+    heatmap_service: HeatmapService
     geocoding: GeocodingProvider
 
 
@@ -50,6 +52,11 @@ def build_container(settings: Any) -> Container:
         weather=weather,
         clock=lambda: datetime.datetime.now(datetime.UTC),
     )
+    heatmap_service = HeatmapService(
+        route_selection=route_selection,
+        weather=weather,
+        clock=lambda: datetime.datetime.now(datetime.UTC),
+    )
     raw_geocoding = TomTomGeocodingProvider(api_key=api_key, timeout_seconds=timeout)
     geocoding = CachedGeocoding(provider=raw_geocoding, cache=cache, ttl_seconds=geocode_ttl)
 
@@ -59,6 +66,7 @@ def build_container(settings: Any) -> Container:
         weather=weather,
         route_selection=route_selection,
         trip_analysis=trip_analysis,
+        heatmap_service=heatmap_service,
         geocoding=geocoding,
     )
 

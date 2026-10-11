@@ -6,6 +6,7 @@ from typing import Any
 from rest_framework import serializers
 
 from core.domain import geometry, timezones
+from core.domain.grid import cell_center
 from core.domain.types import (
     Coordinate,
     IntervalMode,
@@ -14,6 +15,7 @@ from core.domain.types import (
     TripRequest,
     Warning,
 )
+from core.services.heatmap_service import HeatmapResult
 
 
 class PlaceSerializer(serializers.Serializer):
@@ -257,4 +259,34 @@ def format_trip_analysis(
             "weather_ms": round(analysis.meta.weather_ms, 1),
             "in_process_ms": round(analysis.meta.in_process_ms, 1),
         },
+    }
+
+
+def format_heatmap_response(result: HeatmapResult) -> dict[str, Any]:
+    """Format HeatmapResult domain model into API response payload."""
+    return {
+        "start_utc": result.heatmap.start_utc.isoformat().replace("+00:00", "Z"),
+        "start_local": result.start_local,
+        "origin_timezone": result.origin_tz,
+        "cells": [
+            {
+                "lat": round(cell_center(cell).lat, 3),
+                "lon": round(cell_center(cell).lon, 3),
+            }
+            for cell in result.heatmap.cells
+        ],
+        "frames": [
+            {
+                "offset_hours": frame.offset_hours,
+                "time_utc": frame.time_utc.isoformat().replace("+00:00", "Z"),
+                "time_local": time_local,
+                "overall": list(frame.overall),
+                "wind": list(frame.wind),
+                "rain": list(frame.rain),
+                "snow": list(frame.snow),
+            }
+            for frame, time_local in zip(
+                result.heatmap.frames, result.frame_times_local, strict=True
+            )
+        ],
     }

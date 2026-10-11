@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.container import get_container
-from api.serializers import TripRequestSerializer, format_trip_analysis
-from api.throttles import AnalyzeThrottle, GeocodeThrottle
+from api.serializers import TripRequestSerializer, format_heatmap_response, format_trip_analysis
+from api.throttles import AnalyzeThrottle, GeocodeThrottle, HeatmapThrottle
 from core.domain.types import Warning
 
 
@@ -68,3 +68,18 @@ class TripAnalyzeView(APIView):
             )
 
         return Response(format_trip_analysis(analysis, warnings=warnings))
+
+
+class TripHeatmapView(APIView):
+    """Trip corridor heatmap endpoint returning grid cells and 49 hourly risk frames."""
+
+    throttle_classes = [HeatmapThrottle]
+    throttle_scope = "heatmap"
+
+    def post(self, request: Request) -> Response:
+        serializer = TripRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        trip_request = serializer.to_domain()
+
+        result = get_container().heatmap_service.build(trip_request)
+        return Response(format_heatmap_response(result))

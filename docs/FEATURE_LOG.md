@@ -147,7 +147,7 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-032 | Results UI: RecommendationBanner, RouteCards, CheckpointTable | P4 | done |
 | F-033 | MapView: canvas render, route polylines, checkpoint markers, legend; remove map placeholder text | P4 | done |
 | F-034 | UX states: idle, loading skeletons, error retry, no-safe-route alert | P4 | done |
-| F-040 | Heatmap backend: corridor grid generation & `/api/trips/heatmap/` | P5 | planned |
+| F-040 | Heatmap backend: corridor grid generation & `/api/trips/heatmap/` | P5 | done |
 | F-041 | Heatmap frontend: useHeatmap, HeatmapLayer, 0-48h slider controls | P5 | planned |
 | F-050 | Polish: responsive layout & mobile testing | P6 | planned |
 | F-051 | Performance benchmarking (cold/warm analyze, payload sizes) | P6 | planned |
@@ -265,3 +265,5 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | P4 (fix) | Local time formatting & time zone labels | 0.25 | 0.20 | 5.65 | departure_tz/arrival_tz backend & ARCHITECTURE, formatLocalTime fractional/microseconds & Intl.DateTimeFormat tz, checkpoint miles whole/decimal, 73 frontend tests, 492 backend tests |
 | P4c (F-033) | Map with routes & checkpoints | 0.75 | 0.40 | 6.05 | MapView, OpenStreetMap tiles with dark CSS filter, RouteLayer casing & pills, CheckpointLayer & popups, MapLegend, sync & invalidateSize, 81 frontend tests |
 | Fix round | Basemap, label pills, minute rounding | 0.35 | 0.25 | 6.30 | OSM dark-filtered basemap, route label placement 30%/50%/70%, consistent minute rounding floor(x+0.5) backend & frontend, 85 frontend tests, 494 backend tests |
+| P5a (F-040) | Heatmap backend | 0.50 | 0.35 | 6.65 | Pure corridor generator & build_heatmap, shared departure resolution, HeatmapService, POST /api/trips/heatmap/, 100% coverage, live test script |
+
