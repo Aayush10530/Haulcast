@@ -5,7 +5,7 @@ import time
 from collections.abc import Callable
 
 from core.domain import geometry, ranking, rules_config, sampling, scoring, timezones
-from core.domain.errors import BeyondForecastHorizonError
+from core.domain.errors import BeyondForecastHorizonError, DepartureOutOfWindowError
 from core.domain.grid import snap_to_cell
 from core.domain.timeline import etas_for_checkpoints
 from core.domain.types import (
@@ -46,7 +46,15 @@ class TripAnalysisService:
         # 1. Resolve origin timezone, convert local departure to UTC, and validate window
         origin_tz = self.weather.get_timezone(request.origin.coordinate)
         departure_utc = timezones.local_to_utc(request.departure_local, origin_tz)
-        timezones.validate_departure_window(departure_utc, now_utc=self.clock())
+        try:
+            timezones.validate_departure_window(departure_utc, now_utc=self.clock())
+        except DepartureOutOfWindowError as e:
+            raise DepartureOutOfWindowError(
+                str(e),
+                allowed_from=e.allowed_from,
+                allowed_to=e.allowed_to,
+                origin_tz=origin_tz,
+            ) from e
 
         # 2. Fetch diverse candidate routes via route selection service (cached)
         selection_result = self.route_selection.get_routes(

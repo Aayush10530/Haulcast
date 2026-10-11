@@ -15,10 +15,12 @@ class DepartureOutOfWindowError(ValueError):
         message: str,
         allowed_from: datetime.datetime,
         allowed_to: datetime.datetime,
+        origin_tz: str | None = None,
     ) -> None:
         super().__init__(message)
         self.allowed_from = allowed_from
         self.allowed_to = allowed_to
+        self.origin_tz = origin_tz
 
 
 class BeyondForecastHorizonError(ValueError):

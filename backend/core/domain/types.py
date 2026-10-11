@@ -388,6 +388,7 @@ class Place:
 
     label: str
     coordinate: Coordinate
+    id: str | None = None
 
     def __post_init__(self) -> None:
         if not self.label or not self.label.strip():

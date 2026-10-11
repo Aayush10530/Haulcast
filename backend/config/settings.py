@@ -70,6 +70,13 @@ CACHES = {
 }
 ROUTE_CACHE_TTL_SECONDS = int(os.getenv("ROUTE_CACHE_TTL_SECONDS", "1800"))
 WEATHER_CACHE_TTL_SECONDS = int(os.getenv("WEATHER_CACHE_TTL_SECONDS", "1800"))
+GEOCODE_CACHE_TTL_SECONDS = int(os.getenv("GEOCODE_CACHE_TTL_SECONDS", "86400"))
+HTTP_TIMEOUT_SECONDS = float(os.getenv("HTTP_TIMEOUT_SECONDS", "8.0"))
+ROUTING_PROVIDER = os.getenv("ROUTING_PROVIDER", "tomtom")
+TOMTOM_API_KEY = os.getenv("TOMTOM_API_KEY", "")
+
+num_proxies_val = os.getenv("NUM_PROXIES")
+NUM_PROXIES = int(num_proxies_val) if num_proxies_val is not None else None
 
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = [
@@ -89,6 +96,16 @@ REST_FRAMEWORK = {
     "DEFAULT_PARSER_CLASSES": [
         "rest_framework.parsers.JSONParser",
     ],
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.ScopedRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "analyze": os.getenv("THROTTLE_ANALYZE", "20/min"),
+        "heatmap": os.getenv("THROTTLE_HEATMAP", "30/min"),
+        "geocode": os.getenv("THROTTLE_GEOCODE", "120/min"),
+    },
+    "NUM_PROXIES": NUM_PROXIES,
+    "EXCEPTION_HANDLER": "api.errors.custom_exception_handler",
 }
 
 # Internationalization
