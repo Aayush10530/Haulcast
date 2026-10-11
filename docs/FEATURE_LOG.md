@@ -158,7 +158,13 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 
 ## 4. Changes
 
-_None yet._
+### C-003 Documentation Reorganization into docs/
+- Date: 2026-10-11
+- Type: change
+- Phase: P4
+- Summary: Moved all project specification, architecture, and design documents (ARCHITECTURE.md, CODING_RULES.md, DESIGN.md, FEATURE_LOG.md, PROJECT_CONTEXT.md, PROMPT.md) into docs/ for clean project organization. AGENTS.md remains at workspace root to preserve IDE rule discovery.
+- Files: docs/ARCHITECTURE.md, docs/CODING_RULES.md, docs/DESIGN.md, docs/FEATURE_LOG.md, docs/PROJECT_CONTEXT.md, docs/PROMPT.md, AGENTS.md
+- Status: done
 
 ---
 
