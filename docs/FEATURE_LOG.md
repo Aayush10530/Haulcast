@@ -157,10 +157,10 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-035 | Operations console dashboard: Elevation Profile, Checkpoints & Weather Analysis timeline, Route Comparison bar chart & metrics table, Map forecast slider and layer controls | P4 | done |
 | F-040 | Heatmap backend: corridor grid generation & `/api/trips/heatmap/` | P5 | done |
 | F-041 | Heatmap frontend: useHeatmap, HeatmapLayer, 0-48h slider controls | P5 | done |
-| F-050 | Polish: responsive layout & mobile testing | P6 | planned |
-| F-051 | Performance benchmarking (cold/warm analyze, payload sizes) | P6 | planned |
-| F-052 | Slow-server banner & example trip preset | P6 | planned |
-| F-053 | Accessibility & contrast review | P6 | planned |
+| F-050 | Polish: responsive layout & mobile testing (360, 390, 768, 800, 1100, 1280, 1440, 1920 px) | P6 | done |
+| F-051 | Performance benchmarking (cold/warm analyze, heatmap, bundle sizes) | P6 | done |
+| F-052 | Slow-server / cold-start progress banner (example trip excluded per live presentation decision) | P6 | done |
+| F-053 | Accessibility & contrast review (WCAG AA certified, forecast slider ARIA) | P6 | done |
 | F-060 | Production deployment configuration (set NUM_PROXIES for host & verify throttling sees real client IPs) | P7 | planned |
 | F-061 | Comprehensive documentation & README | P7 | planned |
 | F-062 | Fresh-clone verification test | P7 | planned |
@@ -172,6 +172,14 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 ---
 
 ## 4. Changes
+
+### C-011 Phase 6 Performance Benchmarks, Cold-Start UX Banner, and Accessibility Pass
+- Date: 2026-10-12
+- Type: change
+- Phase: P6
+- Summary: Completed Phase 6 polish: Added dynamic slow-server / cold-start progress banner in TripForm triggering after 4.5s for live API calls with state-aware button label ("Analyzing live forecasts..."). Removed example trip preset per live presentation directive. Added accessibility attributes (aria-label, aria-valuemin, aria-valuemax, aria-valuenow, aria-valuetext) to forecast hour slider in MapView. Expanded responsive layout automated tests to include 360 px and 768 px viewports (99 frontend tests passing). Benchmarked live endpoints: Cold analyze ~8.56s, warm analyze 0.24s (35x speedup), cold heatmap 1.94s, warm heatmap 0.42s; frontend production bundle: index JS 36.1 kB gzipped, CSS 21.4 kB gzipped.
+- Files: frontend/src/features/trip-form/TripForm.tsx, frontend/src/features/map/MapView.tsx, frontend/src/App.test.tsx, docs/FEATURE_LOG.md, docs/PROMPT.md, docs/DESIGN.md
+- Status: done
 
 ### C-010 Comprehensive Technical README Documentation Enhancement
 - Date: 2026-10-12

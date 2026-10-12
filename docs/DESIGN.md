@@ -83,7 +83,7 @@ Change: the route "score" ring shows our real average risk on the 0-4 scale (neu
 
 ## 6. Components
 
-**Trip form (left column):** title "Trip planning" (20/28), subtitle "Plan a safer route with the weather forecast". Origin and destination place fields with start icons (Place, Flag) and a swap icon button between them. Departure date and time with CalendarToday start icon (native `datetime-local` input styled by the theme; helper "Local time at origin"). Load weight in lb with Scale start icon (helper "Wind rules apply above 30,000 and 40,000 lb"). Checkpoint interval toggle: Auto, 10 mi, 25 mi, 50 mi (default Auto). Primary button "Generate routes" (44 px high, flat brand fill). Text button "Try an example trip" (fills the form, no fake results).
+**Trip form (left column):** title "Trip planning" (20/28), subtitle "Plan a safer route with the weather forecast". Origin and destination place fields with start icons (Place, Flag) and a swap icon button between them. Departure date and time with CalendarToday start icon (native `datetime-local` input styled by the theme; helper "Local time at origin"). Load weight in lb with Scale start icon (helper "Wind rules apply above 30,000 and 40,000 lb"). Checkpoint interval toggle: Auto, 10 mi, 25 mi, 50 mi (default Auto). Primary button "Generate routes" (44 px high, flat brand fill). (Example trip button omitted per live-data presentation direction).
 
 **Results (right column):** header "Route options (3)". Recommendation banner: 4 px brand left border, headline from the API, caption "Decided by: <factor>". Three route cards:
 - Letter badge A/B/C (28 px square, mono), tag chips ("Recommended" in brand, "Fastest" outlined), avg-risk ring (neutral fill, number inside, label "Avg risk").

@@ -315,12 +315,12 @@ Generates a precomputed 49-frame corridor risk tensor for the interactive weathe
 
 ---
 
-### GET `/api/geocoding/autocomplete/`
+### GET `/api/geocode/`
 
-Provides debounced geographic address completion.
+Provides debounced geographic address completion via TomTom search.
 
 - **Query Parameters**:
-  - `q`: Search query string (minimum 3 characters).
+  - `q`: Search query string (minimum 3 characters, e.g. `?q=Chicago`).
 - **Response**: Array of candidate objects with `label`, `lat`, and `lon`.
 
 ---

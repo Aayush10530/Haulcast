@@ -131,6 +131,11 @@ export const MapView: React.FC<MapViewProps> = ({
             step={1}
             value={forecastHour}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForecastHour(parseInt(e.target.value, 10))}
+            aria-label="Weather forecast hour scrubber"
+            aria-valuemin={0}
+            aria-valuemax={48}
+            aria-valuenow={forecastHour}
+            aria-valuetext={`+${forecastHour} hours from departure`}
             data-testid="forecast-hour-slider"
             sx={{
               flex: 1,

@@ -167,7 +167,7 @@ Task: responsive layout, performance pass, accessibility and polish. Measure fir
 - Record in FEATURE_LOG.md: analyze time (cold and warm), heatmap time, payload sizes (gzipped), number of upstream calls per analyze, bundle size.
 - Fix the worst offender only if it is clearly above target (analyze cold under about 6 s, warm under about 1.5 s; heatmap scrub at 60 fps; bundle under about 350 KB gzipped).
 - Responsive checks at 360, 768 and 1280 px widths. No horizontal page scroll.
-- Slow-server banner if the first request exceeds 5 s. A clearly labeled "Try an example trip" button that fills the form (no fake results).
+- Slow-server / cold-start progress banner if the request exceeds 5 s (fetching live corridor geometry & forecasts). (Example trip button omitted per user presentation direction).
 - Accessibility pass: labels, focus order, text alongside color, slider value text.
 Do not add features outside F-050..F-054.
 ```

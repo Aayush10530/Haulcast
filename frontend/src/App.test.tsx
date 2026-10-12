@@ -237,7 +237,7 @@ describe('App Component Shell & Responsive Layouts', () => {
   });
 
   describe('Breakpoint Layouts below and above 900 px and 1440 px', () => {
-    it.each([390, 800])(
+    it.each([360, 390, 768, 800])(
       'renders mobile layout at %i px with fixed tab bar, Plan selected, and active region visible',
       (width) => {
         setViewportWidth(width);

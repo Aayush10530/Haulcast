@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Box,
@@ -80,9 +80,24 @@ export const TripForm: React.FC<TripFormProps> = ({
   const [clientErrors, setClientErrors] = useState<TripFormErrors>({});
   const [serverFieldErrors, setServerFieldErrors] = useState<Record<string, string>>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
+  const [isSlowRequest, setIsSlowRequest] = useState(false);
 
   const analyzeMutation = useAnalyzeTrip();
   const isPending = analyzeMutation.isPending || disabled;
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    if (isPending) {
+      timer = setTimeout(() => {
+        setIsSlowRequest(true);
+      }, 4500);
+    } else {
+      setIsSlowRequest(false);
+    }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [isPending]);
 
   const handleSwap = () => {
     setOrigin(destination);
@@ -409,6 +424,26 @@ export const TripForm: React.FC<TripFormProps> = ({
         )}
       </Box>
 
+      {/* Slow Server / Cold-Start Progress Banner */}
+      {isPending && isSlowRequest && (
+        <Alert
+          severity="info"
+          data-testid="slow-server-alert"
+          sx={{
+            backgroundColor: 'rgba(0, 229, 255, 0.08)',
+            border: `1px solid rgba(0, 229, 255, 0.3)`,
+            color: colorTokens.text,
+            fontSize: '0.8125rem',
+            lineHeight: 1.4,
+            '& .MuiAlert-icon': {
+              color: colorTokens.brand,
+            },
+          }}
+        >
+          Analyzing live weather along route corridors... Live requests query TomTom commercial truck routing and Open-Meteo atmospheric forecasts across all checkpoints.
+        </Alert>
+      )}
+
       {/* General Server Error Alert with Retry Button */}
       {generalError && (
         <Alert
@@ -452,7 +487,11 @@ export const TripForm: React.FC<TripFormProps> = ({
           mt: 1,
         }}
       >
-        {isPending ? 'Finding routes...' : 'Generate routes →'}
+        {isPending
+          ? isSlowRequest
+            ? 'Analyzing live forecasts...'
+            : 'Finding routes...'
+          : 'Generate routes →'}
       </Button>
     </Box>
   );
