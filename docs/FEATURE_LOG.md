@@ -156,7 +156,7 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-034 | UX states: idle, loading skeletons, error retry, no-safe-route alert | P4 | done |
 | F-035 | Operations console dashboard: Elevation Profile, Checkpoints & Weather Analysis timeline, Route Comparison bar chart & metrics table, Map forecast slider and layer controls | P4 | done |
 | F-040 | Heatmap backend: corridor grid generation & `/api/trips/heatmap/` | P5 | done |
-| F-041 | Heatmap frontend: useHeatmap, HeatmapLayer, 0-48h slider controls | P5 | planned |
+| F-041 | Heatmap frontend: useHeatmap, HeatmapLayer, 0-48h slider controls | P5 | done |
 | F-050 | Polish: responsive layout & mobile testing | P6 | planned |
 | F-051 | Performance benchmarking (cold/warm analyze, payload sizes) | P6 | planned |
 | F-052 | Slow-server banner & example trip preset | P6 | planned |
@@ -172,6 +172,14 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 ---
 
 ## 4. Changes
+
+### C-008 Leaflet.heat Canvas Integration and Route Comparison Card Audit & Fixes
+- Date: 2026-10-12
+- Type: change
+- Phase: P5/P4
+- Summary: Implemented leaflet.heat (v0.2.0 pinned) canvas heatmap layer (HeatmapLayer.tsx, heatUtils.ts) in MapView.tsx, converting corridor grid frames to [lat, lon, intensity] per ARCHITECTURE.md §10 with gradient mapped to riskColors and requestAnimationFrame throttling. Audited and fixed RouteComparisonCard.tsx: zero risk miles produce zero-height/hidden bars eliminating 4px minimum bars on 0-mile routes; separated mixed units into two clear charts (Weather Risk Exposure with Y-axis in miles, and Estimated Travel Time with hours scale); confirmed changing trips immediately updates every chart and metric without stale data; verified recommendation ranking priority (Severe -> High -> Avg Risk -> Duration); added full test suite covering charts, units, zero bars, and trip updates (RouteComparisonCard.test.tsx, heatUtils.test.ts).
+- Files: frontend/package.json, frontend/src/features/map/HeatmapLayer.tsx, frontend/src/features/map/heatUtils.ts, frontend/src/features/map/heatUtils.test.ts, frontend/src/features/map/MapView.tsx, frontend/src/features/map/WeatherRadarLayer.tsx, frontend/src/features/results/RouteComparisonCard.tsx, frontend/src/features/results/RouteComparisonCard.test.tsx, frontend/src/test/setup.ts, docs/PROJECT_CONTEXT.md, docs/FEATURE_LOG.md
+- Status: done
 
 ### C-007 Obsidian Black Glassmorphism Theme with Terrain Contours & Hover Animations
 - Date: 2026-10-12

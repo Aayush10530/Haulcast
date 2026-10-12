@@ -5,3 +5,5 @@ export * from './CheckpointPopup';
 export * from './MapLegend';
 export * from './MapController';
 export * from './WeatherRadarLayer';
+export * from './HeatmapLayer';
+export * from './heatUtils';

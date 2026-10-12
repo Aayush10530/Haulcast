@@ -9,6 +9,7 @@ import { MapController } from './MapController';
 import { MapLegend } from './MapLegend';
 import { RouteLayer } from './RouteLayer';
 import { WeatherRadarLayer } from './WeatherRadarLayer';
+import { HeatmapLayer } from './HeatmapLayer';
 import './leafletDark.css';
 
 export interface MapViewProps {
@@ -206,12 +207,17 @@ export const MapView: React.FC<MapViewProps> = ({
           />
         )}
 
-        {/* Corridor Risk Heatmap (0-48h forecast) & Checkpoint Risk Indicators */}
+        {/* Continuous Corridor Risk Heatmap Canvas (0-48h forecast) via leaflet.heat */}
+        <HeatmapLayer
+          heatmapData={heatmapData}
+          forecastHour={forecastHour}
+          isVisible={true}
+        />
+
+        {/* Checkpoint Risk Indicators */}
         <WeatherRadarLayer
           routes={routes}
           selectedRouteId={selectedRouteId}
-          forecastHour={forecastHour}
-          heatmapData={heatmapData}
           isVisible={true}
         />
 

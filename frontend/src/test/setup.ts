@@ -25,7 +25,13 @@ class MockResizeObserver {
 
 window.ResizeObserver = window.ResizeObserver || (MockResizeObserver as unknown as typeof ResizeObserver);
 
+vi.mock('leaflet.heat', () => ({}));
+
 vi.mock('leaflet', () => {
+  const mockHeatLayer = vi.fn(() => ({
+    addTo: vi.fn().mockReturnThis(),
+    setLatLngs: vi.fn(),
+  }));
   return {
     default: {
       divIcon: vi.fn((opts) => opts),
@@ -36,6 +42,7 @@ vi.mock('leaflet', () => {
       Icon: {
         Default: vi.fn(),
       },
+      heatLayer: mockHeatLayer,
     },
     divIcon: vi.fn((opts) => opts),
     latLngBounds: vi.fn(() => ({
@@ -45,6 +52,7 @@ vi.mock('leaflet', () => {
     Icon: {
       Default: vi.fn(),
     },
+    heatLayer: mockHeatLayer,
   };
 });
 
@@ -117,6 +125,9 @@ vi.mock('react-leaflet', () => {
       getContainer: vi.fn(() => document.createElement('div')),
       on: vi.fn(),
       off: vi.fn(),
+      hasLayer: vi.fn(() => false),
+      addLayer: vi.fn(),
+      removeLayer: vi.fn(),
     }),
   };
 });
