@@ -1,4 +1,4 @@
-"""WSGI config for Haulcast project."""
+"""WSGI config for StormRoute project."""
 
 import os
 

@@ -185,7 +185,7 @@ export const MapView: React.FC<MapViewProps> = ({
         center={[39.5, -98.35]}
         zoom={4}
         zoomControl={false}
-        className="haulcast-map-container"
+        className="stormroute-map-container"
         style={{ width: '100%', height: '100%' }}
       >
         <TileLayer

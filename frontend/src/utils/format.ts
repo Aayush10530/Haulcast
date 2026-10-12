@@ -1,5 +1,5 @@
 /**
- * Formatting utilities for Haulcast UI.
+ * Formatting utilities for StormRoute UI.
  * Pure display formatters - no business logic, no timezone conversion.
  */
 

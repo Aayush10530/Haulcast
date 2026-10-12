@@ -1,4 +1,4 @@
-"""Comprehensive API tests for Haulcast endpoints, error envelopes, and validation."""
+"""Comprehensive API tests for StormRoute endpoints, error envelopes, and validation."""
 
 import datetime
 from collections.abc import Generator

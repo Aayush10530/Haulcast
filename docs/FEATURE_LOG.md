@@ -173,6 +173,14 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 
 ## 4. Changes
 
+### C-009 Standardize Application Namespace and Configurations Across Codebase
+- Date: 2026-10-12
+- Type: change
+- Phase: P7/P6
+- Summary: Standardized project namespace, service identifiers, package metadata, cache settings, and documentation across frontend, backend, stylesheets, and test suites.
+- Files: README.md, frontend/package.json, frontend/package-lock.json, frontend/src/utils/format.ts, frontend/src/api/types.ts, frontend/src/features/map/MapView.tsx, frontend/src/features/map/leafletDark.css, backend/config/settings.py, backend/config/wsgi.py, backend/config/urls.py, backend/api/views.py, backend/api/__init__.py, backend/api/tests/test_api.py, backend/core/__init__.py, backend/scripts/live_heatmap.py, backend/scripts/spike/*
+- Status: done
+
 ### C-008 Leaflet.heat Canvas Integration and Route Comparison Card Audit & Fixes
 - Date: 2026-10-12
 - Type: change

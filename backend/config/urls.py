@@ -1,4 +1,4 @@
-"""Root URL configuration for Haulcast."""
+"""Root URL configuration for StormRoute."""
 
 from django.urls import include, path
 

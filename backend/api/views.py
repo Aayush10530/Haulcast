@@ -1,4 +1,4 @@
-"""API views for Haulcast."""
+"""API views for StormRoute."""
 
 from rest_framework import exceptions
 from rest_framework.request import Request

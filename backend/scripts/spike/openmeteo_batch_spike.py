@@ -1,5 +1,5 @@
 """
-Open-Meteo 50 and 100 location batch stress spike for Haulcast (F-000).
+Open-Meteo 50 and 100 location batch stress spike for StormRoute (F-000).
 Tests multi-location queries at scale (50 and 100 coordinates) in a single HTTP GET.
 Reports elapsed time, payload size, and any errors.
 """

@@ -1,5 +1,5 @@
 """
-Open-Meteo spike script for Haulcast (F-000).
+Open-Meteo spike script for StormRoute (F-000).
 Tests multi-location batching, parameter compatibility, response shape, and latency.
 No API key required.
 """

@@ -63,7 +63,7 @@ def main() -> None:
     url = f"http://127.0.0.1:{port}/api/trips/heatmap/"
 
     print("==================================================")
-    print("Haulcast Live Heatmap Test: Dallas, TX -> Denver, CO")
+    print("StormRoute Live Heatmap Test: Dallas, TX -> Denver, CO")
     print(f"Target URL: {url}")
     print("==================================================")
 

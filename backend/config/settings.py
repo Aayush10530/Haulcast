@@ -1,4 +1,4 @@
-"""Django settings for Haulcast project.
+"""Django settings for StormRoute project.
 
 Configured strictly from environment variables per ARCHITECTURE.md and CODING_RULES.md.
 """
@@ -24,7 +24,7 @@ if not DEBUG:
         )
     SECRET_KEY = raw_secret_key
 else:
-    SECRET_KEY = raw_secret_key or "django-insecure-dev-only-placeholder-key-for-haulcast"
+    SECRET_KEY = raw_secret_key or "django-insecure-dev-only-placeholder-key-for-stormroute"
 
 ALLOWED_HOSTS = [
     host.strip()
@@ -65,7 +65,7 @@ DATABASES = {
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "haulcast-cache",
+        "LOCATION": "stormroute-cache",
     }
 }
 ROUTE_CACHE_TTL_SECONDS = int(os.getenv("ROUTE_CACHE_TTL_SECONDS", "1800"))

@@ -2,7 +2,7 @@
 
 > Weather-aware truck routing web app.
 
-Haulcast evaluates long-haul truck routes across the contiguous United States against dynamic weather forecasts. It samples weather conditions along route corridors at the truck's estimated arrival time (ETA), evaluates risk thresholds against gross vehicle load weight, and recommends the safest, most efficient route.
+StormRoute evaluates long-haul truck routes across the contiguous United States against dynamic weather forecasts. It samples weather conditions along route corridors at the truck's estimated arrival time (ETA), evaluates risk thresholds against gross vehicle load weight, and recommends the safest, most efficient route.
 
 ---
 
@@ -22,7 +22,7 @@ Haulcast evaluates long-haul truck routes across the contiguous United States ag
 
 ## System Architecture
 
-Haulcast uses a strictly decoupled, layered architecture:
+StormRoute uses a strictly decoupled, layered architecture:
 
 ```mermaid
 flowchart LR

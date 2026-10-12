@@ -1,5 +1,5 @@
 /**
- * API Data Transfer Objects (DTOs) for Haulcast.
+ * API Data Transfer Objects (DTOs) for StormRoute.
  * Defined strictly per ARCHITECTURE.md §8 and backend API serializers.
  */
 
