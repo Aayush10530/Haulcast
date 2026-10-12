@@ -173,6 +173,14 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 
 ## 4. Changes
 
+### C-010 Comprehensive Technical README Documentation Enhancement
+- Date: 2026-10-12
+- Type: change
+- Phase: P7/P6
+- Summary: Rewrote project README.md into a high-density, engineering-grade technical showcase. Documented system architecture with Mermaid flowchart, mathematical methodology (continuous ETA projection, linear wind interpolation, precipitation bucket integration, Voronoi segment distance conservation), cargo weight overrides, lexicographical recommendation waterfall, full REST API contracts with request/response payloads, developer setup, testing verification stats, and WCAG AA contrast tables.
+- Files: README.md, docs/FEATURE_LOG.md
+- Status: done
+
 ### C-009 Standardize Application Namespace and Configurations Across Codebase
 - Date: 2026-10-12
 - Type: change
