@@ -3,6 +3,7 @@
 import math
 from collections.abc import Sequence
 
+from core.domain import rules_config
 from core.domain.types import (
     DecidingFactor,
     RankedRoute,
@@ -23,14 +24,26 @@ _POSITION_TO_FACTOR: tuple[DecidingFactor, ...] = (
 
 def _route_sort_key(inp: RankingInput) -> tuple[bool, bool, float, float, float, float, float]:
     summary = inp.summary
-    no_data = summary.avg_risk_score is None
+    is_insufficient_data = summary.avg_risk_score is None or (
+        summary.distance_miles > 0
+        and (summary.unavailable_miles / summary.distance_miles)
+        > rules_config.MAX_UNAVAILABLE_WEATHER_RATIO
+    )
     has_no_travel = summary.has_no_travel
     no_travel_miles = round(summary.miles_by_level.no_travel, 1)
     severe_miles = round(summary.miles_by_level.severe, 1)
     high_miles = round(summary.miles_by_level.high, 1)
     avg_risk = round(summary.avg_risk_score, 2) if summary.avg_risk_score is not None else 0.0
     duration = summary.duration_seconds
-    return (no_data, has_no_travel, no_travel_miles, severe_miles, high_miles, avg_risk, duration)
+    return (
+        is_insufficient_data,
+        has_no_travel,
+        no_travel_miles,
+        severe_miles,
+        high_miles,
+        avg_risk,
+        duration,
+    )
 
 
 def _format_time_clause(delta_seconds: float) -> str:
@@ -153,7 +166,15 @@ def rank_routes(inputs: Sequence[RankingInput]) -> Recommendation:
     fastest = min(inputs, key=lambda inp: inp.summary.duration_seconds)
     comparison = fastest if winner.route_id != fastest.route_id else runner
 
-    has_data = any(inp.summary.avg_risk_score is not None for inp in inputs)
+    has_data = any(
+        inp.summary.avg_risk_score is not None
+        and not (
+            inp.summary.distance_miles > 0
+            and (inp.summary.unavailable_miles / inp.summary.distance_miles)
+            > rules_config.MAX_UNAVAILABLE_WEATHER_RATIO
+        )
+        for inp in inputs
+    )
     all_no_travel = all(inp.summary.has_no_travel for inp in inputs)
     no_safe_route = all_no_travel and has_data
 

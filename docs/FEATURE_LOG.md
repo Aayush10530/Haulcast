@@ -189,6 +189,18 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 - Files: README.md, docs/FEATURE_LOG.md
 - Status: done
 
+### C-010 Resolution of 4 Core Deficiencies Across Routing, Heatmap, Ranking, and Map Overlays
+- Date: 2026-10-12
+- Type: defect_fix
+- Phase: P6/P7
+- Summary: Resolved four prioritized production defects:
+  1. Zero Load Weight Support: Changed `load_weight_lb` domain validation in `TripRequest` and `TripRequestEcho` from `<=` 0 to `<` 0, enabling 0 lb (empty/bobtail trucks per A-15 spec) to succeed without raising internal server errors; verified end-to-end in `test_api.py` and `test_trip_analysis.py`.
+  2. Heatmap Cache Invalidation: Included `load_weight_lb` and `interval` in `useTripHeatmap` React Query `queryKey`, ensuring changing load weight fetches new hourly risk frames instead of returning stale cached heatmaps; verified in `useTripHeatmap.test.tsx`.
+  3. Incomplete Weather Ranking Advantage Elimination: Added `MAX_UNAVAILABLE_WEATHER_RATIO = 0.25` in `rules_config.py`. Updated `ranking.py` so routes with >25% unavailable weather coverage or missing average risk score are flagged with `is_insufficient_data = True`, preventing routes with unobserved stretches from falsely outranking observed routes with severe miles; verified in `test_ranking.py`.
+  4. Map Unavailable Weather Overlay: Updated `WeatherRadarLayer.tsx` to return `null` for checkpoints with missing or unavailable weather risk assessments, eliminating erroneous green low-risk radar circles on unobserved checkpoints while preserving neutral slate status dots and explicit "Forecast unavailable" popups in `CheckpointLayer`; verified in `WeatherRadarLayer.test.tsx`.
+- Files: backend/core/domain/types.py, backend/core/domain/rules_config.py, backend/core/domain/ranking.py, backend/core/tests/domain/test_ranking.py, backend/core/tests/services/test_trip_analysis.py, backend/api/tests/test_api.py, frontend/src/hooks/useTripHeatmap.ts, frontend/src/hooks/useTripHeatmap.test.tsx, frontend/src/features/map/WeatherRadarLayer.tsx, frontend/src/features/map/WeatherRadarLayer.test.tsx, frontend/src/features/trip-form/TripForm.tsx, docs/FEATURE_LOG.md
+- Status: done
+
 ### C-009 Standardize Application Namespace and Configurations Across Codebase
 - Date: 2026-10-12
 - Type: change
@@ -365,5 +377,6 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | P4 (ui-redesign) | StormRoute UI Redesign per ui deisgn.png | 0.50 | 0.40 | 7.05 | Header unboxed without API status box, 6 distinct cards across 3 columns, compact route cards with color-specific gauge, milestone checkpoints, duplicate 'mi' bug fixed, Doppler radar storm overlay, bar chart Y-axis ticks & metrics table, 85 frontend tests, 514 backend tests |
 | Fix | Weather risk calculation & display verification | 0.50 | 0.35 | 7.40 | Verified backend risk & ranking calculations, corrected frontend masking where missing weather defaulted to 0 instead of unavailable, implemented explicit formatRiskScore (0-100 formula), updated CheckpointList & RouteComparisonCard with clear fallback states, 88 frontend tests, 514 backend tests |
 | Fix (X-007) | Controlled weather fixture test suite & full verification | 0.50 | 0.40 | 7.80 | 40 automated tests for boundary conditions, 3 load-weight overrides, distance sum conservation, lexicographical ranking ties, missing weather states; ran 554 backend tests, 88 frontend tests, typecheck, lint, production build |
+| Fix (C-010) | 4 core defects: zero load, heatmap key, incomplete weather ranking, map overlay | 0.50 | 0.35 | 8.15 | Fixed zero load weight in domain types, included load_weight in heatmap query key, penalized routes with >25% unavailable weather in ranking, omitted radar circles for unavailable checkpoints; 557 backend tests, 102 frontend tests passing |
 
 

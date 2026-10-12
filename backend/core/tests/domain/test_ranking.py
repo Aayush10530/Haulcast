@@ -518,3 +518,49 @@ def test_ranking_types_validation_errors() -> None:
         ranked=[RankedRoute("r1", 1, 0.0)],
     )
     assert isinstance(rec.ranked, tuple)
+
+
+def test_ranking_incomplete_weather_does_not_outrank_observed_route_with_severe_miles() -> None:
+    # Route A: 80% unavailable weather coverage, 0 severe miles
+    # Route B: 100% observed weather coverage, 10 severe miles
+    r_unknown = RankingInput(
+        "r1",
+        "Route A",
+        _make_summary(
+            distance_miles=100.0,
+            duration_seconds=3600.0,
+            low=20.0,
+            severe=0.0,
+            unavailable_miles=80.0,
+            avg_risk_score=0.0,
+            max_level=RiskLevel.LOW,
+            unavailable_checkpoints=8,
+        ),
+    )
+    r_observed = RankingInput(
+        "r2",
+        "Route B",
+        _make_summary(
+            distance_miles=100.0,
+            duration_seconds=3600.0,
+            low=90.0,
+            severe=10.0,
+            unavailable_miles=0.0,
+            avg_risk_score=0.4,
+            max_level=RiskLevel.SEVERE,
+            unavailable_checkpoints=0,
+        ),
+    )
+
+    rec = rank_routes([r_unknown, r_observed])
+
+    assert rec.route_id == "r2"
+    assert rec.decided_by == DecidingFactor.NO_DATA
+    assert rec.ranked[0].route_id == "r2"
+    assert rec.ranked[0].rank == 1
+    assert rec.ranked[1].route_id == "r1"
+    assert rec.ranked[1].rank == 2
+    assert (
+        "Route B is recommended because weather data was unavailable for the other routes."
+        in rec.headline
+    )

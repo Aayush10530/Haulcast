@@ -25,8 +25,12 @@ export const WeatherRadarLayer: React.FC<WeatherRadarLayerProps> = ({
   return (
     <>
       {checkpoints.map((cp) => {
-        const riskLevel = (cp.risk?.level || 'low') as RiskLevelKey;
-        const colorSpec = riskColors[riskLevel] || riskColors.low;
+        if (!cp.risk || !cp.risk.level || !riskColors[cp.risk.level as RiskLevelKey]) {
+          return null;
+        }
+
+        const riskLevel = cp.risk.level as RiskLevelKey;
+        const colorSpec = riskColors[riskLevel];
         const fillColor = colorSpec.background;
 
         let fillOpacity = 0.16;

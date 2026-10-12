@@ -502,8 +502,8 @@ class TripRequest:
             raise ValueError(f"departure_local must be naive datetime, got {self.departure_local}")
         if not isinstance(self.load_weight_lb, int) or isinstance(self.load_weight_lb, bool):
             raise TypeError(f"load_weight_lb must be an int, got {type(self.load_weight_lb)}")
-        if self.load_weight_lb <= 0:
-            raise ValueError(f"load_weight_lb must be positive, got {self.load_weight_lb}")
+        if self.load_weight_lb < 0:
+            raise ValueError(f"load_weight_lb must be non-negative, got {self.load_weight_lb}")
         if not isinstance(self.interval_mode, IntervalMode):
             raise TypeError(
                 f"interval_mode must be an IntervalMode, got {type(self.interval_mode)}"
@@ -536,8 +536,8 @@ class TripRequestEcho:
             raise ValueError(f"departure_local must be naive datetime, got {self.departure_local}")
         if not self.origin_tz or not self.origin_tz.strip():
             raise ValueError("origin_tz cannot be empty")
-        if self.load_weight_lb <= 0:
-            raise ValueError(f"load_weight_lb must be positive, got {self.load_weight_lb}")
+        if self.load_weight_lb < 0:
+            raise ValueError(f"load_weight_lb must be non-negative, got {self.load_weight_lb}")
         if self.interval_miles <= 0:
             raise ValueError(f"interval_miles must be positive, got {self.interval_miles}")
 

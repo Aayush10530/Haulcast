@@ -86,16 +86,13 @@ export const TripForm: React.FC<TripFormProps> = ({
   const isPending = analyzeMutation.isPending || disabled;
 
   useEffect(() => {
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    if (isPending) {
-      timer = setTimeout(() => {
-        setIsSlowRequest(true);
-      }, 4500);
-    } else {
-      setIsSlowRequest(false);
-    }
+    if (!isPending) return;
+    const timer = setTimeout(() => {
+      setIsSlowRequest(true);
+    }, 4500);
     return () => {
-      if (timer) clearTimeout(timer);
+      clearTimeout(timer);
+      setIsSlowRequest(false);
     };
   }, [isPending]);
 

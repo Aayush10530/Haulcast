@@ -7,7 +7,16 @@ import { TripHeatmapResponse, TripRequestPayload } from '../api/types';
  */
 export function useTripHeatmap(payload: TripRequestPayload | null) {
   return useQuery<TripHeatmapResponse>({
-    queryKey: ['tripHeatmap', payload?.origin?.lat, payload?.origin?.lon, payload?.destination?.lat, payload?.destination?.lon, payload?.departure_local],
+    queryKey: [
+      'tripHeatmap',
+      payload?.origin?.lat,
+      payload?.origin?.lon,
+      payload?.destination?.lat,
+      payload?.destination?.lon,
+      payload?.departure_local,
+      payload?.load_weight_lb,
+      payload?.interval,
+    ],
     queryFn: ({ signal }) => {
       if (!payload) {
         throw new Error('Trip request payload required');
