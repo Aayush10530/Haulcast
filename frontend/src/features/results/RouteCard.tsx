@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Chip, CircularProgress, Paper, Typography } from '@mui/material';
 import { RouteDTO } from '../../api/types';
 import { RiskStrip } from '../../components/RiskStrip';
-import { colorTokens, typographyTokens } from '../../theme/tokens';
+import { colorTokens, glassTokens, typographyTokens } from '../../theme/tokens';
 import {
   formatDelta,
   formatDuration,
@@ -84,13 +84,26 @@ export const RouteCard: React.FC<RouteCardProps> = ({
         mb: 1.25,
         cursor: 'pointer',
         borderRadius: '10px',
-        border: isSelected ? '1.5px solid #00D2FF' : `1px solid ${colorTokens.border}`,
-        backgroundColor: isSelected ? 'rgba(0, 210, 255, 0.05)' : colorTokens.surface,
-        boxShadow: isSelected ? '0 0 15px rgba(0, 210, 255, 0.12)' : 'none',
-        transition: 'all 150ms ease-out',
+        backgroundColor: isSelected ? 'rgba(0, 210, 255, 0.08)' : glassTokens.surface,
+        backgroundImage: isSelected ? 'none' : glassTokens.surfaceGradient,
+        backdropFilter: glassTokens.blur,
+        WebkitBackdropFilter: glassTokens.webkitBlur,
+        border: isSelected ? '1.5px solid #00D2FF' : `1px solid ${glassTokens.border}`,
+        boxShadow: isSelected
+          ? '0 8px 24px rgba(0, 210, 255, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.15)'
+          : glassTokens.shadow,
+        transition:
+          'transform 200ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1), border-color 200ms ease, background-color 200ms ease',
         '&:hover': {
-          borderColor: isSelected ? '#00D2FF' : colorTokens.textMuted,
-          backgroundColor: isSelected ? 'rgba(0, 210, 255, 0.08)' : colorTokens.surfaceRaised,
+          transform: 'translateY(-2px)',
+          borderColor: isSelected ? '#00D2FF' : 'rgba(0, 229, 255, 0.4)',
+          boxShadow: isSelected
+            ? '0 12px 28px rgba(0, 210, 255, 0.3), inset 0 1px 1.5px rgba(255, 255, 255, 0.25)'
+            : glassTokens.shadowElevated,
+          backgroundColor: isSelected ? 'rgba(0, 210, 255, 0.12)' : 'rgba(28, 28, 28, 0.85)',
+        },
+        '&:active': {
+          transform: 'translateY(0) scale(0.99)',
         },
       }}
     >

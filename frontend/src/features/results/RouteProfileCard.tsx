@@ -4,7 +4,7 @@ import AccessTime from '@mui/icons-material/AccessTime';
 import Straighten from '@mui/icons-material/Straighten';
 import Terrain from '@mui/icons-material/Terrain';
 import { RouteDTO } from '../../api/types';
-import { colorTokens, shapeTokens, typographyTokens } from '../../theme/tokens';
+import { colorTokens, glassPanelSx, shapeTokens, typographyTokens } from '../../theme/tokens';
 import { formatDuration, formatMiles } from '../../utils/format';
 
 export interface RouteProfileCardProps {
@@ -73,9 +73,7 @@ export const RouteProfileCard: React.FC<RouteProfileCardProps> = ({ route }) => 
       variant="outlined"
       data-testid="route-profile-card"
       sx={{
-        backgroundColor: colorTokens.surface,
-        border: `1px solid ${colorTokens.border}`,
-        borderRadius: `${shapeTokens.panelBorderRadius}px`,
+        ...glassPanelSx,
         p: 2,
         display: 'flex',
         flexDirection: 'column',

@@ -444,15 +444,23 @@ export const CheckpointList: React.FC<CheckpointListProps> = ({
               <Box
                 sx={{
                   backgroundColor: isExpanded
-                    ? 'rgba(9, 29, 48, 0.85)'
+                    ? 'rgba(24, 24, 24, 0.85)'
                     : 'transparent',
                   border: isExpanded
-                    ? '1px solid rgba(0, 163, 255, 0.28)'
+                    ? '1px solid rgba(0, 229, 255, 0.35)'
                     : '1px solid transparent',
-                  borderRadius: isExpanded ? '12px' : 0,
+                  borderRadius: isExpanded ? '12px' : '8px',
+                  boxShadow: isExpanded ? '0 8px 24px rgba(0,0,0,0.55)' : 'none',
                   px: 1.5,
                   py: isExpanded ? 1.5 : 0.75,
-                  transition: 'background-color 150ms ease',
+                  transition:
+                    'transform 180ms cubic-bezier(0.16, 1, 0.3, 1), background-color 180ms ease, border-color 180ms ease',
+                  '&:hover': {
+                    backgroundColor: isExpanded
+                      ? 'rgba(28, 28, 28, 0.95)'
+                      : 'rgba(255, 255, 255, 0.04)',
+                    transform: isExpanded ? 'none' : 'translateX(3px)',
+                  },
                 }}
               >
                 {/* Main Row Header */}

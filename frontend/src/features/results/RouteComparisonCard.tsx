@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Paper, Typography } from '@mui/material';
 import { RouteDTO } from '../../api/types';
-import { colorTokens, shapeTokens, typographyTokens } from '../../theme/tokens';
+import { colorTokens, glassPanelSx, typographyTokens } from '../../theme/tokens';
 import { formatDuration, formatMiles, formatRiskScore } from '../../utils/format';
 
 export interface RouteComparisonCardProps {
@@ -34,9 +34,7 @@ export const RouteComparisonCard: React.FC<RouteComparisonCardProps> = ({ routes
       variant="outlined"
       data-testid="route-comparison-card"
       sx={{
-        backgroundColor: colorTokens.surface,
-        border: `1px solid ${colorTokens.border}`,
-        borderRadius: `${shapeTokens.panelBorderRadius}px`,
+        ...glassPanelSx,
         p: 1.5,
         display: 'flex',
         flexDirection: 'column',

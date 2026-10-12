@@ -131,6 +131,8 @@ export const theme = createTheme({
           textTransform: 'none',
           fontWeight: 600,
           borderRadius: shapeTokens.borderRadius,
+          transition:
+            'transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1), background-color 180ms ease, border-color 180ms ease',
           '&.Mui-focusVisible, &:focus-visible': {
             outline: `2px solid ${colorTokens.brand}`,
             outlineOffset: '2px',
@@ -143,13 +145,17 @@ export const theme = createTheme({
           boxShadow: 'none',
           '&:hover': {
             backgroundColor: colorTokens.brandStrong,
-            boxShadow: 'none',
+            transform: 'translateY(-1.5px)',
+            boxShadow: '0 6px 20px rgba(0, 229, 255, 0.35)',
+          },
+          '&:active': {
+            transform: 'translateY(0) scale(0.98)',
           },
         },
         text: {
           color: colorTokens.brand,
           '&:hover': {
-            backgroundColor: 'rgba(45, 184, 197, 0.08)',
+            backgroundColor: 'rgba(0, 229, 255, 0.08)',
             color: colorTokens.brandStrong,
           },
         },
@@ -158,7 +164,11 @@ export const theme = createTheme({
           color: colorTokens.text,
           '&:hover': {
             borderColor: colorTokens.brand,
-            backgroundColor: 'rgba(45, 184, 197, 0.08)',
+            backgroundColor: 'rgba(0, 229, 255, 0.08)',
+            transform: 'translateY(-1px)',
+          },
+          '&:active': {
+            transform: 'translateY(0) scale(0.98)',
           },
         },
       },

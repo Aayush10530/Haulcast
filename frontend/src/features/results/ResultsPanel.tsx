@@ -1,7 +1,7 @@
 import React from 'react';
 import { Alert, Box, Button, Paper, Skeleton, Typography } from '@mui/material';
 import { AnalyzeResponse, CheckpointDTO } from '../../api/types';
-import { colorTokens, shapeTokens, typographyTokens } from '../../theme/tokens';
+import { colorTokens, glassTokens, shapeTokens, typographyTokens } from '../../theme/tokens';
 import { CheckpointList } from './CheckpointList';
 import { RecommendationBanner } from './RecommendationBanner';
 import { RouteComparisonCard } from './RouteComparisonCard';
@@ -49,8 +49,8 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
               p: 2,
               mb: 2,
               borderRadius: `${shapeTokens.panelBorderRadius}px`,
-              backgroundColor: colorTokens.surface,
-              borderColor: colorTokens.border,
+              backgroundColor: glassTokens.surfaceRaised,
+              borderColor: glassTokens.borderSubtle,
             }}
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
@@ -106,8 +106,10 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
         data-testid="results-idle"
         sx={{
           p: 3,
-          backgroundColor: colorTokens.surface,
-          borderColor: colorTokens.border,
+          backgroundColor: glassTokens.surfaceRaised,
+          backdropFilter: glassTokens.blur,
+          WebkitBackdropFilter: glassTokens.webkitBlur,
+          border: `1px solid ${glassTokens.borderSubtle}`,
           borderRadius: `${shapeTokens.panelBorderRadius}px`,
           textAlign: 'center',
         }}
@@ -162,8 +164,10 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
         variant="outlined"
         sx={{
           p: 2,
-          backgroundColor: colorTokens.surface,
-          border: `1px solid ${colorTokens.border}`,
+          backgroundColor: glassTokens.surfaceRaised,
+          backdropFilter: glassTokens.blur,
+          WebkitBackdropFilter: glassTokens.webkitBlur,
+          border: `1px solid ${glassTokens.borderSubtle}`,
           borderRadius: `${shapeTokens.panelBorderRadius}px`,
           mb: 2,
         }}

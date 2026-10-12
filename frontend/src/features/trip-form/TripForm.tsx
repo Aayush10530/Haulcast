@@ -244,10 +244,13 @@ export const TripForm: React.FC<TripFormProps> = ({
             width: 32,
             height: 32,
             backgroundColor: colorTokens.surfaceRaised,
+            transition: 'all 200ms cubic-bezier(0.16, 1, 0.3, 1)',
             '&:hover': {
               color: colorTokens.brand,
               borderColor: colorTokens.brand,
               backgroundColor: colorTokens.surfaceRaised,
+              transform: 'rotate(180deg) scale(1.08)',
+              boxShadow: '0 0 14px rgba(0, 229, 255, 0.35)',
             },
           }}
         >

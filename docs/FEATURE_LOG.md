@@ -173,6 +173,14 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 
 ## 4. Changes
 
+### C-007 Obsidian Black Glassmorphism Theme with Terrain Contours & Hover Animations
+- Date: 2026-10-12
+- Type: change
+- Phase: P4/P6
+- Summary: Upgraded entire application UI to deep obsidian black (#0A0A0A canvas, #121212 surface, #1A1A1A surfaceRaised, #262626 border, #00E5FF electric cyan brand). Added organic SVG elevation contour isolines background (TopographyBackground) with multi-tier ridgelines and vertical gradient opacity mask. Implemented complete glassmorphism design system (glassTokens and glassPanelSx with backdropFilter blur(20px) saturate(150%), specular highlight borders rgba(255, 255, 255, 0.12), layered inner/outer depth shadows). Added smooth micro-animations on hover (interactive card lift -2px, cyan border glow and shadow escalation, button -1.5px translate with ambient cyan glow, icon button rotation and scale, checkpoint row shift). Maintained 100% WCAG AA contrast compliance (text on surface = 18.73:1, brand on surface = 12.18:1, onBrand on brand = 11.89:1).
+- Files: frontend/src/theme/tokens.ts, frontend/src/theme/theme.ts, frontend/src/components/TopographyBackground.tsx, frontend/src/App.tsx, frontend/src/features/results/RouteCard.tsx, frontend/src/features/results/RouteProfileCard.tsx, frontend/src/features/results/RouteComparisonCard.tsx, frontend/src/features/results/CheckpointList.tsx, frontend/src/features/results/ResultsPanel.tsx, frontend/src/features/trip-form/TripForm.tsx
+- Status: done
+
 ### C-006 Redesign of Checkpoints & Weather Analysis Card to Match Mockup
 - Date: 2026-10-12
 - Type: change

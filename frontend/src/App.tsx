@@ -18,7 +18,14 @@ import {
   RouteProfileCard,
 } from './features/results';
 import { TripForm } from './features/trip-form';
-import { colorTokens, shapeTokens, typographyTokens } from './theme/tokens';
+import {
+  colorTokens,
+  glassPanelSx,
+  glassTokens,
+  shapeTokens,
+  typographyTokens,
+} from './theme/tokens';
+import { TopographyBackground } from './components/TopographyBackground';
 
 type MobileTab = 'plan' | 'map' | 'routes';
 
@@ -175,6 +182,7 @@ export const App: React.FC = () => {
   return (
     <Box
       sx={{
+        position: 'relative',
         display: 'flex',
         flexDirection: 'column',
         height: '100dvh',
@@ -189,6 +197,8 @@ export const App: React.FC = () => {
         boxSizing: 'border-box',
       }}
     >
+      <TopographyBackground />
+
       {/* Header: transparent, unboxed, minimal space usage per user request */}
       <Box
         component="header"
@@ -202,6 +212,8 @@ export const App: React.FC = () => {
           justifyContent: 'space-between',
           flexShrink: 0,
           boxSizing: 'border-box',
+          position: 'relative',
+          zIndex: 1,
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -264,6 +276,8 @@ export const App: React.FC = () => {
       <Box
         component="main"
         sx={{
+          position: 'relative',
+          zIndex: 1,
           flex: 1,
           minHeight: 0,
           display: 'grid',
@@ -313,9 +327,7 @@ export const App: React.FC = () => {
           <Paper
             variant="outlined"
             sx={{
-              backgroundColor: colorTokens.surface,
-              border: `1px solid ${colorTokens.border}`,
-              borderRadius: `${shapeTokens.panelBorderRadius}px`,
+              ...glassPanelSx,
               p: 2,
               flexShrink: 0,
             }}
@@ -351,11 +363,9 @@ export const App: React.FC = () => {
           <Paper
             variant="outlined"
             sx={{
+              ...glassPanelSx,
               flex: 1,
               minHeight: { xs: 260, md: 300 },
-              backgroundColor: colorTokens.surface,
-              border: `1px solid ${colorTokens.border}`,
-              borderRadius: `${shapeTokens.panelBorderRadius}px`,
               overflow: 'hidden',
               position: 'relative',
             }}
@@ -374,11 +384,9 @@ export const App: React.FC = () => {
             <Paper
               variant="outlined"
               sx={{
+                ...glassPanelSx,
                 height: { md: 240, xl: 270 },
                 flexShrink: 0,
-                backgroundColor: colorTokens.surface,
-                border: `1px solid ${colorTokens.border}`,
-                borderRadius: `${shapeTokens.panelBorderRadius}px`,
                 p: 2,
                 overflowY: 'auto',
                 boxSizing: 'border-box',
@@ -440,8 +448,10 @@ export const App: React.FC = () => {
             pb: 'env(safe-area-inset-bottom, 0px)',
             boxSizing: 'border-box',
             flexShrink: 0,
-            backgroundColor: colorTokens.surface,
-            borderTop: `1px solid ${colorTokens.border}`,
+            backgroundColor: glassTokens.surface,
+            backdropFilter: glassTokens.blur,
+            WebkitBackdropFilter: glassTokens.webkitBlur,
+            borderTop: `1px solid ${glassTokens.border}`,
             '& .MuiBottomNavigationAction-root': {
               minHeight: 48,
               minWidth: 48,
