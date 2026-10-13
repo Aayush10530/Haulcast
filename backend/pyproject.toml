@@ -14,8 +14,25 @@ select = [
     "I",   # isort
     "B",   # flake8-bugbear
     "UP",  # pyupgrade
+    "C901",    # mccabe complexity
+    "PLR0911", # too many return statements
+    "PLR0912", # too many branches
+    "PLR0913", # too many arguments
+    "PLR0915", # too many statements
 ]
 ignore = []
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+
+[tool.ruff.lint.pylint]
+max-branches = 15
+max-returns = 8
+max-args = 6
+max-statements = 50
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["PLR0913", "PLR0915", "C901", "PLR0912"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings"
