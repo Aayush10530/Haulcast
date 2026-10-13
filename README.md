@@ -6,6 +6,13 @@ StormRoute evaluates long-haul commercial truck routes across the contiguous Uni
 
 ---
 
+## Live Deployment
+
+- **Web Application (Vercel)**: [https://stormroute-a.vercel.app/](https://stormroute-a.vercel.app/)
+- **Backend API (Render)**: [https://stormroute-api-0lnv.onrender.com/api/health/](https://stormroute-api-0lnv.onrender.com/api/health/)
+
+---
+
 ## Table of Contents
 
 - [Core Capabilities](#core-capabilities)
