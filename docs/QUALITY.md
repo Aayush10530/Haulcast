@@ -80,13 +80,40 @@ Date: 2026-10-13
 
 ---
 
-## 2. Before vs After Summary (To be finalized in Step 5)
+## 2. Before vs After Summary (Final Step 5 Verification)
 
-| Metric | Baseline | Target / After |
-|---|---|---|
-| Backend Ruff Complexity Issues | 26 (19 prod) | Reduced (extracted helpers, HTTP client, exception mapping) |
-| Backend Clones (jscpd) | 6 clones (78 lines) | Reduced (shared HTTP retry, unified validation) |
-| Frontend Clones (jscpd) | 4 clones (61 lines) | Reduced (extracted common sx & card helpers) |
-| Frontend Large Files (>250 lines) | 5 files | 0 files |
-| Frontend Circular Dependencies | 0 | 0 |
-| Knip Unused Exports | 2 exports | Cleaned |
+| Metric | Baseline (Step 1) | Post-Refactor (Step 5) | Status |
+|---|---|---|---|
+| **Backend Ruff Complexity Issues** | 26 (19 prod, 7 test) | **0 issues** (`All checks passed!`) | **100% Resolved** |
+| **Backend Clones (`jscpd`)** | 6 clones (78 lines, 1.85%) | **4 clones (60 lines, 1.37%)** | **Reduced (2 clusters eliminated)** |
+| **Backend Dead Code (`vulture`)** | 0 in prod (2 in test helpers) | **0 in prod (2 in test helpers)** | **Clean** |
+| **Backend Large File (`types.py`)** | 631 lines | **69 lines** (split into 5 modular files <= 149 lines) | **Resolved** |
+| **Frontend Large Files (>250 lines)** | 5 files (`CheckpointList`, `RouteCard`, `App`, `TripForm`, `theme`) | **0 files** (all targeted modules <= 245 lines) | **100% Resolved** |
+| **Frontend Circular Dependencies (`madge`)** | 0 (64 files) | **0 (80 files)** | **Clean** |
+| **Frontend Knip Unused Exports** | 2 exports (`API_BASE_URL`, `fetchHealth`) | **0 unused exports** | **100% Cleaned** |
+| **Frontend Clones (`jscpd`)** | 4 clones (61 lines, 0.96%) | **4 clones (61 lines, 0.93%)** | **Maintained** |
+| **Backend Test Suite (`pytest`)** | 565 passed | **565 passed** | **100% Passing** |
+| **Frontend Test Suite (`vitest`)** | 107 passed (20 files) | **107 passed (20 files)** | **100% Passing** |
+| **Frontend Typecheck (`tsc --noEmit`)** | 0 errors | **0 errors** | **Passing** |
+| **Frontend ESLint** | 0 errors | **0 errors** | **Passing** |
+| **Frontend Production Build** | Success | **Success (`vite build` in 4.58s)** | **Passing** |
+
+---
+
+## 3. Modular Architecture Breakdown
+
+### Backend Decompositions
+- **`core/providers/base_http.py`**: Extracted shared HTTP request, backoff, and retry logic.
+- **`core/providers/weather_openmeteo.py`**: Split monolithic Open-Meteo series parsing into pure coordinate, series, and parameter extraction helpers.
+- **`api/errors.py`**: Converted procedural branching exception handler into a declarative, table-driven dictionary mapping.
+- **`core/services/trip_analysis.py`**: Decomposed `TripAnalysisService.analyze` into discrete private pipeline methods (`_resolve_route_alternatives`, `_generate_corridor_weather_grid`, `_align_and_assess_route`, etc.).
+- **`core/domain/types.py` (69 lines)**: Deduplicated numeric & tuple validation into `_validation.py` (147 lines), and separated domain definitions into `risk_types.py` (140 lines), `route_types.py` (116 lines), `weather_types.py` (91 lines), and `analysis_types.py` (149 lines) with zero breaking changes via top-level re-exports.
+
+### Frontend Decompositions (<250 Line Enforcement)
+- **`theme/theme.ts` (79 lines)**: Extracted MUI component overrides into `componentOverrides.ts` (146 lines) and `inputOverrides.ts` (152 lines).
+- **`CheckpointList.tsx` (168 lines)**: Extracted row rendering into `CheckpointItem.tsx` (208 lines), corridor milestone name mapping into `checkpointListUtils.ts` (216 lines), and vector icons into `CheckpointIcons.tsx` (48 lines).
+- **`RouteCard.tsx` (245 lines)**: Extracted circular risk gauge into `RouteRiskGauge.tsx` (64 lines), weather exposure miles into `RouteWeatherMiles.tsx` (64 lines), and status/recommendation chips into `RouteCardTags.tsx` (91 lines).
+- **`TripForm.tsx` (243 lines)**: Extracted origin/destination autocomplete into `TripPlacesInputs.tsx` (106 lines), checkpoint interval selector into `TripIntervalSelector.tsx` (64 lines), departure/weight fields into `TripDepartureWeightInputs.tsx` (94 lines), form header into `TripFormHeader.tsx` (33 lines), submit button into `TripSubmitButton.tsx` (44 lines), and feedback alerts into `TripFormAlerts.tsx` (61 lines).
+- **`App.tsx` (229 lines)**: Extracted application branding and status indicators into `AppHeader.tsx` (142 lines) and mobile navigation tabs into `MobileBottomNav.tsx` (126 lines).
+- **`api/client.ts` (154 lines)**: Cleaned unused exports (`API_BASE_URL`, `fetchHealth`), ensuring optimal tree-shaking and zero dead exports.
+

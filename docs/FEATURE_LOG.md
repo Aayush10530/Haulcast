@@ -180,6 +180,19 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 
 ## 4. Changes
 
+### C-012 Comprehensive Code Quality Refactoring and Complexity Reduction Pass
+- Date: 2026-10-13
+- Type: change
+- Phase: P7
+- Summary: Executed comprehensive code quality pass across backend and frontend codebases:
+  1. Measured baseline metrics using `ruff`, `jscpd`, `vulture`, `knip`, and `madge` (documented in `docs/QUALITY.md`).
+  2. Configured complexity and file size quality gates in `backend/pyproject.toml` (McCabe complexity <= 15, max branches <= 15, max returns <= 8, max args <= 6, max statements <= 50) and `frontend/eslint.config.js` (max file lines <= 250, max function lines <= 80, cyclomatic complexity <= 12).
+  3. Backend refactorings: Extracted shared HTTP client and retry logic (`core/providers/base_http.py`), decomposed Open-Meteo series parsing (`core/providers/weather_openmeteo.py`), converted exception handler to table-driven mapping (`api/errors.py`), split `TripAnalysisService.analyze` into private pipeline steps, deduplicated validation logic into `_validation.py`, and split `types.py` into focused modules (`risk_types.py`, `route_types.py`, `weather_types.py`, `analysis_types.py`) with zero breaking changes.
+  4. Frontend refactorings: Decomposed large files under 250 lines (`theme.ts` via `componentOverrides.ts` and `inputOverrides.ts`; `CheckpointList.tsx` via `CheckpointItem.tsx`, `checkpointListUtils.ts`, and `CheckpointIcons.tsx`; `RouteCard.tsx` via `RouteRiskGauge.tsx`, `RouteWeatherMiles.tsx`, and `RouteCardTags.tsx`; `TripForm.tsx` via `TripPlacesInputs.tsx`, `TripIntervalSelector.tsx`, `TripDepartureWeightInputs.tsx`, `TripFormHeader.tsx`, `TripSubmitButton.tsx`, and `TripFormAlerts.tsx`; `App.tsx` via `AppHeader.tsx` and `MobileBottomNav.tsx`). Cleaned unused exports from `api/client.ts`.
+  5. Verification: Ruff complexity issues reduced from 26 to 0 (`All checks passed!`); backend duplicated lines reduced from 78 (1.85%) to 60 (1.37%); knip unused exports reduced from 2 to 0; all targeted large files brought strictly <= 245 lines; 565/565 backend pytest tests and 107/107 frontend vitest tests passing with zero errors.
+- Files: backend/pyproject.toml, backend/core/providers/base_http.py, backend/core/providers/geocoding_tomtom.py, backend/core/providers/routing_tomtom.py, backend/core/providers/weather_openmeteo.py, backend/api/errors.py, backend/core/services/trip_analysis.py, backend/core/domain/_validation.py, backend/core/domain/risk_types.py, backend/core/domain/route_types.py, backend/core/domain/weather_types.py, backend/core/domain/analysis_types.py, backend/core/domain/types.py, frontend/eslint.config.js, frontend/src/theme/theme.ts, frontend/src/theme/componentOverrides.ts, frontend/src/theme/inputOverrides.ts, frontend/src/features/results/CheckpointList.tsx, frontend/src/features/results/CheckpointItem.tsx, frontend/src/features/results/checkpointListUtils.ts, frontend/src/features/results/CheckpointIcons.tsx, frontend/src/features/results/RouteCard.tsx, frontend/src/features/results/RouteRiskGauge.tsx, frontend/src/features/results/RouteWeatherMiles.tsx, frontend/src/features/results/RouteCardTags.tsx, frontend/src/features/trip-form/TripForm.tsx, frontend/src/features/trip-form/TripPlacesInputs.tsx, frontend/src/features/trip-form/TripIntervalSelector.tsx, frontend/src/features/trip-form/TripDepartureWeightInputs.tsx, frontend/src/features/trip-form/TripFormHeader.tsx, frontend/src/features/trip-form/TripSubmitButton.tsx, frontend/src/features/trip-form/TripFormAlerts.tsx, frontend/src/App.tsx, frontend/src/components/AppHeader.tsx, frontend/src/components/MobileBottomNav.tsx, frontend/src/api/client.ts, docs/QUALITY.md, docs/FEATURE_LOG.md
+- Status: done
+
 ### C-011 Phase 6 Performance Benchmarks, Cold-Start UX Banner, and Accessibility Pass
 - Date: 2026-10-12
 - Type: change
