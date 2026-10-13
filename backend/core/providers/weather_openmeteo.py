@@ -11,20 +11,14 @@ import httpx
 from core.domain import rules_config
 from core.domain.grid import cell_center
 from core.domain.types import Coordinate, GridCell, HourlySeries, WeatherSeries
-from core.providers.base import (
-    Cache,
-    ProviderBadResponse,
-    ProviderRateLimited,
-    ProviderTimeout,
-    ProviderUnavailable,
-)
+from core.providers.base import Cache, ProviderBadResponse
 from core.providers.http import execute_request_with_retry
 
 OPENMETEO_FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 
 
-def _parse_weather_series(item: Any) -> WeatherSeries:
-    """Parse a single Open-Meteo location forecast object into WeatherSeries."""
+def _normalize_response_item(item: Any) -> tuple[str, dict[str, list[Any]], int]:
+    """Validate structure of weather item and return timezone, hourly lists, and count."""
     if not isinstance(item, dict):
         raise ProviderBadResponse("Weather location entry must be a dictionary")
 
@@ -36,38 +30,28 @@ def _parse_weather_series(item: Any) -> WeatherSeries:
     if not isinstance(hourly, dict):
         raise ProviderBadResponse("Missing hourly data object in weather response")
 
-    time_list = hourly.get("time")
-    wind_list = hourly.get("wind_speed_10m")
-    rain_list = hourly.get("rain")
-    showers_list = hourly.get("showers")
-    snow_list = hourly.get("snowfall")
-
-    for field_name, lst in (
-        ("time", time_list),
-        ("wind_speed_10m", wind_list),
-        ("rain", rain_list),
-        ("showers", showers_list),
-        ("snowfall", snow_list),
-    ):
+    fields = ("time", "wind_speed_10m", "rain", "showers", "snowfall")
+    for f in fields:
+        lst = hourly.get(f)
         if not isinstance(lst, list) or not lst:
-            raise ProviderBadResponse(f"Missing or empty {field_name} list in hourly data")
+            raise ProviderBadResponse(f"Missing or empty {f} list in hourly data")
 
-    n = len(time_list)
-    if not (
-        len(wind_list) == n
-        and len(rain_list) == n
-        and len(showers_list) == n
-        and len(snow_list) == n
-    ):
-        raise ProviderBadResponse("Hourly array lengths do not match")
+    n = len(hourly["time"])
+    for f in fields[1:]:
+        if len(hourly[f]) != n:
+            raise ProviderBadResponse("Hourly array lengths do not match")
 
+    return tz_name, hourly, n
+
+
+def _validate_timestamp_grid(time_list: list[Any], count: int) -> int:
+    """Validate regular 3600-second timestamp grid and return start epoch seconds."""
     try:
         start_epoch = int(time_list[0])
     except (ValueError, TypeError):
         raise ProviderBadResponse("Invalid start epoch in hourly time") from None
 
-    # Verify strict 3600 s steps
-    for idx in range(1, n):
+    for idx in range(1, count):
         try:
             t = int(time_list[idx])
         except (ValueError, TypeError):
@@ -75,56 +59,66 @@ def _parse_weather_series(item: Any) -> WeatherSeries:
         if t != start_epoch + idx * rules_config.SECONDS_PER_HOUR:
             raise ProviderBadResponse(f"Irregular timestamp step at index {idx}")
 
-    # Process wind (mph)
-    wind_vals: list[float | None] = []
-    for w in wind_list:
-        if w is None:
-            wind_vals.append(None)
-        else:
-            try:
-                wf = float(w)
-                wind_vals.append(wf if math.isfinite(wf) else None)
-            except (ValueError, TypeError):
-                wind_vals.append(None)
+    return start_epoch
 
-    # Process rain + showers (in/hr)
+
+def _combine_rain_and_showers(
+    rain_list: list[Any], showers_list: list[Any]
+) -> list[float | None]:
+    """Combine hourly rain and showers into unified precipitation rate (in/hr)."""
     rain_vals: list[float | None] = []
     for r, s in zip(rain_list, showers_list, strict=True):
         if r is None or s is None:
             rain_vals.append(None)
-        else:
-            try:
-                rf = float(r)
-                sf = float(s)
-                if not math.isfinite(rf) or not math.isfinite(sf):
-                    rain_vals.append(None)
-                else:
-                    rain_vals.append(rf + sf)
-            except (ValueError, TypeError):
-                rain_vals.append(None)
+            continue
+        try:
+            rf = float(r)
+            sf = float(s)
+            rain_vals.append(rf + sf if math.isfinite(rf) and math.isfinite(sf) else None)
+        except (ValueError, TypeError):
+            rain_vals.append(None)
+    return rain_vals
 
-    # Process snow (in/hr)
-    snow_vals: list[float | None] = []
-    for sn in snow_list:
-        if sn is None:
-            snow_vals.append(None)
-        else:
-            try:
-                snf = float(sn)
-                snow_vals.append(snf if math.isfinite(snf) else None)
-            except (ValueError, TypeError):
-                snow_vals.append(None)
 
-    wind_series = HourlySeries(start_epoch=start_epoch, values=tuple(wind_vals))
-    rain_series = HourlySeries(start_epoch=start_epoch, values=tuple(rain_vals))
-    snow_series = HourlySeries(start_epoch=start_epoch, values=tuple(snow_vals))
+def _parse_numeric_series(values: list[Any]) -> list[float | None]:
+    """Extract finite float values or None from a raw API array."""
+    parsed: list[float | None] = []
+    for val in values:
+        if val is None:
+            parsed.append(None)
+            continue
+        try:
+            vf = float(val)
+            parsed.append(vf if math.isfinite(vf) else None)
+        except (ValueError, TypeError):
+            parsed.append(None)
+    return parsed
 
+
+def _build_weather_series(
+    tz_name: str,
+    start_epoch: int,
+    wind_vals: list[float | None],
+    rain_vals: list[float | None],
+    snow_vals: list[float | None],
+) -> WeatherSeries:
+    """Construct WeatherSeries domain entity from parsed components."""
     return WeatherSeries(
         tz_name=tz_name,
-        wind_mph=wind_series,
-        rain_in_hr=rain_series,
-        snow_in_hr=snow_series,
+        wind_mph=HourlySeries(start_epoch=start_epoch, values=tuple(wind_vals)),
+        rain_in_hr=HourlySeries(start_epoch=start_epoch, values=tuple(rain_vals)),
+        snow_in_hr=HourlySeries(start_epoch=start_epoch, values=tuple(snow_vals)),
     )
+
+
+def _parse_weather_series(item: Any) -> WeatherSeries:
+    """Parse a single Open-Meteo location forecast object into WeatherSeries."""
+    tz_name, hourly, n = _normalize_response_item(item)
+    start_epoch = _validate_timestamp_grid(hourly["time"], n)
+    wind_vals = _parse_numeric_series(hourly["wind_speed_10m"])
+    rain_vals = _combine_rain_and_showers(hourly["rain"], hourly["showers"])
+    snow_vals = _parse_numeric_series(hourly["snowfall"])
+    return _build_weather_series(tz_name, start_epoch, wind_vals, rain_vals, snow_vals)
 
 
 class OpenMeteoWeatherProvider:
