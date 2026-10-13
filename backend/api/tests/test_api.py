@@ -722,3 +722,20 @@ def test_heatmap_endpoint_throttle_scope() -> None:
     assert TripHeatmapView.throttle_scope == "heatmap"
     assert HeatmapThrottle.scope == "heatmap"
     assert TripHeatmapView.throttle_classes == [HeatmapThrottle]
+
+
+def test_analyze_and_heatmap_zero_load_weight_success(
+    client: APIClient, api_test_context: dict[str, Any]
+) -> None:
+    payload = valid_payload()
+    payload["load_weight_lb"] = 0
+
+    res_analyze = client.post("/api/trips/analyze/", payload, format="json")
+    assert res_analyze.status_code == 200
+    data_analyze = res_analyze.json()
+    assert data_analyze["request"]["load_weight_lb"] == 0
+
+    res_heatmap = client.post("/api/trips/heatmap/", payload, format="json")
+    assert res_heatmap.status_code == 200
+    data_heatmap = res_heatmap.json()
+    assert "frames" in data_heatmap

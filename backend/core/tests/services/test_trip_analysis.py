@@ -658,3 +658,47 @@ def test_all_checkpoints_missing_weather_sample_raises_horizon_error(
 
     with pytest.raises(BeyondForecastHorizonError, match="All weather cells unavailable"):
         service.analyze(req)
+
+
+def test_analyze_zero_load_weight_success(test_places: tuple[Place, Place]) -> None:
+    fixed_now = datetime.datetime(2026, 10, 11, 12, 0, 0, tzinfo=datetime.UTC)
+    dep_local = datetime.datetime(2026, 10, 12, 8, 0, 0)
+    p_orig, p_dest = test_places
+
+    routes = [
+        _make_route(
+            "raw_a",
+            (p_orig.coordinate, Coordinate(35.0, -100.0), p_dest.coordinate),
+            100.0,
+            7200.0,
+        )
+    ]
+    route_service = RouteSelectionService(
+        provider=FakeRoutingProvider(routes=routes),
+        cache=FakeCache(),
+        ttl_seconds=1800,
+    )
+    start_epoch = int(datetime.datetime(2026, 10, 12, 10, 0, 0, tzinfo=datetime.UTC).timestamp())
+
+    class CalmWeather(FakeWeatherProvider):
+        def get_series(self, cells):
+            super().get_series(cells)
+            return {c: _make_series(start_epoch, count=24, wind=10.0) for c in cells}
+
+    weather = CalmWeather()
+    service = TripAnalysisService(
+        route_selection=route_service,
+        weather=weather,
+        clock=lambda: fixed_now,
+    )
+
+    req = TripRequest(
+        origin=p_orig,
+        destination=p_dest,
+        departure_local=dep_local,
+        load_weight_lb=0,
+        interval_mode=IntervalMode.AUTO,
+    )
+
+    analysis = service.analyze(req)
+    assert analysis.request.load_weight_lb == 0
