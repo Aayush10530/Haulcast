@@ -1,22 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Button,
-  InputAdornment,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box } from '@mui/material';
 import { AnalyzeResponse, IntervalOption, PlaceDTO, TripRequestPayload } from '../../api/types';
-import CalendarToday from '@mui/icons-material/CalendarToday';
-import Scale from '@mui/icons-material/Scale';
 import { useAnalyzeTrip } from '../../hooks/useAnalyzeTrip';
-import { colorTokens, shapeTokens, typographyTokens } from '../../theme/tokens';
+import { TripDepartureWeightInputs } from './TripDepartureWeightInputs';
 import { TripFormAlerts } from './TripFormAlerts';
+import { TripFormHeader } from './TripFormHeader';
 import { TripIntervalSelector } from './TripIntervalSelector';
 import { TripPlacesInputs } from './TripPlacesInputs';
+import { TripSubmitButton } from './TripSubmitButton';
 import {
-  formatDepartureSpelledOut,
-  formatLoadWeightDisplay,
   getNextFullHourLocal,
   TripFormErrors,
   TripFormValues,
@@ -171,31 +163,7 @@ export const TripForm: React.FC<TripFormProps> = ({
         gap: 2,
       }}
     >
-      <Box sx={{ mb: 0.5 }}>
-        <Typography
-          variant="h1"
-          sx={{
-            fontFamily: typographyTokens.fontFamilyUi,
-            fontSize: typographyTokens.panelTitle.fontSize,
-            lineHeight: typographyTokens.panelTitle.lineHeight,
-            fontWeight: typographyTokens.panelTitle.fontWeight,
-            color: colorTokens.text,
-          }}
-        >
-          Trip planning
-        </Typography>
-        <Typography
-          sx={{
-            fontFamily: typographyTokens.fontFamilyUi,
-            fontSize: typographyTokens.caption.fontSize,
-            lineHeight: typographyTokens.caption.lineHeight,
-            color: colorTokens.textMuted,
-            mt: 0.5,
-          }}
-        >
-          Plan a safer route with the weather forecast
-        </Typography>
-      </Box>
+      <TripFormHeader />
 
       {/* Origin, Swap, and Destination Inputs */}
       <TripPlacesInputs
@@ -225,13 +193,15 @@ export const TripForm: React.FC<TripFormProps> = ({
         onSwap={handleSwap}
       />
 
-      {/* Departure Local Native Input */}
-      <TextField
-        label="Departure"
-        type="datetime-local"
-        value={departureLocal}
-        onChange={(e) => {
-          setDepartureLocal(e.target.value);
+      {/* Departure & Load Weight Inputs */}
+      <TripDepartureWeightInputs
+        departureLocal={departureLocal}
+        loadWeightLb={loadWeightLb}
+        departureError={clientErrors.departure_local || serverFieldErrors.departure_local}
+        loadWeightError={clientErrors.load_weight_lb || serverFieldErrors.load_weight_lb}
+        disabled={isPending}
+        onDepartureChange={(val) => {
+          setDepartureLocal(val);
           setClientErrors((prev) => ({ ...prev, departure_local: undefined }));
           setServerFieldErrors((prev) => {
             const next = { ...prev };
@@ -239,65 +209,7 @@ export const TripForm: React.FC<TripFormProps> = ({
             return next;
           });
         }}
-        error={Boolean(clientErrors.departure_local || serverFieldErrors.departure_local)}
-        helperText={
-          clientErrors.departure_local ||
-          serverFieldErrors.departure_local ||
-          formatDepartureSpelledOut(departureLocal) ||
-          'Local time at origin'
-        }
-        disabled={isPending}
-        fullWidth
-        size="small"
-        slotProps={{
-          input: {
-            startAdornment: (
-              <InputAdornment position="start" sx={{ color: colorTokens.textMuted }}>
-                <CalendarToday sx={{ fontSize: 18 }} />
-              </InputAdornment>
-            ),
-          },
-          inputLabel: { shrink: true },
-          htmlInput: {
-            step: 60,
-            'data-testid': 'departure-input',
-          },
-        }}
-      />
-
-      {/* Load Weight */}
-      <TextField
-        label="Load weight"
-        type="text"
-        value={formatLoadWeightDisplay(loadWeightLb)}
-        onChange={handleLoadWeightChange}
-        error={Boolean(clientErrors.load_weight_lb || serverFieldErrors.load_weight_lb)}
-        helperText={
-          clientErrors.load_weight_lb ||
-          serverFieldErrors.load_weight_lb ||
-          'Wind rules apply above 30,000 and 40,000 lb'
-        }
-        disabled={isPending}
-        fullWidth
-        size="small"
-        slotProps={{
-          input: {
-            startAdornment: (
-              <InputAdornment position="start" sx={{ color: colorTokens.textMuted }}>
-                <Scale sx={{ fontSize: 18 }} />
-              </InputAdornment>
-            ),
-            endAdornment: (
-              <InputAdornment position="end" sx={{ color: colorTokens.textMuted }}>
-                lb
-              </InputAdornment>
-            ),
-          },
-          htmlInput: {
-            inputMode: 'numeric',
-            'data-testid': 'load-weight-input',
-          },
-        }}
+        onLoadWeightChange={handleLoadWeightChange}
       />
 
       {/* Checkpoint Interval Selector */}
@@ -325,34 +237,7 @@ export const TripForm: React.FC<TripFormProps> = ({
       />
 
       {/* Form Action Button */}
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        disabled={isPending}
-        data-testid="generate-routes-button"
-        fullWidth
-        sx={{
-          height: 44,
-          minHeight: 44,
-          borderRadius: `${shapeTokens.borderRadius}px`,
-          backgroundColor: colorTokens.brand,
-          color: colorTokens.onBrand,
-          fontWeight: 600,
-          boxShadow: 'none',
-          '&:hover': {
-            backgroundColor: colorTokens.brandStrong,
-            boxShadow: 'none',
-          },
-          mt: 1,
-        }}
-      >
-        {isPending
-          ? isSlowRequest
-            ? 'Analyzing live forecasts...'
-            : 'Finding routes...'
-          : 'Generate routes →'}
-      </Button>
+      <TripSubmitButton isPending={isPending} isSlowRequest={isSlowRequest} />
     </Box>
   );
 };

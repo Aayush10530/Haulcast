@@ -11,7 +11,7 @@ export const SEVERITY_ORDER: Record<RiskLevelKey, number> = {
 };
 
 // Known corridor milestone naming sequences
-export const CORRIDOR_SEQUENCES: Record<string, string[]> = {
+const CORRIDOR_SEQUENCES: Record<string, string[]> = {
   'chicago-denver': [
     'Chicago, IL (Start)',
     'Rockford, IL',
