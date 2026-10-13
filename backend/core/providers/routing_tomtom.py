@@ -15,6 +15,7 @@ from core.providers.base import (
     ProviderTimeout,
     ProviderUnavailable,
 )
+from core.providers.http import execute_request_with_retry
 
 
 def _is_no_route_error(data: Any) -> bool:
@@ -108,36 +109,13 @@ class TomTomRoutingProvider:
         url: str,
         params: dict[str, Any],
     ) -> httpx.Response:
-        for attempt in range(2):
-            try:
-                resp = client.get(url, params=params)
-            except httpx.TimeoutException:
-                if attempt == 0:
-                    self.sleep(0.3)
-                    continue
-                raise ProviderTimeout("Routing request timed out") from None
-            except httpx.RequestError:
-                if attempt == 0:
-                    self.sleep(0.3)
-                    continue
-                raise ProviderUnavailable("Routing provider is currently unavailable") from None
-
-            if resp.status_code == 429:
-                if attempt == 0:
-                    self.sleep(0.3)
-                    continue
-                raise ProviderRateLimited("Routing provider rate limit exceeded")
-
-            if resp.status_code >= 500:
-                if attempt == 0:
-                    self.sleep(0.3)
-                    continue
-                raise ProviderUnavailable("Routing provider is currently unavailable")
-
-            if resp.status_code in (401, 403):
-                raise ProviderUnavailable("Routing provider authentication failed")
-
-            return resp
+        return execute_request_with_retry(
+            client=client,
+            url=url,
+            params=params,
+            service_label="Routing",
+            sleep_fn=self.sleep,
+        )
 
     def _parse_route(self, idx: int, route_dict: dict[str, Any]) -> RawRoute:
         if not isinstance(route_dict, dict):

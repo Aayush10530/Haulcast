@@ -18,6 +18,7 @@ from core.providers.base import (
     ProviderTimeout,
     ProviderUnavailable,
 )
+from core.providers.http import execute_request_with_retry
 
 OPENMETEO_FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 
@@ -152,41 +153,14 @@ class OpenMeteoWeatherProvider:
         params: dict[str, Any],
     ) -> httpx.Response:
         """Execute HTTP request with at most one retry on 429/5xx/timeout."""
-        for attempt in range(2):
-            try:
-                resp = client.get(url, params=params)
-            except httpx.TimeoutException:
-                if attempt == 0:
-                    self.sleep(0.3)
-                    continue
-                raise ProviderTimeout("Weather provider request timed out") from None
-            except httpx.RequestError:
-                if attempt == 0:
-                    self.sleep(0.3)
-                    continue
-                raise ProviderUnavailable("Weather provider is currently unavailable") from None
-
-            if resp.status_code == 429:
-                if attempt == 0:
-                    self.sleep(0.3)
-                    continue
-                raise ProviderRateLimited("Weather provider rate limit exceeded")
-
-            if resp.status_code >= 500:
-                if attempt == 0:
-                    self.sleep(0.3)
-                    continue
-                raise ProviderUnavailable("Weather provider is currently unavailable")
-
-            if resp.status_code in (401, 403):
-                raise ProviderUnavailable("Weather provider authentication failed")
-
-            if resp.status_code != 200:
-                raise ProviderBadResponse(
-                    f"Weather provider returned error HTTP {resp.status_code}"
-                )
-
-            return resp
+        return execute_request_with_retry(
+            client=client,
+            url=url,
+            params=params,
+            service_label="Weather provider",
+            sleep_fn=self.sleep,
+            check_200=True,
+        )
 
     def _fetch_chunk(
         self,

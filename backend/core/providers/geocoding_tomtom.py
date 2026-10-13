@@ -16,6 +16,7 @@ from core.providers.base import (
     ProviderTimeout,
     ProviderUnavailable,
 )
+from core.providers.http import execute_request_with_retry
 
 
 class TomTomGeocodingProvider:
@@ -41,36 +42,13 @@ class TomTomGeocodingProvider:
         url: str,
         params: dict[str, Any],
     ) -> httpx.Response:
-        for attempt in range(2):
-            try:
-                resp = client.get(url, params=params)
-            except httpx.TimeoutException:
-                if attempt == 0:
-                    self.sleep(0.3)
-                    continue
-                raise ProviderTimeout("Geocoding request timed out") from None
-            except httpx.RequestError:
-                if attempt == 0:
-                    self.sleep(0.3)
-                    continue
-                raise ProviderUnavailable("Geocoding provider is currently unavailable") from None
-
-            if resp.status_code == 429:
-                if attempt == 0:
-                    self.sleep(0.3)
-                    continue
-                raise ProviderRateLimited("Geocoding provider rate limit exceeded")
-
-            if resp.status_code >= 500:
-                if attempt == 0:
-                    self.sleep(0.3)
-                    continue
-                raise ProviderUnavailable("Geocoding provider is currently unavailable")
-
-            if resp.status_code in (401, 403):
-                raise ProviderUnavailable("Geocoding provider authentication failed")
-
-            return resp
+        return execute_request_with_retry(
+            client=client,
+            url=url,
+            params=params,
+            service_label="Geocoding",
+            sleep_fn=self.sleep,
+        )
 
     def search(self, query: str, limit: int = 5) -> list[Place]:
         """Search US places matching query string up to limit."""
