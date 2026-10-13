@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Chip, CircularProgress, Paper, Typography } from '@mui/material';
+import { Box, Chip, Paper, Typography } from '@mui/material';
 import { RouteDTO } from '../../api/types';
 import { RiskStrip } from '../../components/RiskStrip';
 import { colorTokens, glassTokens, typographyTokens } from '../../theme/tokens';
@@ -10,6 +10,8 @@ import {
   formatMiles,
   formatRiskScore,
 } from '../../utils/format';
+import { RouteRiskGauge } from './RouteRiskGauge';
+import { RouteWeatherMiles } from './RouteWeatherMiles';
 
 export interface RouteCardProps {
   route: RouteDTO;
@@ -60,7 +62,6 @@ export const RouteCard: React.FC<RouteCardProps> = ({
   const highMiles = Math.round(route.summary?.miles_by_level?.high || 0);
   const moderateMiles = Math.round(route.summary?.miles_by_level?.moderate || 0);
   const unavailableMiles = Math.round(route.summary?.unavailable_miles || 0);
-
 
   // Delta line
   const deltaSec = route.summary?.delta_vs_fastest_seconds || 0;
@@ -253,107 +254,22 @@ export const RouteCard: React.FC<RouteCardProps> = ({
         </Box>
 
         {/* Circular Risk Score Gauge */}
-        <Box
-          data-testid="avg-risk-ring"
-          sx={{ position: 'relative', display: 'inline-flex', width: 44, height: 44 }}
-        >
-          <CircularProgress
-            variant="determinate"
-            value={100}
-            size={44}
-            thickness={3.5}
-            sx={{ color: '#16324A', position: 'absolute' }}
-          />
-          <CircularProgress
-            variant="determinate"
-            value={Math.max(15, progressValue)}
-            size={44}
-            thickness={3.5}
-            sx={{ color: ringColor }}
-          />
-          <Box
-            sx={{
-              top: 0,
-              left: 0,
-              bottom: 0,
-              right: 0,
-              position: 'absolute',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Typography
-              sx={{
-                fontFamily: typographyTokens.fontFamilyMono,
-                fontSize: scoreDisplay === '--' ? '12px' : '14px',
-                fontWeight: 700,
-                color: isDataAvailable ? '#FFFFFF' : colorTokens.textMuted,
-                lineHeight: 1,
-              }}
-              title={isDataAvailable ? `Risk Score: ${scoreDisplay}/100 (formula: round(avg_risk * 25))` : 'Weather data unavailable'}
-            >
-              {scoreDisplay}
-            </Typography>
-            {/* Hidden for test assertion compatibility */}
-            <Typography data-testid="avg-risk-score" sx={{ display: 'none' }}>
-              {avgRisk !== null && avgRisk !== undefined ? avgRisk.toFixed(2) : '--'}
-            </Typography>
-            <Typography sx={{ display: 'none' }}>Avg risk</Typography>
-          </Box>
-        </Box>
+        <RouteRiskGauge
+          scoreDisplay={scoreDisplay}
+          progressValue={progressValue}
+          ringColor={ringColor}
+          isDataAvailable={isDataAvailable}
+          avgRisk={avgRisk}
+        />
       </Box>
 
       {/* Weather Breakdown Row: Severe | High | Moderate Miles */}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          pt: 1,
-          borderTop: '1px solid rgba(22, 50, 74, 0.6)',
-        }}
-      >
-        {/* Severe Miles */}
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-            <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#E5484D' }} />
-            <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#FFFFFF' }}>
-              {isDataAvailable ? `${severeMiles} mi` : '-- mi'}
-            </Typography>
-          </Box>
-          <Typography sx={{ fontSize: '10px', color: '#E5484D', fontWeight: 600, pl: 1.5 }}>
-            Severe
-          </Typography>
-        </Box>
-
-        {/* High Miles */}
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-            <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#E8872B' }} />
-            <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#FFFFFF' }}>
-              {isDataAvailable ? `${highMiles} mi` : '-- mi'}
-            </Typography>
-          </Box>
-          <Typography sx={{ fontSize: '10px', color: '#E8872B', fontWeight: 600, pl: 1.5 }}>
-            High
-          </Typography>
-        </Box>
-
-        {/* Moderate Miles */}
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-            <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#E2C044' }} />
-            <Typography sx={{ fontSize: '12px', fontWeight: 700, color: '#FFFFFF' }}>
-              {isDataAvailable ? `${moderateMiles} mi` : '-- mi'}
-            </Typography>
-          </Box>
-          <Typography sx={{ fontSize: '10px', color: '#E2C044', fontWeight: 600, pl: 1.5 }}>
-            Moderate
-          </Typography>
-        </Box>
-      </Box>
+      <RouteWeatherMiles
+        isDataAvailable={isDataAvailable}
+        severeMiles={severeMiles}
+        highMiles={highMiles}
+        moderateMiles={moderateMiles}
+      />
 
       {/* Secondary details retained in DOM for test assertions while keeping card compact */}
       <Box sx={{ position: 'absolute', opacity: 0, pointerEvents: 'none', height: 0, width: 0, overflow: 'hidden' }}>
