@@ -31,6 +31,9 @@ ALLOWED_HOSTS = [
     for host in os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
     if host.strip()
 ]
+render_host = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+if render_host and render_host not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(render_host)
 
 # Minimal INSTALLED_APPS (no django.contrib.admin, sessions, or messages)
 INSTALLED_APPS = [
@@ -76,13 +79,16 @@ ROUTING_PROVIDER = os.getenv("ROUTING_PROVIDER", "tomtom")
 TOMTOM_API_KEY = os.getenv("TOMTOM_API_KEY", "")
 
 num_proxies_val = os.getenv("NUM_PROXIES")
-NUM_PROXIES = int(num_proxies_val) if num_proxies_val is not None else None
+NUM_PROXIES = int(num_proxies_val) if num_proxies_val is not None else (1 if not DEBUG else None)
 
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = [
     origin.strip()
     for origin in os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173").split(",")
     if origin.strip()
+]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https:\/\/.*\.vercel\.app$",
 ]
 
 # Django REST Framework configuration
