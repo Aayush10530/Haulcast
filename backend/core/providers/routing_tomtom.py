@@ -11,9 +11,6 @@ from core.domain.types import Coordinate, RawRoute, Timeline
 from core.providers.base import (
     NoRouteFound,
     ProviderBadResponse,
-    ProviderRateLimited,
-    ProviderTimeout,
-    ProviderUnavailable,
 )
 from core.providers.http import execute_request_with_retry
 
