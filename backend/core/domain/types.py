@@ -3,6 +3,47 @@ import math
 from collections.abc import Sequence
 from dataclasses import dataclass
 from enum import IntEnum, StrEnum
+from typing import Any
+
+
+def _validate_non_empty_str(val: str, name: str) -> None:
+    if not val or not val.strip():
+        raise ValueError(f"{name} cannot be empty")
+
+
+def _validate_positive_finite(val: float, name: str) -> None:
+    if not math.isfinite(val) or val <= 0.0:
+        raise ValueError(f"{name} must be a positive finite number, got {val}")
+
+
+def _validate_non_negative_finite(val: float, name: str) -> None:
+    if not math.isfinite(val) or val < 0.0:
+        if "delta_vs_fastest_seconds" in name or "miles" in name:
+            raise ValueError(f"{name} must be a non-negative finite number, got {val}")
+        raise ValueError(f"{name} must be non-negative finite, got {val}")
+
+
+def _validate_load_weight_lb(val: Any) -> None:
+    if not isinstance(val, int) or isinstance(val, bool):
+        raise TypeError(f"load_weight_lb must be an int, got {type(val)}")
+    if val < 0:
+        raise ValueError(f"load_weight_lb must be non-negative, got {val}")
+
+
+def _coerce_tuple[T](val: Sequence[T]) -> tuple[T, ...]:
+    return tuple(val) if not isinstance(val, tuple) else val
+
+
+def _validate_coordinates(
+    coords: Sequence["Coordinate"], name: str = "polyline", min_count: int = 2
+) -> tuple["Coordinate", ...]:
+    res = _coerce_tuple(coords)
+    if len(res) < min_count:
+        if name == "polyline":
+            raise ValueError(f"{name} must contain at least {min_count} points")
+        raise ValueError(f"{name} must have at least {min_count} points")
+    return res
+
 
 
 class RiskLevel(IntEnum):
@@ -181,8 +222,7 @@ class HourlySeries:
     values: tuple[float | None, ...]
 
     def __post_init__(self) -> None:
-        if not isinstance(self.values, tuple):
-            object.__setattr__(self, "values", tuple(self.values))
+        object.__setattr__(self, "values", _coerce_tuple(self.values))
         if not self.values:
             raise ValueError("HourlySeries values cannot be empty")
 
@@ -253,8 +293,7 @@ class MilesByLevel:
             ("severe", self.severe),
             ("no_travel", self.no_travel),
         ):
-            if not math.isfinite(val) or val < 0.0:
-                raise ValueError(f"{name} miles must be a non-negative finite number, got {val}")
+            _validate_non_negative_finite(val, f"{name} miles")
 
     def for_level(self, level: RiskLevel) -> float:
         """Return the miles covered for a specific RiskLevel."""
@@ -284,18 +323,9 @@ class RouteSummary:
     unavailable_checkpoints: int
 
     def __post_init__(self) -> None:
-        if not math.isfinite(self.distance_miles) or self.distance_miles <= 0.0:
-            raise ValueError(
-                f"distance_miles must be a positive finite number, got {self.distance_miles}"
-            )
-        if not math.isfinite(self.duration_seconds) or self.duration_seconds < 0.0:
-            raise ValueError(
-                f"duration_seconds must be non-negative finite, got {self.duration_seconds}"
-            )
-        if not math.isfinite(self.unavailable_miles) or self.unavailable_miles < 0.0:
-            raise ValueError(
-                f"unavailable_miles must be non-negative finite, got {self.unavailable_miles}"
-            )
+        _validate_positive_finite(self.distance_miles, "distance_miles")
+        _validate_non_negative_finite(self.duration_seconds, "duration_seconds")
+        _validate_non_negative_finite(self.unavailable_miles, "unavailable_miles")
         if self.avg_risk_score is not None and (
             not math.isfinite(self.avg_risk_score) or not (0.0 <= self.avg_risk_score <= 4.0)
         ):
@@ -336,10 +366,8 @@ class RankingInput:
     summary: RouteSummary
 
     def __post_init__(self) -> None:
-        if not self.route_id or not self.route_id.strip():
-            raise ValueError("route_id cannot be empty")
-        if not self.label or not self.label.strip():
-            raise ValueError("label cannot be empty")
+        _validate_non_empty_str(self.route_id, "route_id")
+        _validate_non_empty_str(self.label, "label")
 
 
 @dataclass(frozen=True, slots=True)
@@ -351,15 +379,10 @@ class RankedRoute:
     delta_vs_fastest_seconds: float
 
     def __post_init__(self) -> None:
-        if not self.route_id or not self.route_id.strip():
-            raise ValueError("route_id cannot be empty")
+        _validate_non_empty_str(self.route_id, "route_id")
         if self.rank < 1:
             raise ValueError(f"rank must be a positive 1-based integer, got {self.rank}")
-        if not math.isfinite(self.delta_vs_fastest_seconds) or self.delta_vs_fastest_seconds < 0.0:
-            raise ValueError(
-                f"delta_vs_fastest_seconds must be a non-negative finite number, "
-                f"got {self.delta_vs_fastest_seconds}"
-            )
+        _validate_non_negative_finite(self.delta_vs_fastest_seconds, "delta_vs_fastest_seconds")
 
 
 @dataclass(frozen=True, slots=True)
@@ -373,12 +396,9 @@ class Recommendation:
     ranked: tuple[RankedRoute, ...]
 
     def __post_init__(self) -> None:
-        if not self.route_id or not self.route_id.strip():
-            raise ValueError("route_id cannot be empty")
-        if not self.headline or not self.headline.strip():
-            raise ValueError("headline cannot be empty")
-        if not isinstance(self.ranked, tuple):
-            object.__setattr__(self, "ranked", tuple(self.ranked))
+        _validate_non_empty_str(self.route_id, "route_id")
+        _validate_non_empty_str(self.headline, "headline")
+        object.__setattr__(self, "ranked", _coerce_tuple(self.ranked))
         if not self.ranked:
             raise ValueError("ranked cannot be empty")
 
@@ -392,8 +412,7 @@ class Place:
     id: str | None = None
 
     def __post_init__(self) -> None:
-        if not self.label or not self.label.strip():
-            raise ValueError("label cannot be empty")
+        _validate_non_empty_str(self.label, "label")
 
 
 @dataclass(frozen=True, slots=True)
@@ -422,20 +441,10 @@ class RawRoute:
     via_summary: str | None = None
 
     def __post_init__(self) -> None:
-        if not self.provider_id or not self.provider_id.strip():
-            raise ValueError("provider_id cannot be empty")
-        if not isinstance(self.polyline, tuple):
-            object.__setattr__(self, "polyline", tuple(self.polyline))
-        if len(self.polyline) < 2:
-            raise ValueError("polyline must contain at least 2 points")
-        if not math.isfinite(self.distance_miles) or self.distance_miles <= 0.0:
-            raise ValueError(
-                f"distance_miles must be a positive finite number, got {self.distance_miles}"
-            )
-        if not math.isfinite(self.duration_seconds) or self.duration_seconds < 0.0:
-            raise ValueError(
-                f"duration_seconds must be non-negative finite, got {self.duration_seconds}"
-            )
+        _validate_non_empty_str(self.provider_id, "provider_id")
+        object.__setattr__(self, "polyline", _validate_coordinates(self.polyline, "polyline", 2))
+        _validate_positive_finite(self.distance_miles, "distance_miles")
+        _validate_non_negative_finite(self.duration_seconds, "duration_seconds")
 
 
 @dataclass(frozen=True, slots=True)
@@ -447,10 +456,8 @@ class SelectedRoute:
     raw: RawRoute
 
     def __post_init__(self) -> None:
-        if not self.route_id or not self.route_id.strip():
-            raise ValueError("route_id cannot be empty")
-        if not self.label or not self.label.strip():
-            raise ValueError("label cannot be empty")
+        _validate_non_empty_str(self.route_id, "route_id")
+        _validate_non_empty_str(self.label, "label")
         if not isinstance(self.raw, RawRoute):
             raise TypeError(f"raw must be a RawRoute instance, got {type(self.raw)}")
 
@@ -463,10 +470,8 @@ class Warning:
     message: str
 
     def __post_init__(self) -> None:
-        if not self.code or not self.code.strip():
-            raise ValueError("code cannot be empty")
-        if not self.message or not self.message.strip():
-            raise ValueError("message cannot be empty")
+        _validate_non_empty_str(self.code, "code")
+        _validate_non_empty_str(self.message, "message")
 
 
 @dataclass(frozen=True, slots=True)
@@ -477,10 +482,8 @@ class RouteSelection:
     warnings: tuple[Warning, ...] = ()
 
     def __post_init__(self) -> None:
-        if not isinstance(self.routes, tuple):
-            object.__setattr__(self, "routes", tuple(self.routes))
-        if not isinstance(self.warnings, tuple):
-            object.__setattr__(self, "warnings", tuple(self.warnings))
+        object.__setattr__(self, "routes", _coerce_tuple(self.routes))
+        object.__setattr__(self, "warnings", _coerce_tuple(self.warnings))
 
 
 @dataclass(frozen=True, slots=True)
@@ -501,10 +504,7 @@ class TripRequest:
             raise TypeError(f"destination must be a Place instance, got {type(self.destination)}")
         if self.departure_local.tzinfo is not None:
             raise ValueError(f"departure_local must be naive datetime, got {self.departure_local}")
-        if not isinstance(self.load_weight_lb, int) or isinstance(self.load_weight_lb, bool):
-            raise TypeError(f"load_weight_lb must be an int, got {type(self.load_weight_lb)}")
-        if self.load_weight_lb < 0:
-            raise ValueError(f"load_weight_lb must be non-negative, got {self.load_weight_lb}")
+        _validate_load_weight_lb(self.load_weight_lb)
         if not isinstance(self.interval_mode, IntervalMode):
             raise TypeError(
                 f"interval_mode must be an IntervalMode, got {type(self.interval_mode)}"
@@ -535,12 +535,8 @@ class TripRequestEcho:
             raise ValueError(f"departure_utc must be timezone-aware, got {self.departure_utc}")
         if self.departure_local.tzinfo is not None:
             raise ValueError(f"departure_local must be naive datetime, got {self.departure_local}")
-        if not self.origin_tz or not self.origin_tz.strip():
-            raise ValueError("origin_tz cannot be empty")
-        if not isinstance(self.load_weight_lb, int) or isinstance(self.load_weight_lb, bool):
-            raise TypeError(f"load_weight_lb must be an int, got {type(self.load_weight_lb)}")
-        if self.load_weight_lb < 0:
-            raise ValueError(f"load_weight_lb must be non-negative, got {self.load_weight_lb}")
+        _validate_non_empty_str(self.origin_tz, "origin_tz")
+        _validate_load_weight_lb(self.load_weight_lb)
         if self.interval_miles <= 0:
             raise ValueError(f"interval_miles must be positive, got {self.interval_miles}")
 
@@ -561,27 +557,21 @@ class AnalyzedRoute:
     via_summary: str | None = None
 
     def __post_init__(self) -> None:
-        if not self.route_id or not self.route_id.strip():
-            raise ValueError("route_id cannot be empty")
-        if not self.label or not self.label.strip():
-            raise ValueError("label cannot be empty")
+        _validate_non_empty_str(self.route_id, "route_id")
+        _validate_non_empty_str(self.label, "label")
         if not isinstance(self.raw, RawRoute):
             raise TypeError(f"raw must be a RawRoute instance, got {type(self.raw)}")
-        if not isinstance(self.checkpoints, tuple):
-            object.__setattr__(self, "checkpoints", tuple(self.checkpoints))
+        object.__setattr__(self, "checkpoints", _coerce_tuple(self.checkpoints))
         if not isinstance(self.summary, RouteSummary):
             raise TypeError(f"summary must be a RouteSummary instance, got {type(self.summary)}")
         if self.rank < 1:
             raise ValueError(f"rank must be at least 1, got {self.rank}")
-        if not math.isfinite(self.delta_vs_fastest_seconds) or self.delta_vs_fastest_seconds < 0.0:
-            raise ValueError(
-                "delta_vs_fastest_seconds must be non-negative, "
-                f"got {self.delta_vs_fastest_seconds}"
-            )
-        if not isinstance(self.display_polyline, tuple):
-            object.__setattr__(self, "display_polyline", tuple(self.display_polyline))
-        if len(self.display_polyline) < 2:
-            raise ValueError("display_polyline must have at least 2 points")
+        _validate_non_negative_finite(self.delta_vs_fastest_seconds, "delta_vs_fastest_seconds")
+        object.__setattr__(
+            self,
+            "display_polyline",
+            _validate_coordinates(self.display_polyline, "display_polyline", 2),
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -600,14 +590,10 @@ class TripAnalysisMeta:
             raise ValueError(f"weather_cells must be non-negative, got {self.weather_cells}")
         if self.route_count < 0:
             raise ValueError(f"route_count must be non-negative, got {self.route_count}")
-        if not math.isfinite(self.elapsed_ms) or self.elapsed_ms < 0.0:
-            raise ValueError(f"elapsed_ms must be non-negative finite, got {self.elapsed_ms}")
-        if not math.isfinite(self.routing_ms) or self.routing_ms < 0.0:
-            raise ValueError(f"routing_ms must be non-negative finite, got {self.routing_ms}")
-        if not math.isfinite(self.weather_ms) or self.weather_ms < 0.0:
-            raise ValueError(f"weather_ms must be non-negative finite, got {self.weather_ms}")
-        if not math.isfinite(self.in_process_ms) or self.in_process_ms < 0.0:
-            raise ValueError(f"in_process_ms must be non-negative finite, got {self.in_process_ms}")
+        _validate_non_negative_finite(self.elapsed_ms, "elapsed_ms")
+        _validate_non_negative_finite(self.routing_ms, "routing_ms")
+        _validate_non_negative_finite(self.weather_ms, "weather_ms")
+        _validate_non_negative_finite(self.in_process_ms, "in_process_ms")
 
 
 @dataclass(frozen=True, slots=True)
@@ -621,10 +607,8 @@ class TripAnalysis:
     meta: TripAnalysisMeta
 
     def __post_init__(self) -> None:
-        if not isinstance(self.routes, tuple):
-            object.__setattr__(self, "routes", tuple(self.routes))
-        if not isinstance(self.warnings, tuple):
-            object.__setattr__(self, "warnings", tuple(self.warnings))
+        object.__setattr__(self, "routes", _coerce_tuple(self.routes))
+        object.__setattr__(self, "warnings", _coerce_tuple(self.warnings))
 
 
 RouteRecommendation = Recommendation
