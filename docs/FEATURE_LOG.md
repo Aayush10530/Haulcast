@@ -169,9 +169,9 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-052 | Slow-server / cold-start progress banner (example trip excluded per live presentation decision) | P6 | done |
 | F-053 | Accessibility & contrast review (WCAG AA certified, forecast slider ARIA) | P6 | done |
 | F-060 | Production deployment configuration (set NUM_PROXIES for host & verify throttling sees real client IPs) | P7 | done |
-| F-061 | Comprehensive documentation & README | P7 | planned |
-| F-062 | Fresh-clone verification test | P7 | planned |
-| F-063 | Security audits (`pip-audit`, `npm audit`) | P7 | planned |
+| F-061 | Comprehensive documentation & README | P7 | done |
+| F-062 | Fresh-clone verification test | P7 | done |
+| F-063 | Security audits (`pip-audit`, `npm audit`) | P7 | done |
 | F-064 | Tag `v1.0-submission` & final QA checklist | P7 | done |
 | F-065 | Consolidate the spike scripts into one documented script or delete them (keep results table in FEATURE_LOG.md) | P7 | done |
 | F-066 | Split types.py into focused domain modules (optional refactoring) | P7 | done |
