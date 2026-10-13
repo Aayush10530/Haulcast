@@ -165,7 +165,8 @@ Given an hourly series keyed by epoch seconds and a time `t` (UTC):
 ### 4.7 Ranking (`ranking.py`)
 Sort key (ascending):
 ```
-(no_travel_miles > 0,            # routes without No Travel first
+(incomplete,                    # routes with sufficient weather (<= 10% unavailable) first
+ no_travel_miles > 0,            # routes without No Travel first
  round(no_travel_miles, 1),
  round(severe_miles, 1),
  round(high_miles, 1),
@@ -173,7 +174,7 @@ Sort key (ascending):
  duration_seconds)
 ```
 - Rank 1 is recommended. Ties after all keys: keep provider order (stable sort).
-- `decided_by`: the first key where winner and runner-up differ: `no_travel`, `severe_miles`, `high_miles`, `avg_risk`, `travel_time`; `only_option` if there is one route.
+- `decided_by`: the first key where winner and runner-up differ: `incomplete_data`, `no_travel`, `severe_miles`, `high_miles`, `avg_risk`, `travel_time`; `only_option` if there is one route.
 - `headline` is template text built from the numbers, for example: "Route B has 0 Severe miles vs 34 on Route A. It is 42 min slower than the fastest route." Deterministic. No LLM.
 - If every route has No Travel: recommend rank 1 and add warning code `NO_SAFE_ROUTE`.
 

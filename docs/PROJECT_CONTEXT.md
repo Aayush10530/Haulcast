@@ -90,6 +90,7 @@ The spec has gaps. These are the decisions. Each must appear in the README and b
 | A-16 | Geography | Built and demoed for the contiguous US (mph, in/hr, lb). Other regions work only if the providers cover them. |
 | A-17 | Always 3 routes | Best effort with a documented fallback (see ARCHITECTURE §6). If fewer than 3 distinct routes exist, return fewer plus a warning. Never fake a route. |
 | A-18 | Out of scope | No auth, no accounts, no persistent database, no LLM calls, no hours-of-service, no live traffic, no mobile app. The recommendation logic is deterministic and explainable by design. |
+| A-19 | Incomplete weather in ranking | Routes with >10% unavailable weather distance (unavailable_miles / distance_miles > INCOMPLETE_WEATHER_MAX_FRACTION = 0.10) rank below routes with complete weather data (replacing the no_data check). Deciding factor is INCOMPLETE_DATA. If multiple routes exceed the limit, they fall back to standard lexicographic order. API issues an INCOMPLETE_WEATHER warning with route label and percent unavailable. |
 
 ## 5. Stack
 

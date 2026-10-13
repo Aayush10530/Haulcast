@@ -317,6 +317,7 @@ class DecidingFactor(StrEnum):
     """Criterion that determined the recommended route."""
 
     ONLY_OPTION = "only_option"
+    INCOMPLETE_DATA = "incomplete_data"
     NO_DATA = "no_data"
     NO_TRAVEL = "no_travel"
     SEVERE_MILES = "severe_miles"

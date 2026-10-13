@@ -8,6 +8,7 @@ export interface RecommendationBannerProps {
 }
 
 const FACTOR_LABELS: Record<string, string> = {
+  incomplete_data: 'weather data was incomplete',
   severe_miles: 'fewer Severe miles',
   high_miles: 'fewer High risk miles',
   avg_risk: 'lower average risk score',

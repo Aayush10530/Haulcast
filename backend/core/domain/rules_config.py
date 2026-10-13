@@ -80,6 +80,7 @@ VIA_OFFSET_FRACTION: float = 0.12
 VIA_OFFSET_MIN_MILES: float = 15.0
 VIA_OFFSET_MAX_MILES: float = 60.0
 MAX_ROUTES: int = 3
+INCOMPLETE_WEATHER_MAX_FRACTION: float = 0.10
 
 # Open-Meteo weather provider constants
 WEATHER_GRID_DEG: float = 0.1

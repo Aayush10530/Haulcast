@@ -20,11 +20,13 @@ def _make_summary(
     high: float = 0.0,
     severe: float = 0.0,
     no_travel: float = 0.0,
-    unavailable_miles: float = 0.0,
+    unavailable_miles: float | None = None,
     avg_risk_score: float | None = 0.0,
     max_level: RiskLevel | None = RiskLevel.LOW,
     unavailable_checkpoints: int = 0,
 ) -> RouteSummary:
+    if unavailable_miles is None:
+        unavailable_miles = distance_miles if avg_risk_score is None else 0.0
     miles = MilesByLevel(
         low=low,
         moderate=moderate,
@@ -46,7 +48,6 @@ def _make_summary(
 def test_ranking_deciding_factor_only_option_exact_headline() -> None:
     inp = RankingInput("r1", "Route A", _make_summary())
     rec = rank_routes([inp])
-
     assert rec.route_id == "r1"
     assert rec.decided_by == DecidingFactor.ONLY_OPTION
     assert rec.headline == "Only one route is available: Route A."
@@ -64,9 +65,9 @@ def test_ranking_deciding_factor_no_data_exact_headline() -> None:
     rec = rank_routes([r1, r2])
 
     assert rec.route_id == "r1"
-    assert rec.decided_by == DecidingFactor.NO_DATA
+    assert rec.decided_by == DecidingFactor.INCOMPLETE_DATA
     assert rec.headline == (
-        "Route A is recommended because weather data was unavailable for the other routes. "
+        "Route A is recommended because weather data was incomplete for Route B. "
         "It is also the fastest route."
     )
     assert not rec.no_safe_route
@@ -518,3 +519,155 @@ def test_ranking_types_validation_errors() -> None:
         ranked=[RankedRoute("r1", 1, 0.0)],
     )
     assert isinstance(rec.ranked, tuple)
+
+
+def test_ranking_incomplete_weather_exact_reproduction() -> None:
+    # Route X has 80% unavailable and 0 Severe miles
+    # Route Y is fully observed with 10 Severe miles
+    # Y wins, decided_by INCOMPLETE_DATA
+    rx = RankingInput(
+        "rx",
+        "Route X",
+        _make_summary(
+            distance_miles=100.0,
+            duration_seconds=3600.0,
+            low=20.0,
+            severe=0.0,
+            unavailable_miles=80.0,
+            avg_risk_score=0.0,
+            max_level=RiskLevel.LOW,
+            unavailable_checkpoints=8,
+        ),
+    )
+    ry = RankingInput(
+        "ry",
+        "Route Y",
+        _make_summary(
+            distance_miles=100.0,
+            duration_seconds=3600.0,
+            low=90.0,
+            severe=10.0,
+            unavailable_miles=0.0,
+            avg_risk_score=0.4,
+            max_level=RiskLevel.SEVERE,
+            unavailable_checkpoints=0,
+        ),
+    )
+    rec = rank_routes([rx, ry])
+
+    assert rec.route_id == "ry"
+    assert rec.decided_by == DecidingFactor.INCOMPLETE_DATA
+    assert rec.ranked[0].route_id == "ry"
+    assert rec.ranked[0].rank == 1
+    assert rec.ranked[1].route_id == "rx"
+    assert rec.ranked[1].rank == 2
+    assert (
+        "Route Y is recommended because weather data was incomplete for Route X."
+        in rec.headline
+    )
+
+
+def test_ranking_route_at_exactly_ten_percent_unavailable_is_not_incomplete() -> None:
+    # 10.0 / 100.0 == 0.10: not incomplete
+    ra = RankingInput(
+        "ra",
+        "Route A",
+        _make_summary(
+            distance_miles=100.0,
+            duration_seconds=3600.0,
+            low=90.0,
+            severe=0.0,
+            unavailable_miles=10.0,
+            avg_risk_score=0.1,
+            max_level=RiskLevel.LOW,
+        ),
+    )
+    rb = RankingInput(
+        "rb",
+        "Route B",
+        _make_summary(
+            distance_miles=100.0,
+            duration_seconds=3600.0,
+            low=90.0,
+            severe=10.0,
+            unavailable_miles=0.0,
+            avg_risk_score=0.4,
+            max_level=RiskLevel.SEVERE,
+        ),
+    )
+    rec = rank_routes([ra, rb])
+
+    # Route A is not incomplete and has fewer severe miles, so it wins
+    assert rec.route_id == "ra"
+    assert rec.decided_by == DecidingFactor.SEVERE_MILES
+
+
+def test_ranking_two_incomplete_routes_fallback_to_normal_order() -> None:
+    # Route A: 20% unavailable, 0 severe miles
+    # Route B: 30% unavailable, 10 severe miles
+    # Both are incomplete, so ranking falls back to normal order (severe miles)
+    ra = RankingInput(
+        "ra",
+        "Route A",
+        _make_summary(
+            distance_miles=100.0,
+            duration_seconds=3600.0,
+            low=80.0,
+            severe=0.0,
+            unavailable_miles=20.0,
+            avg_risk_score=0.1,
+            max_level=RiskLevel.LOW,
+        ),
+    )
+    rb = RankingInput(
+        "rb",
+        "Route B",
+        _make_summary(
+            distance_miles=100.0,
+            duration_seconds=3600.0,
+            low=60.0,
+            severe=10.0,
+            unavailable_miles=30.0,
+            avg_risk_score=0.4,
+            max_level=RiskLevel.SEVERE,
+        ),
+    )
+    rec = rank_routes([ra, rb])
+
+    assert rec.route_id == "ra"
+    assert rec.decided_by == DecidingFactor.SEVERE_MILES
+
+
+def test_ranking_all_routes_incomplete_still_returns_recommendation() -> None:
+    # All routes incomplete still returns a valid recommendation
+    r1 = RankingInput(
+        "r1",
+        "Route 1",
+        _make_summary(
+            distance_miles=100.0,
+            duration_seconds=3600.0,
+            low=20.0,
+            severe=10.0,
+            unavailable_miles=70.0,
+            avg_risk_score=0.5,
+            max_level=RiskLevel.SEVERE,
+        ),
+    )
+    r2 = RankingInput(
+        "r2",
+        "Route 2",
+        _make_summary(
+            distance_miles=100.0,
+            duration_seconds=3700.0,
+            low=10.0,
+            severe=0.0,
+            unavailable_miles=90.0,
+            avg_risk_score=0.1,
+            max_level=RiskLevel.LOW,
+        ),
+    )
+    rec = rank_routes([r1, r2])
+
+    assert rec.route_id == "r2"  # r2 has 0 severe vs 10 severe on r1
+    assert rec.ranked[0].rank == 1
+    assert len(rec.ranked) == 2

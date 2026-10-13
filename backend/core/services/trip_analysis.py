@@ -166,6 +166,17 @@ class TripAnalysisService:
                     message=f"{total_unavailable} checkpoint(s) have unavailable weather data.",
                 )
             )
+        for sr, _, summary in analyzed_data:
+            if summary.distance_miles > 0:
+                frac = summary.unavailable_miles / summary.distance_miles
+                if frac > rules_config.INCOMPLETE_WEATHER_MAX_FRACTION:
+                    pct = round(frac * 100)
+                    warnings_list.append(
+                        Warning(
+                            code="INCOMPLETE_WEATHER",
+                            message=f"{sr.label} has incomplete weather data ({pct}% unavailable).",
+                        )
+                    )
         if recommendation.no_safe_route:
             warnings_list.append(
                 Warning(

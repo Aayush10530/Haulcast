@@ -702,3 +702,38 @@ def test_analyze_zero_load_weight_success(test_places: tuple[Place, Place]) -> N
 
     analysis = service.analyze(req)
     assert analysis.request.load_weight_lb == 0
+
+
+def test_incomplete_weather_warning_when_route_exceeds_threshold(
+    fixed_now: datetime.datetime,
+    test_places: tuple[Place, Place],
+) -> None:
+    p_orig, p_dest = test_places
+    r = _make_route("r1", (p_orig.coordinate, p_dest.coordinate), 50.0, 3600.0)
+    routing = FakeRoutingProvider(routes=[r])
+    route_service = RouteSelectionService(provider=routing, cache=FakeCache(), ttl_seconds=1800)
+
+    start_epoch = int(datetime.datetime(2026, 10, 12, 10, 0, 0, tzinfo=datetime.UTC).timestamp())
+    c_orig = snap_to_cell(p_orig.coordinate)
+    weather = FakeWeatherProvider(series_by_cell={c_orig: _make_series(start_epoch)})
+
+    service = TripAnalysisService(
+        route_selection=route_service,
+        weather=weather,
+        clock=lambda: fixed_now,
+    )
+
+    req = TripRequest(
+        origin=p_orig,
+        destination=p_dest,
+        departure_local=datetime.datetime(2026, 10, 12, 8, 0, 0),
+        load_weight_lb=30000,
+        interval_mode=IntervalMode.MANUAL,
+        manual_interval=25,
+    )
+
+    analysis = service.analyze(req)
+    warn = next((w for w in analysis.warnings if w.code == "INCOMPLETE_WEATHER"), None)
+    assert warn is not None
+    assert "Route A" in warn.message
+    assert "% unavailable" in warn.message

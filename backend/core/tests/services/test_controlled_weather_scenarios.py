@@ -28,6 +28,7 @@ from core.domain.types import (
 # Helper Factories
 # ==============================================================================
 
+
 def _make_route(
     route_id: str,
     polyline: tuple[Coordinate, ...],
@@ -62,6 +63,7 @@ def _make_series(
 # 1. Weather Threshold Boundaries & Mutual Exclusivity
 # ==============================================================================
 
+
 class TestWeatherThresholdBoundaries:
     """Tests every threshold boundary with lower-bound inclusive [min, max) definition."""
 
@@ -70,11 +72,11 @@ class TestWeatherThresholdBoundaries:
         [
             (0.0, RiskLevel.LOW),
             (24.9, RiskLevel.LOW),
-            (25.0, RiskLevel.MODERATE),   # 25.0 inclusive lower bound of Moderate
+            (25.0, RiskLevel.MODERATE),  # 25.0 inclusive lower bound of Moderate
             (34.9, RiskLevel.MODERATE),
-            (35.0, RiskLevel.HIGH),       # 35.0 inclusive lower bound of High
+            (35.0, RiskLevel.HIGH),  # 35.0 inclusive lower bound of High
             (44.9, RiskLevel.HIGH),
-            (45.0, RiskLevel.SEVERE),     # 45.0 inclusive lower bound of Severe
+            (45.0, RiskLevel.SEVERE),  # 45.0 inclusive lower bound of Severe
             (54.9, RiskLevel.SEVERE),
             (55.0, RiskLevel.NO_TRAVEL),  # 55.0 inclusive lower bound of No Travel
             (70.0, RiskLevel.NO_TRAVEL),
@@ -88,12 +90,12 @@ class TestWeatherThresholdBoundaries:
         [
             (0.0, RiskLevel.LOW),
             (0.09, RiskLevel.LOW),
-            (0.10, RiskLevel.MODERATE),   # 0.10 inclusive lower bound of Moderate
+            (0.10, RiskLevel.MODERATE),  # 0.10 inclusive lower bound of Moderate
             (0.24, RiskLevel.MODERATE),
-            (0.25, RiskLevel.HIGH),       # 0.25 inclusive lower bound of High
+            (0.25, RiskLevel.HIGH),  # 0.25 inclusive lower bound of High
             (0.49, RiskLevel.HIGH),
-            (0.50, RiskLevel.SEVERE),     # 0.50 inclusive lower bound of Severe
-            (1.00, RiskLevel.SEVERE),     # 1.00 inclusive upper bound of Severe
+            (0.50, RiskLevel.SEVERE),  # 0.50 inclusive lower bound of Severe
+            (1.00, RiskLevel.SEVERE),  # 1.00 inclusive upper bound of Severe
             (1.01, RiskLevel.NO_TRAVEL),  # > 1.00 is No Travel
             (2.50, RiskLevel.NO_TRAVEL),
         ],
@@ -106,12 +108,12 @@ class TestWeatherThresholdBoundaries:
         [
             (0.0, RiskLevel.LOW),
             (0.49, RiskLevel.LOW),
-            (0.50, RiskLevel.MODERATE),   # 0.50 inclusive lower bound of Moderate
+            (0.50, RiskLevel.MODERATE),  # 0.50 inclusive lower bound of Moderate
             (0.99, RiskLevel.MODERATE),
-            (1.00, RiskLevel.HIGH),       # 1.00 inclusive lower bound of High
+            (1.00, RiskLevel.HIGH),  # 1.00 inclusive lower bound of High
             (1.99, RiskLevel.HIGH),
-            (2.00, RiskLevel.SEVERE),     # 2.00 inclusive lower bound of Severe
-            (3.00, RiskLevel.SEVERE),     # 3.00 inclusive upper bound of Severe
+            (2.00, RiskLevel.SEVERE),  # 2.00 inclusive lower bound of Severe
+            (3.00, RiskLevel.SEVERE),  # 3.00 inclusive upper bound of Severe
             (3.01, RiskLevel.NO_TRAVEL),  # > 3.00 is No Travel
             (5.00, RiskLevel.NO_TRAVEL),
         ],
@@ -123,6 +125,7 @@ class TestWeatherThresholdBoundaries:
 # ==============================================================================
 # 2. Load-Weight Overrides (Below, At, and Above Limits)
 # ==============================================================================
+
 
 class TestLoadWeightOverrides:
     """Tests all three load overrides with exact values below, at, and above limits."""
@@ -177,6 +180,7 @@ class TestLoadWeightOverrides:
 # 3. Conservation of Distance (Miles by Level Sum Invariant)
 # ==============================================================================
 
+
 class TestDistanceConservation:
     """Verifies that miles assigned to all risk categories sum to the exact route distance."""
 
@@ -189,6 +193,7 @@ class TestDistanceConservation:
 
         cum = geometry.cumulative_miles(r1.polyline, r1.distance_miles)
         from core.domain.sampling import build_checkpoints
+
         checkpoints = build_checkpoints(r1.polyline, cum, 25)
 
         start_epoch = 1791694800
@@ -224,6 +229,7 @@ class TestDistanceConservation:
 # ==============================================================================
 # 4. Route Ranking Priority (Lexicographic Comparison)
 # ==============================================================================
+
 
 class TestRouteRankingPriority:
     """Verifies strict 4-tier lexicographic ranking with controlled fixtures."""
@@ -315,6 +321,7 @@ class TestRouteRankingPriority:
 # 5. Missing Weather Handling & Unavailable Checkpoints
 # ==============================================================================
 
+
 class TestMissingWeatherHandling:
     """Verifies that missing weather data produces explicit None / Unavailable states."""
 
@@ -325,6 +332,7 @@ class TestMissingWeatherHandling:
 
         cum = geometry.cumulative_miles(r.polyline, r.distance_miles)
         from core.domain.sampling import build_checkpoints
+
         checkpoints = build_checkpoints(r.polyline, cum, 50)
 
         # CP 0 has valid weather series; CP 1 has series=None (weather provider error/miss)
