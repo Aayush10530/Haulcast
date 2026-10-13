@@ -66,4 +66,10 @@ describe('RiskChip', () => {
     expect(screen.getByText('Low')).toBeInTheDocument();
     expect(screen.queryByTestId('driver-icon-air')).not.toBeInTheDocument();
   });
+
+  it('renders neutral style with Forecast unavailable when risk is null without fallback to low', () => {
+    render(<RiskChip risk={null} />);
+    expect(screen.getByText('Forecast unavailable')).toBeInTheDocument();
+    expect(screen.queryByText('Low')).not.toBeInTheDocument();
+  });
 });

@@ -71,4 +71,17 @@ describe('CheckpointPopup', () => {
     );
     expect(screen.queryByTestId('popup-metrics')).not.toBeInTheDocument();
   });
+
+  it('renders "Forecast unavailable" with neutral muted styling when risk is null', () => {
+    const cpWithNullRisk: CheckpointDTO = {
+      ...mockCheckpointWithWeather,
+      risk: null,
+    };
+    render(<CheckpointPopup checkpoint={cpWithNullRisk} />);
+
+    const unavailableEl = screen.getByTestId('popup-unavailable');
+    expect(unavailableEl).toHaveTextContent('Forecast unavailable');
+    expect(screen.queryByTestId('risk-chip')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('popup-metrics')).not.toBeInTheDocument();
+  });
 });

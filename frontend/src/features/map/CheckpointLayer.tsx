@@ -14,6 +14,15 @@ export interface CheckpointLayerProps {
   focusedCheckpoint?: CheckpointDTO | null;
 }
 
+export function getCheckpointMarkerColor(
+  risk?: CheckpointDTO['risk'] | null,
+): string {
+  if (!risk || !risk.level || !riskColors[risk.level]) {
+    return colorTokens.textMuted;
+  }
+  return riskColors[risk.level].background;
+}
+
 export const CheckpointLayer: React.FC<CheckpointLayerProps> = ({
   routes,
   selectedRouteId,
@@ -85,8 +94,7 @@ export const CheckpointLayer: React.FC<CheckpointLayerProps> = ({
 
         return (route.checkpoints || []).map((cp) => {
           const key = `${route.id}-${cp.index}`;
-          const riskSpec = cp.risk ? riskColors[cp.risk.level] : null;
-          const fillColor = riskSpec ? riskSpec.background : '#8FA4AB';
+          const fillColor = getCheckpointMarkerColor(cp.risk);
 
           return (
             <CircleMarker
