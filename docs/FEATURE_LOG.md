@@ -172,13 +172,21 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-061 | Comprehensive documentation & README | P7 | planned |
 | F-062 | Fresh-clone verification test | P7 | planned |
 | F-063 | Security audits (`pip-audit`, `npm audit`) | P7 | planned |
-| F-064 | Tag `v1.0-submission` & final QA checklist | P7 | planned |
-| F-065 | Consolidate the spike scripts into one documented script or delete them (keep results table in FEATURE_LOG.md) | P7 | planned |
-| F-066 | Split types.py into focused domain modules (optional refactoring) | P7 | planned |
+| F-064 | Tag `v1.0-submission` & final QA checklist | P7 | done |
+| F-065 | Consolidate the spike scripts into one documented script or delete them (keep results table in FEATURE_LOG.md) | P7 | done |
+| F-066 | Split types.py into focused domain modules (optional refactoring) | P7 | done |
 
 ---
 
 ## 4. Changes
+
+### C-013 Consolidate Spike Scripts and Final Release Tagging
+- Date: 2026-10-13
+- Type: change
+- Phase: P7
+- Summary: Consolidated exploratory Phase P0 spike scripts into a single documented evaluation harness (`backend/scripts/spike/provider_spike.py` supporting `--weather`, `--routing`, and `--all` CLI modes). Removed redundant scratch scripts (`p0_investigation.py`, `p0_final_round.py`, `openmeteo_batch_spike.py`, `openmeteo_spike.py`, `tomtom_spike.py`). Updated `backend/scripts/spike/README.md`. Tagged release `v1.0-submission`.
+- Files: backend/scripts/spike/provider_spike.py, backend/scripts/spike/README.md, docs/FEATURE_LOG.md
+- Status: done
 
 ### C-012 Comprehensive Code Quality Refactoring and Complexity Reduction Pass
 - Date: 2026-10-13
