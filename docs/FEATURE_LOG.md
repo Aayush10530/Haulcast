@@ -168,7 +168,7 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 | F-051 | Performance benchmarking (cold/warm analyze, heatmap, bundle sizes) | P6 | done |
 | F-052 | Slow-server / cold-start progress banner (example trip excluded per live presentation decision) | P6 | done |
 | F-053 | Accessibility & contrast review (WCAG AA certified, forecast slider ARIA) | P6 | done |
-| F-060 | Production deployment configuration (set NUM_PROXIES for host & verify throttling sees real client IPs) | P7 | planned |
+| F-060 | Production deployment configuration (set NUM_PROXIES for host & verify throttling sees real client IPs) | P7 | done |
 | F-061 | Comprehensive documentation & README | P7 | planned |
 | F-062 | Fresh-clone verification test | P7 | planned |
 | F-063 | Security audits (`pip-audit`, `npm audit`) | P7 | planned |
@@ -179,6 +179,14 @@ IDs: `F-xxx` features, `C-xxx` changes, `X-xxx` fixes, `D-xxx` decisions, `P-xxx
 ---
 
 ## 4. Changes
+
+### C-014 Live Production Deployment on Render and Vercel
+- Date: 2026-10-13
+- Type: change
+- Phase: P7
+- Summary: Successfully deployed StormRoute full-stack application to production: Django backend hosted on Render (https://stormroute-api-0lnv.onrender.com) with Gunicorn WSGI, NUM_PROXIES=1, RENDER_EXTERNAL_HOSTNAME support, and Vercel CORS regex; React frontend hosted on Vercel (https://stormroute-a.vercel.app/) with Vite SPA rewrite configuration. Verified end-to-end trip planning, TomTom commercial truck routing, Open-Meteo multi-checkpoint weather analysis, and interactive Leaflet map live in the browser.
+- Files: backend/config/settings.py, backend/Procfile, frontend/vercel.json, README.md, docs/FEATURE_LOG.md
+- Status: done
 
 ### C-013 Consolidate Spike Scripts and Final Release Tagging
 - Date: 2026-10-13
