@@ -1,24 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
   Box,
   Button,
-  FormHelperText,
-  IconButton,
   InputAdornment,
   TextField,
-  ToggleButton,
-  ToggleButtonGroup,
   Typography,
 } from '@mui/material';
 import { AnalyzeResponse, IntervalOption, PlaceDTO, TripRequestPayload } from '../../api/types';
 import CalendarToday from '@mui/icons-material/CalendarToday';
-import Flag from '@mui/icons-material/Flag';
-import Place from '@mui/icons-material/Place';
 import Scale from '@mui/icons-material/Scale';
 import { useAnalyzeTrip } from '../../hooks/useAnalyzeTrip';
 import { colorTokens, shapeTokens, typographyTokens } from '../../theme/tokens';
-import { PlaceAutocomplete } from './PlaceAutocomplete';
+import { TripFormAlerts } from './TripFormAlerts';
+import { TripIntervalSelector } from './TripIntervalSelector';
+import { TripPlacesInputs } from './TripPlacesInputs';
 import {
   formatDepartureSpelledOut,
   formatLoadWeightDisplay,
@@ -29,23 +24,6 @@ import {
 } from './validateTripForm';
 
 export type { TripFormValues };
-
-const SwapIcon: React.FC = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M7 16V4M7 4L3 8M7 4L11 8" />
-    <path d="M17 8V20M17 20L21 16M17 20L13 16" />
-  </svg>
-);
 
 export interface TripFormProps {
   onSuccess?: (analysis: AnalyzeResponse) => void;
@@ -219,13 +197,14 @@ export const TripForm: React.FC<TripFormProps> = ({
         </Typography>
       </Box>
 
-      {/* Origin Autocomplete */}
-      <PlaceAutocomplete
-        id="trip-origin"
-        label="Origin"
-        placeholder="Search origin city or address"
-        value={origin}
-        onChange={(val) => {
+      {/* Origin, Swap, and Destination Inputs */}
+      <TripPlacesInputs
+        origin={origin}
+        destination={destination}
+        originError={clientErrors.origin || serverFieldErrors.origin}
+        destinationError={clientErrors.destination || serverFieldErrors.destination}
+        disabled={isPending}
+        onOriginChange={(val) => {
           setOrigin(val);
           setClientErrors((prev) => ({ ...prev, origin: undefined }));
           setServerFieldErrors((prev) => {
@@ -234,49 +213,7 @@ export const TripForm: React.FC<TripFormProps> = ({
             return next;
           });
         }}
-        error={clientErrors.origin || serverFieldErrors.origin}
-        disabled={isPending}
-        startIcon={<Place sx={{ fontSize: 18 }} />}
-        data-testid="origin-autocomplete"
-      />
-
-      {/* Swap Places Button */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', my: -0.5 }}>
-        <IconButton
-          type="button"
-          onClick={handleSwap}
-          size="small"
-          aria-label="Swap origin and destination"
-          data-testid="swap-places-button"
-          disabled={isPending}
-          sx={{
-            color: colorTokens.textMuted,
-            border: `1px solid ${colorTokens.border}`,
-            borderRadius: '50%',
-            width: 32,
-            height: 32,
-            backgroundColor: colorTokens.surfaceRaised,
-            transition: 'all 200ms cubic-bezier(0.16, 1, 0.3, 1)',
-            '&:hover': {
-              color: colorTokens.brand,
-              borderColor: colorTokens.brand,
-              backgroundColor: colorTokens.surfaceRaised,
-              transform: 'rotate(180deg) scale(1.08)',
-              boxShadow: '0 0 14px rgba(0, 229, 255, 0.35)',
-            },
-          }}
-        >
-          <SwapIcon />
-        </IconButton>
-      </Box>
-
-      {/* Destination Autocomplete */}
-      <PlaceAutocomplete
-        id="trip-destination"
-        label="Destination"
-        placeholder="Search destination city or address"
-        value={destination}
-        onChange={(val) => {
+        onDestinationChange={(val) => {
           setDestination(val);
           setClientErrors((prev) => ({ ...prev, destination: undefined }));
           setServerFieldErrors((prev) => {
@@ -285,10 +222,7 @@ export const TripForm: React.FC<TripFormProps> = ({
             return next;
           });
         }}
-        error={clientErrors.destination || serverFieldErrors.destination}
-        disabled={isPending}
-        startIcon={<Flag sx={{ fontSize: 18 }} />}
-        data-testid="destination-autocomplete"
+        onSwap={handleSwap}
       />
 
       {/* Departure Local Native Input */}
@@ -366,102 +300,31 @@ export const TripForm: React.FC<TripFormProps> = ({
         }}
       />
 
-      {/* Checkpoint Interval Toggle */}
-      <Box>
-        <Typography
-          sx={{
-            fontFamily: typographyTokens.fontFamilyUi,
-            fontSize: typographyTokens.label.fontSize,
-            lineHeight: typographyTokens.label.lineHeight,
-            fontWeight: typographyTokens.label.fontWeight,
-            letterSpacing: typographyTokens.label.letterSpacing,
-            textTransform: typographyTokens.label.textTransform,
-            color: colorTokens.textMuted,
-            mb: 0.75,
-          }}
-        >
-          Checkpoint interval
-        </Typography>
-        <ToggleButtonGroup
-          value={interval}
-          exclusive
-          onChange={(_, val: IntervalOption | null) => {
-            if (val !== null) {
-              setInterval(val);
-              setClientErrors((prev) => ({ ...prev, interval: undefined }));
-              setServerFieldErrors((prev) => {
-                const next = { ...prev };
-                delete next.interval;
-                return next;
-              });
-            }
-          }}
-          disabled={isPending}
-          size="small"
-          fullWidth
-          aria-label="Checkpoint interval"
-        >
-          <ToggleButton value="auto" data-testid="interval-auto">
-            Auto
-          </ToggleButton>
-          <ToggleButton value={10} data-testid="interval-10">
-            10 mi
-          </ToggleButton>
-          <ToggleButton value={25} data-testid="interval-25">
-            25 mi
-          </ToggleButton>
-          <ToggleButton value={50} data-testid="interval-50">
-            50 mi
-          </ToggleButton>
-        </ToggleButtonGroup>
-        {(clientErrors.interval || serverFieldErrors.interval) && (
-          <FormHelperText error>
-            {clientErrors.interval || serverFieldErrors.interval}
-          </FormHelperText>
-        )}
-      </Box>
+      {/* Checkpoint Interval Selector */}
+      <TripIntervalSelector
+        interval={interval}
+        error={clientErrors.interval || serverFieldErrors.interval}
+        disabled={isPending}
+        onChange={(val) => {
+          setInterval(val);
+          setClientErrors((prev) => ({ ...prev, interval: undefined }));
+          setServerFieldErrors((prev) => {
+            const next = { ...prev };
+            delete next.interval;
+            return next;
+          });
+        }}
+      />
 
-      {/* Slow Server / Cold-Start Progress Banner */}
-      {isPending && isSlowRequest && (
-        <Alert
-          severity="info"
-          data-testid="slow-server-alert"
-          sx={{
-            backgroundColor: 'rgba(0, 229, 255, 0.08)',
-            border: `1px solid rgba(0, 229, 255, 0.3)`,
-            color: colorTokens.text,
-            fontSize: '0.8125rem',
-            lineHeight: 1.4,
-            '& .MuiAlert-icon': {
-              color: colorTokens.brand,
-            },
-          }}
-        >
-          Analyzing live weather along route corridors... Live requests query TomTom commercial truck routing and Open-Meteo atmospheric forecasts across all checkpoints.
-        </Alert>
-      )}
+      {/* Slow server alert & error alert */}
+      <TripFormAlerts
+        isPending={isPending}
+        isSlowRequest={isSlowRequest}
+        generalError={generalError}
+        onRetry={submitForm}
+      />
 
-      {/* General Server Error Alert with Retry Button */}
-      {generalError && (
-        <Alert
-          severity="error"
-          data-testid="trip-form-alert"
-          action={
-            <Button
-              color="inherit"
-              size="small"
-              onClick={submitForm}
-              data-testid="retry-button"
-            >
-              Retry
-            </Button>
-          }
-        >
-          {generalError}
-        </Alert>
-      )}
-
-      {/* Form Action Buttons */}
+      {/* Form Action Button */}
       <Button
         type="submit"
         variant="contained"
