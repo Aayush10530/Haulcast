@@ -14,6 +14,7 @@ from core.domain.types import (
     Checkpoint,
     GridCell,
     RankingInput,
+    Recommendation,
     RouteSummary,
     SelectedRoute,
     TripAnalysis,
@@ -21,6 +22,7 @@ from core.domain.types import (
     TripRequest,
     TripRequestEcho,
     Warning,
+    WeatherSeries,
 )
 from core.providers.base import ProviderBadResponse, WeatherProvider
 from core.services.departure import resolve_departure
@@ -44,32 +46,84 @@ class TripAnalysisService:
         """Execute complete trip analysis from request to ranked routes and recommendation."""
         t0 = time.perf_counter()
 
-        # 1. Resolve origin timezone, convert local departure to UTC, and validate window
-        origin_tz, departure_utc = resolve_departure(
+        origin_tz, departure_utc = self._resolve_departure(request)
+        selected_routes, routing_ms, route_warnings = self._fetch_candidate_routes(request)
+        interval_miles, routes_prep = self._prepare_routes(
+            selected_routes, request, departure_utc
+        )
+        weather_map, weather_ms, unique_cells, last_forecast_time = (
+            self._fetch_and_validate_weather(routes_prep, departure_utc)
+        )
+        analyzed_data = self._assess_routes(
+            routes_prep, weather_map, float(request.load_weight_lb), last_forecast_time
+        )
+        recommendation = self._rank_routes(analyzed_data)
+        warnings_tuple = self._compile_warnings(
+            route_warnings, analyzed_data, recommendation.no_safe_route
+        )
+        analyzed_routes = self._assemble_analyzed_routes(analyzed_data, recommendation)
+
+        elapsed_ms = (time.perf_counter() - t0) * 1000.0
+        in_process_ms = max(0.0, elapsed_ms - routing_ms - weather_ms)
+
+        echo = TripRequestEcho(
+            origin=request.origin,
+            destination=request.destination,
+            departure_utc=departure_utc,
+            departure_local=request.departure_local,
+            origin_tz=origin_tz,
+            load_weight_lb=request.load_weight_lb,
+            interval_miles=interval_miles,
+            interval_mode=request.interval_mode,
+        )
+        meta = TripAnalysisMeta(
+            weather_cells=len(unique_cells),
+            route_count=len(analyzed_routes),
+            elapsed_ms=elapsed_ms,
+            routing_ms=routing_ms,
+            weather_ms=weather_ms,
+            in_process_ms=in_process_ms,
+        )
+
+        return TripAnalysis(
+            request=echo,
+            routes=analyzed_routes,
+            recommendation=recommendation,
+            warnings=warnings_tuple,
+            meta=meta,
+        )
+
+    def _resolve_departure(self, request: TripRequest) -> tuple[str, datetime.datetime]:
+        return resolve_departure(
             origin_coord=request.origin.coordinate,
             departure_local=request.departure_local,
             weather=self.weather,
             clock=self.clock,
         )
 
-        # 2. Fetch diverse candidate routes via route selection service (cached)
+    def _fetch_candidate_routes(
+        self, request: TripRequest
+    ) -> tuple[tuple[SelectedRoute, ...], float, tuple[Warning, ...]]:
         t_route_0 = time.perf_counter()
         selection_result = self.route_selection.get_routes(
             origin=request.origin.coordinate,
             destination=request.destination.coordinate,
         )
         routing_ms = (time.perf_counter() - t_route_0) * 1000.0
-        selected_routes = selection_result.routes
+        return selection_result.routes, routing_ms, selection_result.warnings
 
-        # 3. Resolve interval from longest route's distance
+    def _prepare_routes(
+        self,
+        selected_routes: tuple[SelectedRoute, ...],
+        request: TripRequest,
+        departure_utc: datetime.datetime,
+    ) -> tuple[float, list[tuple[SelectedRoute, list[Checkpoint], list[datetime.datetime]]]]:
         longest_miles = max(sr.raw.distance_miles for sr in selected_routes)
         interval_miles = sampling.resolve_interval(
             mode=request.interval_mode,
             manual_miles=request.manual_interval,
             longest_route_miles=longest_miles,
         )
-
-        # 4. Per route: checkpoints, timeline check, ETAs
         routes_prep: list[tuple[SelectedRoute, list[Checkpoint], list[datetime.datetime]]] = []
         for sr in selected_routes:
             raw = sr.raw
@@ -83,8 +137,13 @@ class TripAnalysisService:
             checkpoints = sampling.build_checkpoints(raw.polyline, cum, interval_miles)
             etas = etas_for_checkpoints(departure_utc, timeline, checkpoints)
             routes_prep.append((sr, checkpoints, etas))
+        return interval_miles, routes_prep
 
-        # 5. Collect unique GridCells from all checkpoints and call weather.get_series once
+    def _fetch_and_validate_weather(
+        self,
+        routes_prep: list[tuple[SelectedRoute, list[Checkpoint], list[datetime.datetime]]],
+        departure_utc: datetime.datetime,
+    ) -> tuple[dict[GridCell, WeatherSeries], float, list[GridCell], datetime.datetime]:
         unique_cells: list[GridCell] = list(
             dict.fromkeys(snap_to_cell(cp.coordinate) for _, cps, _ in routes_prep for cp in cps)
         )
@@ -109,7 +168,6 @@ class TripAnalysisService:
             for s in weather_map.values()
         )
 
-        # Horizon check: if any ETA is beyond the series window for ALL cells
         if any(eta > last_forecast_time for eta in all_etas):
             raise BeyondForecastHorizonError(
                 f"Trip arrival time exceeds available forecast horizon "
@@ -117,8 +175,15 @@ class TripAnalysisService:
                 last_forecast_time=last_forecast_time,
             )
 
-        # 6. Per checkpoint: assess against weather series
-        # 7. Per route: summarize route
+        return weather_map, weather_ms, unique_cells, last_forecast_time
+
+    def _assess_routes(
+        self,
+        routes_prep: list[tuple[SelectedRoute, list[Checkpoint], list[datetime.datetime]]],
+        weather_map: dict[GridCell, WeatherSeries],
+        load_weight_lb: float,
+        last_forecast_time: datetime.datetime,
+    ) -> list[tuple[SelectedRoute, tuple[AssessedCheckpoint, ...], RouteSummary]]:
         analyzed_data: list[tuple[SelectedRoute, tuple[AssessedCheckpoint, ...], RouteSummary]] = []
         all_assessed_cps: list[AssessedCheckpoint] = []
         for sr, checkpoints, etas in routes_prep:
@@ -130,7 +195,7 @@ class TripAnalysisService:
                     checkpoint=cp,
                     eta_utc=eta,
                     series=series,
-                    load_weight_lb=float(request.load_weight_lb),
+                    load_weight_lb=load_weight_lb,
                 )
                 assessed_cps.append(ac)
                 all_assessed_cps.append(ac)
@@ -148,16 +213,25 @@ class TripAnalysisService:
                 last_forecast_time=last_forecast_time,
             )
 
-        # 8. ranking.rank_routes
+        return analyzed_data
+
+    def _rank_routes(
+        self,
+        analyzed_data: list[tuple[SelectedRoute, tuple[AssessedCheckpoint, ...], RouteSummary]],
+    ) -> Recommendation:
         ranking_inputs = [
             RankingInput(route_id=sr.route_id, label=sr.label, summary=summary)
             for sr, _, summary in analyzed_data
         ]
-        recommendation = ranking.rank_routes(ranking_inputs)
-        ranked_lookup = {r.route_id: r for r in recommendation.ranked}
+        return ranking.rank_routes(ranking_inputs)
 
-        # 9. Warnings
-        warnings_list: list[Warning] = list(selection_result.warnings)
+    def _compile_warnings(
+        self,
+        route_warnings: tuple[Warning, ...],
+        analyzed_data: list[tuple[SelectedRoute, tuple[AssessedCheckpoint, ...], RouteSummary]],
+        no_safe_route: bool,
+    ) -> tuple[Warning, ...]:
+        warnings_list: list[Warning] = list(route_warnings)
         total_unavailable = sum(summary.unavailable_checkpoints for _, _, summary in analyzed_data)
         if total_unavailable > 0:
             warnings_list.append(
@@ -177,15 +251,21 @@ class TripAnalysisService:
                             message=f"{sr.label} has incomplete weather data ({pct}% unavailable).",
                         )
                     )
-        if recommendation.no_safe_route:
+        if no_safe_route:
             warnings_list.append(
                 Warning(
                     code="NO_SAFE_ROUTE",
                     message="No safe route available under current weather conditions.",
                 )
             )
+        return tuple(warnings_list)
 
-        # Assemble AnalyzedRoute objects
+    def _assemble_analyzed_routes(
+        self,
+        analyzed_data: list[tuple[SelectedRoute, tuple[AssessedCheckpoint, ...], RouteSummary]],
+        recommendation: Recommendation,
+    ) -> tuple[AnalyzedRoute, ...]:
+        ranked_lookup = {r.route_id: r for r in recommendation.ranked}
         analyzed_routes: list[AnalyzedRoute] = []
         for sr, assessed_cps, summary in analyzed_data:
             r_info = ranked_lookup[sr.route_id]
@@ -204,32 +284,4 @@ class TripAnalysisService:
                     via_summary=sr.raw.via_summary,
                 )
             )
-
-        elapsed_ms = (time.perf_counter() - t0) * 1000.0
-        in_process_ms = max(0.0, elapsed_ms - routing_ms - weather_ms)
-        echo = TripRequestEcho(
-            origin=request.origin,
-            destination=request.destination,
-            departure_utc=departure_utc,
-            departure_local=request.departure_local,
-            origin_tz=origin_tz,
-            load_weight_lb=request.load_weight_lb,
-            interval_miles=interval_miles,
-            interval_mode=request.interval_mode,
-        )
-        meta = TripAnalysisMeta(
-            weather_cells=len(unique_cells),
-            route_count=len(analyzed_routes),
-            elapsed_ms=elapsed_ms,
-            routing_ms=routing_ms,
-            weather_ms=weather_ms,
-            in_process_ms=in_process_ms,
-        )
-
-        return TripAnalysis(
-            request=echo,
-            routes=tuple(analyzed_routes),
-            recommendation=recommendation,
-            warnings=tuple(warnings_list),
-            meta=meta,
-        )
+        return tuple(analyzed_routes)
